@@ -8,7 +8,8 @@ import {
   Activity, 
   LogOut,
   Moon,
-  Sun
+  Sun,
+  BookOpen
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -18,6 +19,7 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Documents', href: '/docs', icon: FileText },
   { name: 'Activity Log', href: '/activity', icon: Activity },
+  { name: 'Documentation', href: '/docs/viewer', icon: BookOpen },
 ]
 
 export default function Sidebar() {
