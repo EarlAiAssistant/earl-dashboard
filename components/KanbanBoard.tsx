@@ -90,10 +90,9 @@ function SortableTaskCard({ task, onView }: { task: Task; onView: (task: Task) =
     transition,
   }
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     // Only open detail if not dragging
     if (!isDragging) {
-      e.stopPropagation()
       onView(task)
     }
   }
