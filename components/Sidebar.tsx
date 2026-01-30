@@ -19,7 +19,6 @@ const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Documents', href: '/docs', icon: FileText },
   { name: 'Activity Log', href: '/activity', icon: Activity },
-  { name: 'Documentation', href: '/docs/viewer', icon: BookOpen },
 ]
 
 export default function Sidebar() {
