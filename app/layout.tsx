@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Sidebar from '@/components/Sidebar'
+import MobileNav from '@/components/MobileNav'
 import { createClient } from '@/lib/supabase/server'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -30,10 +31,15 @@ export default async function RootLayout({
           children
         ) : (
           <div className="flex h-screen bg-gray-950">
-            <aside className="w-64 flex-shrink-0">
+            {/* Desktop sidebar - hidden on mobile */}
+            <aside className="hidden md:block w-64 flex-shrink-0">
               <Sidebar />
             </aside>
-            <main className="flex-1 overflow-auto">
+            
+            {/* Mobile navigation */}
+            <MobileNav />
+            
+            <main className="flex-1 overflow-auto pt-16 md:pt-0">
               {children}
             </main>
           </div>

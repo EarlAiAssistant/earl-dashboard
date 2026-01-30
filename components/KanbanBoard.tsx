@@ -30,34 +30,34 @@ function TaskCard({ task, isDragging = false }: { task: Task; isDragging?: boole
 
   return (
     <div
-      className={`p-4 bg-gray-800 border border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow ${
+      className={`p-3 md:p-4 bg-gray-800 border border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow ${
         isDragging ? 'opacity-50' : ''
       }`}
     >
       <div className="flex items-start justify-between mb-2">
-        <h3 className="font-medium text-white flex-1">{task.title}</h3>
-        <Icon className="w-4 h-4 text-gray-400 ml-2" />
+        <h3 className="font-medium text-sm md:text-base text-white flex-1 pr-2">{task.title}</h3>
+        <Icon className="w-4 h-4 text-gray-400 flex-shrink-0" />
       </div>
 
       {task.description && (
-        <p className="text-sm text-gray-400 mb-3 line-clamp-2">{task.description}</p>
+        <p className="text-xs md:text-sm text-gray-400 mb-3 line-clamp-2">{task.description}</p>
       )}
 
-      <div className="flex flex-wrap gap-2 text-xs">
+      <div className="flex flex-wrap gap-1.5 md:gap-2 text-xs">
         {task.session_key && (
-          <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded">
+          <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-gray-700 text-gray-300 rounded text-[10px] md:text-xs">
             {task.session_key.substring(0, 8)}...
           </span>
         )}
         
         {task.started_at && (
-          <span className="px-2 py-1 bg-blue-900/50 text-blue-300 rounded">
+          <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-blue-900/50 text-blue-300 rounded text-[10px] md:text-xs">
             Started {formatRelativeTime(task.started_at)}
           </span>
         )}
         
         {task.completed_at && (
-          <span className="px-2 py-1 bg-green-900/50 text-green-300 rounded">
+          <span className="px-1.5 md:px-2 py-0.5 md:py-1 bg-green-900/50 text-green-300 rounded text-[10px] md:text-xs">
             Completed {formatRelativeTime(task.completed_at)}
           </span>
         )}
@@ -66,10 +66,10 @@ function TaskCard({ task, isDragging = false }: { task: Task; isDragging?: boole
       {task.metadata && Object.keys(task.metadata).length > 0 && (
         <div className="mt-2 pt-2 border-t border-gray-700">
           {task.metadata.type && (
-            <span className="text-xs text-gray-500">Type: {task.metadata.type}</span>
+            <span className="text-[10px] md:text-xs text-gray-500">Type: {task.metadata.type}</span>
           )}
           {task.metadata.tool && (
-            <span className="text-xs text-gray-500 ml-2">Tool: {task.metadata.tool}</span>
+            <span className="text-[10px] md:text-xs text-gray-500 ml-2">Tool: {task.metadata.tool}</span>
           )}
         </div>
       )}
@@ -99,23 +99,23 @@ function Column({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
   const Icon = config.icon
 
   return (
-    <div className="flex-1 min-w-[300px]">
-      <div className={`${config.color} rounded-lg p-4 mb-4`}>
+    <div className="flex-1 min-w-full md:min-w-[300px]">
+      <div className={`${config.color} rounded-lg p-3 md:p-4 mb-3 md:mb-4`}>
         <div className="flex items-center justify-between text-white">
           <div className="flex items-center">
-            <Icon className="w-5 h-5 mr-2" />
-            <h2 className="font-semibold text-lg">{config.label}</h2>
+            <Icon className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+            <h2 className="font-semibold text-base md:text-lg">{config.label}</h2>
           </div>
-          <span className="bg-white/20 px-2 py-1 rounded-full text-sm font-medium">
+          <span className="bg-white/20 px-2 py-1 rounded-full text-xs md:text-sm font-medium">
             {tasks.length}
           </span>
         </div>
       </div>
 
       <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {tasks.length === 0 ? (
-            <div className="p-8 text-center text-gray-500 bg-gray-800/50 border border-gray-700 border-dashed rounded-lg">
+            <div className="p-4 md:p-8 text-center text-sm md:text-base text-gray-500 bg-gray-800/50 border border-gray-700 border-dashed rounded-lg">
               No tasks
             </div>
           ) : (
@@ -232,7 +232,7 @@ export default function KanbanBoard() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex gap-6 overflow-x-auto pb-4">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:overflow-x-auto pb-4">
         <Column status="backlog" tasks={tasksByStatus.backlog} />
         <Column status="in_progress" tasks={tasksByStatus.in_progress} />
         <Column status="done" tasks={tasksByStatus.done} />

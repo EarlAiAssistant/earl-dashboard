@@ -107,14 +107,14 @@ export default function ActivityPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Activity Log</h1>
-        <p className="text-gray-400">Chronological history of all Earl's activities</p>
+    <div className="p-4 md:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Activity Log</h1>
+        <p className="text-sm md:text-base text-gray-400">Chronological history of all Earl's activities</p>
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+      <div className="mb-4 md:mb-6 flex flex-col sm:flex-row gap-3 md:gap-4">
         {/* Search */}
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -156,7 +156,7 @@ export default function ActivityPage() {
         </div>
       ) : (
         <>
-          <div className="space-y-3">
+          <div className="space-y-2 md:space-y-3">
             {filteredActivities.map((activity) => {
               const StatusIcon = activity.status 
                 ? (statusIcons[activity.status as keyof typeof statusIcons] || AlertCircle)
@@ -168,46 +168,46 @@ export default function ActivityPage() {
               return (
                 <div
                   key={activity.id}
-                  className="p-4 bg-gray-800 border border-gray-700 rounded-lg hover:border-gray-600 transition-colors"
+                  className="p-3 md:p-4 bg-gray-800 border border-gray-700 rounded-lg hover:border-gray-600 transition-colors"
                 >
-                  <div className="flex items-start gap-4">
-                    <StatusIcon className={`w-5 h-5 mt-1 flex-shrink-0 ${statusColor}`} />
+                  <div className="flex items-start gap-2 md:gap-4">
+                    <StatusIcon className={`w-4 h-4 md:w-5 md:h-5 mt-1 flex-shrink-0 ${statusColor}`} />
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4 mb-2">
+                      <div className="flex items-start justify-between gap-2 md:gap-4 mb-2">
                         <div className="flex-1">
-                          <h3 className="font-medium text-white mb-1">
+                          <h3 className="font-medium text-sm md:text-base text-white mb-1">
                             {activity.action_type}
                           </h3>
                           {activity.details && (
-                            <p className="text-sm text-gray-400 whitespace-pre-wrap">
+                            <p className="text-xs md:text-sm text-gray-400 whitespace-pre-wrap break-words">
                               {activity.details}
                             </p>
                           )}
                         </div>
                         
                         {activity.status && (
-                          <span className={`px-2 py-1 text-xs rounded-full bg-gray-700 ${statusColor}`}>
+                          <span className={`px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs rounded-full bg-gray-700 ${statusColor} flex-shrink-0`}>
                             {activity.status}
                           </span>
                         )}
                       </div>
 
-                      <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-                        <span>{formatDate(activity.created_at)}</span>
-                        <span>•</span>
+                      <div className="flex flex-wrap gap-1.5 md:gap-2 text-[10px] md:text-xs text-gray-500">
+                        <span className="hidden sm:inline">{formatDate(activity.created_at)}</span>
+                        <span className="hidden sm:inline">•</span>
                         <span>{formatRelativeTime(activity.created_at)}</span>
                         
                         {activity.metadata && Object.keys(activity.metadata).length > 0 && (
                           <>
                             <span>•</span>
                             {activity.metadata.tool && (
-                              <span className="px-2 py-0.5 bg-gray-700 rounded">
+                              <span className="px-1.5 md:px-2 py-0.5 bg-gray-700 rounded">
                                 Tool: {activity.metadata.tool}
                               </span>
                             )}
                             {activity.metadata.session_key && (
-                              <span className="px-2 py-0.5 bg-gray-700 rounded">
+                              <span className="px-1.5 md:px-2 py-0.5 bg-gray-700 rounded hidden sm:inline">
                                 Session: {activity.metadata.session_key.substring(0, 8)}...
                               </span>
                             )}
