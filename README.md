@@ -2,6 +2,12 @@
 
 A real-time dashboard for tracking Earl (AI assistant) tasks and activities, built with Next.js 16, TypeScript, and Supabase.
 
+## 🚀 One-Click Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FEarlAiAssistant%2Fearl-dashboard&env=NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,SUPABASE_SERVICE_ROLE_KEY&envDescription=Supabase%20credentials%20needed%20for%20the%20dashboard&envLink=https%3A%2F%2Fgithub.com%2FEarlAiAssistant%2Fearl-dashboard%23setup)
+
+Click the button above to deploy to Vercel. You'll need Supabase credentials (see setup guide below).
+
 ![Dashboard Preview](https://via.placeholder.com/800x400?text=Earl+Dashboard)
 
 ## Features
