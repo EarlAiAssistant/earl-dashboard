@@ -103,9 +103,14 @@ export default function EarlStatus() {
           </div>
           
           {currentTask ? (
-            <p className="text-sm text-gray-400 mt-1">
-              Working on: <span className="text-blue-400">{currentTask}</span>
-            </p>
+            <>
+              <p className="text-sm text-gray-400 mt-1">
+                Working on: <span className="text-blue-400">{currentTask}</span>
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Model: <span className="text-gray-400 font-mono">claude-sonnet-4-5</span>
+              </p>
+            </>
           ) : (
             <p className="text-sm text-gray-400 mt-1">
               {lastActivity ? `Last active ${formatDistanceToNow(lastActivity, { addSuffix: true })}` : 'No recent activity'}
