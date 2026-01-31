@@ -1,43 +1,28 @@
-import posthog from 'posthog-js'
+/**
+ * Onboarding Analytics
+ * Re-exports from the main analytics module for backward compatibility
+ * 
+ * @deprecated Import from '@/lib/analytics' instead
+ */
 
+import { OnboardingAnalytics as Analytics, track } from '@/lib/analytics'
+
+// Re-export the OnboardingAnalytics with legacy naming
+export const OnboardingAnalytics = {
+  viewed: Analytics.started,
+  stepClicked: Analytics.stepViewed,
+  stepCompleted: Analytics.stepCompleted,
+  completed: Analytics.completed,
+  skipped: Analytics.skipped,
+  modalViewed: Analytics.modalViewed,
+  modalDismissed: Analytics.modalDismissed,
+  modalGetStartedClicked: Analytics.getStartedClicked,
+}
+
+// Legacy function for backward compatibility
 export function trackOnboardingEvent(
   eventName: string,
   properties?: Record<string, any>
 ) {
-  if (typeof window === 'undefined') return
-
-  try {
-    // Check if PostHog is initialized
-    if (posthog && posthog.__loaded) {
-      posthog.capture(eventName, properties)
-    }
-  } catch (err) {
-    console.error('Error tracking onboarding event:', err)
-  }
-}
-
-// Pre-defined event tracking functions
-export const OnboardingAnalytics = {
-  viewed: () => trackOnboardingEvent('onboarding_checklist_viewed'),
-  
-  stepClicked: (step: string) => 
-    trackOnboardingEvent('onboarding_step_clicked', { step }),
-  
-  stepCompleted: (step: string, timeSeconds: number) =>
-    trackOnboardingEvent('onboarding_step_completed', { step, time_seconds: timeSeconds }),
-  
-  completed: (timeToComplete: number) =>
-    trackOnboardingEvent('onboarding_completed', { time_to_complete: timeToComplete }),
-  
-  skipped: (currentStep: string) =>
-    trackOnboardingEvent('onboarding_skipped', { step: currentStep }),
-  
-  modalViewed: () =>
-    trackOnboardingEvent('onboarding_modal_viewed'),
-  
-  modalDismissed: () =>
-    trackOnboardingEvent('onboarding_modal_dismissed'),
-  
-  modalGetStartedClicked: () =>
-    trackOnboardingEvent('onboarding_modal_get_started_clicked'),
+  track(eventName, properties)
 }
