@@ -1,124 +1,159 @@
-# Customer Interview Mistakes to Avoid (And How to Fix Them)
+# 7 Customer Interview Mistakes That Kill Your Content (And How to Fix Them)
 
-**Meta Description:** Stop wasting customer interviews. Learn the 12 most common mistakes (and fixes) that turn mediocre interviews into goldmine conversations.
+**Meta Description:** Avoid these common customer interview mistakes that ruin testimonials, case studies, and content. Learn what works (with real examples).
 
 **Target Keyword:** customer interview mistakes  
-**Monthly Search Volume:** ~180  
-**Keyword Difficulty:** Low (15/100)  
-**Word Count:** ~3,100  
-**Last Updated:** January 31, 2026
+**Secondary Keywords:** customer interview tips, how to interview customers, customer testimonial mistakes  
+**Word Count:** ~2,800 words  
+**Content Type:** Listicle + Tactical Guide
 
 ---
 
-## Introduction: Why Most Customer Interviews Fail
+## Introduction
 
-You block off 30 minutes. You send the calendar invite. You show up prepared.
+You finally got a customer to agree to an interview. You're excited — this is going to be a great case study!
 
-**Then this happens:**
+You hop on the call, ask your questions, thank them for their time, and hang up feeling good.
 
-- You ask vague questions → You get vague answers
-- You talk too much → The customer talks too little
-- You don't record it → You forget the best quotes
-- You never publish anything → The insights die in your notes app
+Then you sit down to write the case study and realize: **you have nothing quotable.**
 
-**The result?** Wasted time. Zero ROI. Frustrated customers who wonder why they bothered.
+The interview was fine, but the answers were vague. Generic. Safe. Nothing you can really use.
 
-**But here's the good news:** Most interview mistakes are fixable with small tweaks.
+**What went wrong?**
 
-This guide covers the **12 most common customer interview mistakes** — and exactly how to avoid them.
+Chances are, you made one (or more) of the seven mistakes in this guide.
+
+The good news: **they're all fixable.** And once you know what to avoid, your customer interviews will become goldmines of content, testimonials, and social proof.
 
 ---
 
-## Mistake #1: Not Having a Clear Goal
+## Mistake #1: Not Recording the Interview
 
 ### **The Problem**
 
-You schedule an interview without knowing **why** you're doing it.
+You're frantically typing notes while the customer talks. You miss half of what they say because you're distracted. Later, you can't remember their exact words, so you paraphrase — and lose the magic.
 
-**What happens:**
-- You ask random questions
-- The conversation meanders
-- You end with no actionable insights
+**What you wanted:**
+> "This saved me 20 hours a week. I can't believe I didn't do this sooner."
 
-### **The Fix**
-
-Before every interview, answer: **"What do I want to learn?"**
-
-**Examples of clear goals:**
-- ✅ "Get a quotable case study for the homepage"
-- ✅ "Understand why customers churn after 30 days"
-- ✅ "Learn which features drive the most value"
-- ✅ "Find objections prospects have before buying"
-
-**Pro tip:** Share the goal with the customer upfront:
-
-> "Thanks for joining! The goal today is to understand how you use [Product] so we can write a case study. Sound good?"
-
-This sets expectations and keeps the conversation focused.
+**What you wrote down:**
+> "Customer said product saved time, was happy"
 
 ---
 
-## Mistake #2: Asking Yes/No Questions
+### **Why This Happens**
 
-### **The Problem**
+You think you'll remember. Or you're worried about making the customer uncomfortable by recording.
 
-**Bad question:**  
-> "Do you like the product?"
-
-**Customer response:**  
-> "Yeah, it's good."
-
-Conversation dead.
+---
 
 ### **The Fix**
 
-Ask **open-ended questions** that require stories, not one-word answers.
+**Always record the interview.** Just ask permission first:
 
-**Instead of:**  
-> "Do you like the product?"
+> "Hey, do you mind if I record this so I can focus on our conversation instead of taking notes? I'll send you a draft before publishing anything."
 
-**Ask:**  
-> "What's your favorite thing about the product?"
+**99% of people say yes.**
 
-**Instead of:**  
-> "Did this save you time?"
+**Tools:**
+- **Zoom** (built-in cloud recording + auto-transcription)
+- **Otter.ai** (free for 600 min/month)
+- **Fireflies.ai** (free, auto-joins calls)
+- **Call-Content** (built for customer interview content)
 
-**Ask:**  
-> "How much time would you say this saves you each week?"
+**Pro tip:** Tell them the recording is "so I don't miss any of your great insights." Frame it as respect for their time, not surveillance.
 
-**Pro tip:** Start questions with:
-- "What..."
+---
+
+## Mistake #2: Asking Closed Questions
+
+### **The Problem**
+
+You ask questions that can be answered with "yes," "no," or one word.
+
+**Bad question:** "Do you like the product?"  
+**Customer answer:** "Yeah, it's good."
+
+**Bad question:** "Did it save you time?"  
+**Customer answer:** "Yes."
+
+**Result:** No depth. No emotion. No quotable moments.
+
+---
+
+### **Why This Happens**
+
+You're nervous. You want to make it easy for the customer. So you ask simple, safe questions.
+
+---
+
+### **The Fix**
+
+**Ask open-ended questions that start with:**
 - "How..."
+- "What..."
 - "Tell me about..."
 - "Walk me through..."
 
-These force narrative answers.
+**Good question:** "How has your workflow changed since you started using this?"  
+**Customer answer:** "Oh man, it's night and day. I used to spend 10 hours a week on manual data entry. Now it's automated. I literally got 10 hours of my life back every week."
+
+**See the difference?**
 
 ---
 
-## Mistake #3: Leading the Witness
+### **Examples: Closed vs. Open**
+
+| ❌ Closed Question | ✅ Open Question |
+|-------------------|-----------------|
+| "Did it work for you?" | "What changed for you after you started using this?" |
+| "Do you like the dashboard?" | "Walk me through how you use the dashboard in a typical day." |
+| "Would you recommend us?" | "If a friend asked you about this, what would you tell them?" |
+| "Was setup easy?" | "Tell me about your first week using the product — what surprised you?" |
+
+---
+
+## Mistake #3: Not Digging Deeper
 
 ### **The Problem**
 
-**Bad question:**  
-> "You love how fast it is, right?"
+The customer gives you a surface-level answer, and you immediately move to the next question.
 
-**Why it's bad:**  
-You just put words in their mouth. They'll agree even if speed isn't the real reason they love it.
+**Example:**
+
+**You:** "How has this helped you?"  
+**Customer:** "It made things easier."  
+**You:** "Great! So, what features do you use most?"
+
+**You just missed the good stuff.**
+
+---
+
+### **Why This Happens**
+
+You have a list of questions to get through, so you treat it like a checklist instead of a conversation.
+
+---
 
 ### **The Fix**
 
-Let the customer choose the angle.
+**When someone says something interesting, don't move on. Dig deeper.**
 
-**Instead of:**  
-> "You love the speed, right?"
+Use these follow-up prompts:
+- "Tell me more about that."
+- "Can you give me a specific example?"
+- "What do you mean by 'easier'?"
+- "What happened next?"
+- "How did that make you feel?"
 
-**Ask:**  
-> "What stands out to you most?"
+**Example:**
 
-Maybe they say speed. Maybe they say accuracy. Maybe they say something you didn't expect (like customer support or ease of use).
+**You:** "How has this helped you?"  
+**Customer:** "It made things easier."  
+**You:** "Tell me more — what do you mean by easier?"  
+**Customer:** "Well, I used to spend every Monday morning manually pulling reports. It would take me 3-4 hours. Now the reports generate automatically overnight. I just review them over coffee. It's like getting Monday mornings back."
 
-**Pro tip:** Resist the urge to finish their sentences. Let them land the plane.
+**Now you have a quote.**
 
 ---
 
@@ -126,389 +161,330 @@ Maybe they say speed. Maybe they say accuracy. Maybe they say something you didn
 
 ### **The Problem**
 
-**What it sounds like:**
+You spend more time explaining your product than listening to the customer's story.
 
-> **You:** "So we built this feature because we were hearing from customers that... [5-minute monologue]... anyway, what do you think?"  
-> **Customer:** "Uh, yeah, sounds good."
+**Example of what not to do:**
 
-You just burned 5 minutes of a 30-minute call. And you learned nothing.
+**You:** "So, our platform has this amazing feature where you can automate your workflows. It uses AI to predict what tasks you'll need next, and it integrates with over 50 tools. We built it because we saw that most solutions were too rigid, so we made ours super flexible. Anyway, what do you think?"
+
+**Customer:** "Um, yeah, it's nice."
+
+---
+
+### **Why This Happens**
+
+You're excited about your product. You want to explain why it's great. But **this is their story, not yours.**
+
+---
 
 ### **The Fix**
 
-**80/20 rule:** The customer should talk 80% of the time. You talk 20%.
+**80/20 rule: The customer talks 80% of the time. You talk 20%.**
 
-**Your job:**
-- Ask good questions
+Your job is to:
+- Ask great questions
 - Listen
-- Take notes
-- Ask follow-up questions
+- Ask follow-ups
+- Shut up
 
-**Not your job:**
-- Explain your product roadmap
-- Justify design decisions
-- Sell them on features
+**Tip:** If you find yourself explaining a feature, stop. Turn it into a question:
 
-**Pro tip:** After asking a question, **shut up.** Even if there's silence. Let them think.
+Instead of: "Our dashboard is really intuitive..."  
+Say: "How do you use the dashboard in your day-to-day work?"
 
 ---
 
-## Mistake #5: Not Recording the Interview
+## Mistake #5: Not Creating Space for Emotion
 
 ### **The Problem**
 
-You rely on memory. You scribble notes while they talk. You miss half of what they say.
-
-**By the time you sit down to write the case study:**
-- You forgot the best quotes
-- You're fuzzy on the details
-- You have to email them to clarify ("Wait, how much time did you save again?")
-
-### **The Fix**
-
-**Always record** (with permission).
-
-**How to ask:**
-> "I'd like to record this so I can focus on our conversation instead of taking notes. Is that okay?"
-
-99% of people say yes.
-
-**Tools:**
-- **Zoom:** Built-in recording + auto-transcription
-- **Otter.ai:** Real-time transcription
-- **Fireflies.ai:** Joins calls automatically
-- **Google Meet:** Built-in recording
-
-**Pro tip:** After the call, scan the transcript for quotable moments. Highlight them and save them to a doc.
-
----
-
-## Mistake #6: Skipping the "Before" Context
-
-### **The Problem**
-
-You jump straight to: "How's the product working?"
-
-**Customer says:**  
-> "Good, we're saving time."
-
-**You have no idea:**
-- How much time?
-- Compared to what?
-- What was broken before?
-
-### **The Fix**
-
-Always start with the **"Before"** question.
+You stick to facts and features, so the customer does too.
 
 **Example:**
-> "Before you found [Product], what did [process] look like? Walk me through a typical day."
 
-**This gives you:**
-- Context (what was broken)
-- Contrast (before vs. after)
-- Emotional stakes (how bad was it?)
+**You:** "What results did you see?"  
+**Customer:** "We increased efficiency by 30%."  
+**You:** "That's great. What else?"
 
-**Pro tip:** The "Before" section is what makes case studies compelling. Without it, the "After" doesn't land.
-
----
-
-## Mistake #7: Not Probing for Numbers
-
-### **The Problem**
-
-**You:** "Did this save you time?"  
-**Them:** "Yeah, definitely."
-
-**You just missed a chance to quantify it.**
-
-"Saved time" is vague. "Saved 15 hours a week" is a headline.
-
-### **The Fix**
-
-**Always ask for numbers** — even rough estimates.
-
-**Examples:**
-> "How much time would you say this saves you? Even a ballpark guess is fine."
-
-> "If you had to put a dollar value on that, what would it be?"
-
-> "How many [tasks/leads/sales] did this help you generate?"
-
-**If they don't know:**  
-Give them options.
-
-> "Would you say it's closer to 5 hours a week, 10 hours, or more like 20?"
-
-Most people will pick one and refine it.
-
-**Pro tip:** Numbers are proof. "Improved efficiency" means nothing. "40% faster" is a stat you can use.
+**What you got:** A metric.  
+**What you missed:** How it felt to achieve that result.
 
 ---
 
-## Mistake #8: Ignoring Negative Feedback
+### **Why This Happens**
 
-### **The Problem**
-
-**Customer:** "Yeah, the product is great. Though there is one thing that's kind of annoying..."  
-**You:** "Oh, we're working on that! Anyway, back to what you love—"
-
-**You just shut down the most valuable part of the conversation.**
-
-### **The Fix**
-
-**Lean into the complaints.** Negative feedback reveals:
-- Pain points you didn't know existed
-- Feature requests
-- Objections prospects have (use this in marketing)
-
-**When they mention a complaint, ask:**
-> "Tell me more about that. What makes it annoying?"
-
-> "How often does that come up?"
-
-> "If we fixed that, what would change for you?"
-
-**Pro tip:** Complaints are goldmines for product development **and** marketing. If one customer complains, 50 others are thinking it.
+You're focused on getting data for the case study. But **data alone isn't compelling. Emotion is.**
 
 ---
 
-## Mistake #9: Not Asking About Alternatives
-
-### **The Problem**
-
-You never ask: "What else did you try?"
-
-**You miss:**
-- Competitive intelligence (who are you really up against?)
-- Differentiation angles (why did they pick you over X?)
-- Objection handling (what made them hesitate?)
-
 ### **The Fix**
 
-**Always ask about alternatives.**
+**Ask questions that tap into how they *felt*:**
 
-**Examples:**
-> "What were you using before this?"
+- "How did that change things for you personally?"
+- "What was going through your mind when you saw those results?"
+- "What did you tell your team when this started working?"
+- "What would've happened if you hadn't solved this problem?"
 
-> "Did you try any other tools? What didn't work about them?"
+**Example:**
 
-> "What made you choose us over [Competitor]?"
+**You:** "You said you increased efficiency by 30%. How did that change things for you personally?"  
+**Customer:** "Honestly, it saved my sanity. I was working 60-hour weeks and still falling behind. My wife told me, 'Something has to change.' When I saw that 30% improvement, I realized I could finally leave work at a reasonable hour. It sounds dramatic, but it probably saved my marriage."
 
-**Real example:**
-
-**Question:** "What else did you look at before choosing Call-Content?"
-
-**Response:**  
-> "We tried Otter and Fireflies. Both transcribe well, but neither actually **writes** the content. I'd still have to spend hours turning the transcript into a case study. Call-Content was the only one that did the full thing."
-
-**Why this is gold:**
-- Names competitors (shows they did their homework)
-- Explains why competitors fell short
-- Highlights your unique value
-
-**Pro tip:** Use this in marketing: "Unlike Otter and Fireflies, we don't just transcribe — we write the case study for you."
+**That's the quote.** And you wouldn't have gotten it if you'd stuck to metrics.
 
 ---
 
-## Mistake #10: Interrupting
+## Mistake #6: Skipping the Silence
 
 ### **The Problem**
 
-**Them:** "Yeah, so before we started using it—"  
-**You:** "Oh, did you try [Competitor]?"
-
-**You just cut off a potential gold nugget.**
-
-### **The Fix**
-
-**Shut up.**
-
-**When they're on a roll:**
-- Don't interrupt
-- Don't finish their sentences
-- Don't inject your thoughts
-
-**Your job:** Take notes. Let them talk.
-
-**Pro tip:** Use silence strategically. After asking a question, count to 5 in your head before speaking again. Most people will fill the silence with something valuable.
+The customer finishes answering, and you immediately ask the next question. You never give them space to think.
 
 ---
 
-## Mistake #11: Not Capturing Emotion
+### **Why This Happens**
 
-### **The Problem**
-
-You ask: "How's it working?"  
-They say: "Good, no complaints."
-
-**You just missed the emotional hook.**
-
-### **The Fix**
-
-Ask **feeling-based questions.**
-
-**Examples:**
-> "How did you **feel** when you first saw the results?"
-
-> "Was there a moment where you thought, 'Oh wow, this actually works'?"
-
-> "What was your reaction the first time you used it?"
-
-**Real example:**
-
-**Question:** "How did you feel when you realized this was saving you 10 hours a week?"
-
-**Response:**  
-> "Honestly? I almost cried. I'd been drowning in customer research for months, working nights and weekends just to keep up. When I saw the first draft, I thought, 'I can actually have my life back.'"
-
-**Why this is powerful:**
-- Emotional language ("almost cried," "drowning")
-- Specific pain point (working nights/weekends)
-- Clear before/after (drowning → life back)
-
-**Pro tip:** Emotion sells. Prospects don't buy features — they buy relief, excitement, peace of mind.
+Silence feels awkward. You want to fill it.
 
 ---
 
-## Mistake #12: Never Publishing Anything
-
-### **The Problem**
-
-You do the interview. You get great insights. You save the recording.
-
-**Then... nothing.**
-
-The content dies in your notes app. The customer wonders why you bothered. You wasted their time (and yours).
-
 ### **The Fix**
 
-**Publish within 48 hours.**
+**After the customer finishes answering, count to 3 in your head before asking the next question.**
 
-**What to create:**
-- Blog post (2,000 words, 30 min to write)
-- Case study (1,500 words, 20 min to write)
-- LinkedIn post (300 words, 5 min to write)
-- Twitter thread (10 tweets, 10 min to write)
-- Email newsletter blurb (200 words, 5 min to write)
+**Here's what happens:**
 
-**Pro tip:** Send the customer a link when it goes live. Most people love being featured. And they'll share it with their network.
+1. Customer gives an answer
+2. You stay silent
+3. Customer thinks, "Did I answer that fully?"
+4. Customer keeps talking — and this is often where the best stuff comes out
+
+**Example:**
+
+**You:** "What was the biggest challenge you were facing?"  
+**Customer:** "We were spending too much time on manual tasks."  
+**You:** [Silence — count to 3]  
+**Customer:** "Actually, it was worse than that. I'd stay up until midnight trying to catch up. One night, my kid asked me, 'Why are you always on your computer?' That's when I knew I had to find a better way."
+
+**The silence gave them space to go deeper.**
 
 ---
 
-## Bonus Mistake: Not Following Up
+## Mistake #7: Not Asking for Specifics
 
 ### **The Problem**
 
-You publish the case study. You never tell the customer.
+The customer gives you vague, generic answers, and you accept them.
 
-**They find it 6 months later and think:** "Why didn't they tell me?"
+**Example:**
+
+**You:** "How much time did this save you?"  
+**Customer:** "A lot."  
+**You:** "Great!"
+
+**What you got:** Nothing usable.  
+**What you needed:** A specific number.
+
+---
+
+### **Why This Happens**
+
+You don't want to seem pushy. You're grateful they're giving you their time, so you don't want to push for more.
+
+---
 
 ### **The Fix**
 
-**Send a thank-you email immediately after publishing.**
+**Politely press for specifics:**
 
-**Template:**
+- "When you say 'a lot,' can you ballpark it? 5 hours? 10 hours?"
+- "Can you give me an example of when that happened?"
+- "What does 'better' mean for you — faster? Cheaper? Easier?"
 
-> **Subject:** Thanks for the interview — here's the case study!
->
-> Hey [Name],
->
-> Thanks again for taking the time to chat last week! I just published the case study based on our conversation:
->
-> [Link]
->
-> If you spot anything you'd like me to tweak, just let me know. And feel free to share it with your network if you'd like!
->
-> Appreciate you,  
-> [Your Name]
+**Example:**
+
+**You:** "You mentioned this saved you time. How much time are we talking?"  
+**Customer:** "Oh, probably a lot."  
+**You:** "Can you ballpark it? Like, 5 hours a week? 10?"  
+**Customer:** "At least 15. Maybe 20 if you count all the little stuff."  
+**You:** "Wow. What are you doing with those 15-20 hours now?"  
+**Customer:** "Honestly? I'm spending time with my family instead of working late every night."
+
+**Now you have:**
+- A specific number (15-20 hours/week)
+- An emotional payoff (family time)
+
+---
+
+## Bonus Mistake: Not Getting Permission to Publish
+
+### **The Problem**
+
+You write up the case study, publish it with the customer's name and company, and then get an angry email: "You didn't ask if you could use my name!"
+
+---
+
+### **The Fix**
+
+**Always get permission before publishing.**
+
+**At the end of the interview, say:**
+
+> "Thanks so much for this! I'm going to write up your story and send you a draft before we publish anything. If there's anything you want me to change or remove, just let me know."
+
+Then, **send them the draft** and get written approval (email is fine):
+
+> "Hey [Name], here's the case study draft. Does this look good to you? Let me know if you'd like me to change anything!"
 
 **Why this matters:**
-- Shows respect (you used their time wisely)
-- Builds goodwill (they'll do another interview if you ask)
-- Drives traffic (most customers will share it)
+- **Legal protection:** You have proof they approved it
+- **Builds trust:** They feel respected
+- **They might share it:** If they approve it, they're more likely to promote it
 
 ---
 
-## The Perfect Customer Interview Framework
+## How to Rescue a Bad Interview
 
-Here's a proven structure that avoids all 12 mistakes:
+What if you're already halfway through an interview and realize you're making these mistakes?
 
-### **1. Set the Goal (2 min)**
-> "Thanks for joining! Today I want to understand [goal]. I'll record this so I can focus on listening. Sound good?"
-
-### **2. The "Before" Question (5 min)**
-> "Walk me through what [process] looked like **before** you found [Product]. What was the biggest pain point?"
-
-### **3. The Discovery Question (3 min)**
-> "How did you find us? What made you decide to try it?"
-
-### **4. The Skepticism Question (3 min)**
-> "Were you skeptical at first? What were you worried wouldn't work?"
-
-### **5. The Aha Moment Question (4 min)**
-> "When did it click for you? Was there a moment where you thought, 'Oh, this actually works'?"
-
-### **6. The Results Question (5 min)**
-> "How much time/money/effort has this saved you? Even a rough guess is fine."
-
-### **7. The Surprise Question (3 min)**
-> "What surprised you most? Was there a benefit you didn't expect?"
-
-### **8. The Advice Question (3 min)**
-> "If a friend was in your shoes 6 months ago, what would you tell them?"
-
-### **9. Wrap-Up (2 min)**
-> "This was super helpful. I'll send you a link when it's live. Anything else you want to add?"
-
-**Total time:** 30 minutes  
-**Output:** 5-10 quotable moments, 3-5 metrics, 1-2 emotional hooks
+**Don't panic. You can course-correct.**
 
 ---
 
-## Quick-Start Checklist
+### **If the answers are too vague:**
 
-Use this before your next customer interview:
-
-- [ ] Define the goal ("What do I want to learn?")
-- [ ] Ask permission to record
-- [ ] Start with open-ended questions ("What..." "How..." "Tell me about...")
-- [ ] Don't lead the witness (let them choose the angle)
-- [ ] Let them talk 80% of the time
-- [ ] Probe for numbers ("How much time/money did this save?")
-- [ ] Ask about alternatives ("What else did you try?")
-- [ ] Capture emotion ("How did you feel when...?")
-- [ ] Don't interrupt (let silence do the work)
-- [ ] Publish within 48 hours
-- [ ] Send a thank-you email with the link
+**Say:** "That's helpful — can you give me a specific example of when that happened?"
 
 ---
 
-## Conclusion: Great Interviews Are Designed, Not Accidental
+### **If the customer is giving short answers:**
 
-Customer interviews don't fail because customers are bad at talking. They fail because **you're asking the wrong questions.**
-
-Avoid these 12 mistakes and you'll walk away with:
-- Quotable testimonials
-- Quantifiable results
-- Emotional hooks
-- Competitive insights
-- Content gold
-
-**Next steps:**
-1. Book a customer interview this week
-2. Use the framework above
-3. Publish the content within 48 hours
-
-**Want to automate this?** [Try Call-Content free for 14 days](#) — turn customer interviews into case studies automatically.
+**Say:** "I'm curious — can you tell me the story of how you got here? Like, what was the moment you decided you needed to change something?"
 
 ---
 
-**Related Posts:**
+### **If you're talking too much:**
+
+**Say:** "Actually, I want to hear more from you. Tell me more about [topic]."
+
+---
+
+### **If you forgot to record:**
+
+**Say:** "Hey, this conversation is so valuable — do you mind if I start recording from here? I want to make sure I capture your exact words."
+
+---
+
+## Quick Checklist: How to Nail Your Next Customer Interview
+
+Use this checklist before your next interview:
+
+### **Before the Interview**
+- ✅ Ask permission to record
+- ✅ Prepare 5-10 open-ended questions (not a script — a guide)
+- ✅ Research the customer (know their role, company, industry)
+
+### **During the Interview**
+- ✅ Start recording (with permission)
+- ✅ Ask open-ended questions ("How..." "What..." "Tell me about...")
+- ✅ Dig deeper when they say something interesting
+- ✅ Use silence (count to 3 before asking the next question)
+- ✅ Press for specifics ("Can you ballpark that number?")
+- ✅ Ask emotional questions ("How did that change things for you?")
+- ✅ Let them talk 80% of the time
+
+### **After the Interview**
+- ✅ Transcribe the recording (Otter, Zoom, Call-Content)
+- ✅ Pull the best 10-15 quotes
+- ✅ Write the case study/blog post
+- ✅ Send the draft to the customer for approval
+- ✅ Get written permission before publishing
+
+---
+
+## Real Example: Bad Interview → Good Interview
+
+Let's see these principles in action.
+
+---
+
+### **❌ Bad Interview (Making All the Mistakes)**
+
+**You:** "Did you like our product?"  
+**Customer:** "Yeah, it's good."
+
+**You:** "Did it save you time?"  
+**Customer:** "Yes."
+
+**You:** "Would you recommend us?"  
+**Customer:** "Sure."
+
+**You:** "Great! Thanks for your time."
+
+**Result:** Nothing usable. Boring. Generic.
+
+---
+
+### **✅ Good Interview (Applying the Fixes)**
+
+**You:** "What was your situation like before you found us?"  
+**Customer:** "Oh man, it was rough. I was spending 20 hours a week on manual data entry. It was soul-crushing work, and I knew I was wasting time, but I didn't have a better option."
+
+**You:** [Silence — count to 3]  
+**Customer:** "Actually, it was worse than just time. I was making mistakes because I was so burned out. We had a client complain because I messed up their invoice. That was my wake-up call."
+
+**You:** "What happened after that?"  
+**Customer:** "I started looking for solutions. Found your tool. Set it up over a weekend. By Monday, the data entry was automated."
+
+**You:** "How did that change things for you?"  
+**Customer:** "I got my life back. I went from working 60-hour weeks to 40. I started leaving work at 5:30 instead of 9 PM. My wife actually noticed — she said, 'You seem happier.'"
+
+**You:** "If you could go back and talk to yourself before you found this, what would you say?"  
+**Customer:** "I'd say, 'Stop trying to do everything manually. You're burning yourself out for no reason. Just automate it and move on.'"
+
+**Result:**
+- Multiple quotable moments
+- Specific numbers (20 hours/week, 60 → 40 hours)
+- Emotion (soul-crushing, wake-up call, "You seem happier")
+- Advice for others
+
+---
+
+## Conclusion: Great Interviews Are a Skill (And You Can Learn It)
+
+Most people make these mistakes because they've never been taught how to interview customers properly.
+
+**But now you know:**
+- ✅ Record the interview
+- ✅ Ask open-ended questions
+- ✅ Dig deeper
+- ✅ Let them talk
+- ✅ Create space for emotion
+- ✅ Use silence
+- ✅ Press for specifics
+
+**Your challenge:**
+
+Interview one customer this week. Use this checklist. Record it. See what happens.
+
+You'll be shocked at the quality of quotes you get.
+
+---
+
+## Want to Turn Customer Interviews Into Content Automatically?
+
+**Try Call-Content free for 14 days** — record your customer interview, and we'll extract the best quotes, generate blog posts, case studies, and testimonials for you.
+
+[Start Free Trial](#) | [See How It Works](#)
+
+---
+
+**Related Articles:**
 - [How to Get Customers to Say Quotable Things](#)
-- [50 Customer Interview Questions (Organized by Goal)](#)
-- [Customer Interview to Case Study: 5-Step Framework](#)
-- [How to Turn Zoom Calls into Content (2026 Guide)](#)
+- [How to Turn a Customer Interview Into a Blog Post](#)
+- [50 Customer Interview Questions That Generate Great Content](#)
 
 ---
 
-*Found this helpful? Share it with someone who's about to do a customer interview.*
+*Published by Drew at Call-Content | Last updated: January 2026*
