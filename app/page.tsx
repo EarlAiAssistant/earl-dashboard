@@ -1,4 +1,5 @@
 import KanbanBoard from '@/components/KanbanBoard'
+import EarlStatus from '@/components/EarlStatus'
 import { RefreshCw } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -21,6 +22,11 @@ export default function DashboardPage() {
             <span className="sm:hidden">Auto-refresh</span>
           </div>
         </div>
+      </div>
+
+      {/* Earl Status Indicator */}
+      <div className="mb-6">
+        <EarlStatus />
       </div>
 
       <KanbanBoard />
