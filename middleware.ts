@@ -1,7 +1,13 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Allow public access to Earl heartbeat endpoint
+  if (request.nextUrl.pathname === '/api/earl/heartbeat') {
+    return NextResponse.next()
+  }
+  
   return await updateSession(request)
 }
 
