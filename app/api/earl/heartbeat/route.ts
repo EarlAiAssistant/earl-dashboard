@@ -61,7 +61,7 @@ function saveStatus(status: EarlStatus) {
 
 /**
  * GET /api/earl/heartbeat
- * Returns Earl's current status
+ * Returns Earl's current status (public read)
  */
 export async function GET() {
   const status = getStatus()
@@ -87,7 +87,10 @@ export async function GET() {
 
 /**
  * POST /api/earl/heartbeat
- * Updates Earl's status
+ * Updates Earl's status (requires API key)
+ * 
+ * Headers:
+ *   x-api-key: <EARL_HEARTBEAT_KEY>
  * 
  * Body:
  * {
@@ -98,6 +101,24 @@ export async function GET() {
  * }
  */
 export async function POST(request: Request) {
+  // Check API key
+  const apiKey = request.headers.get('x-api-key')
+  const expectedKey = process.env.EARL_HEARTBEAT_KEY
+  
+  if (!expectedKey) {
+    return NextResponse.json(
+      { success: false, error: 'Server misconfigured - no API key set' },
+      { status: 500 }
+    )
+  }
+  
+  if (apiKey !== expectedKey) {
+    return NextResponse.json(
+      { success: false, error: 'Unauthorized - invalid API key' },
+      { status: 401 }
+    )
+  }
+  
   try {
     const body = await request.json()
     

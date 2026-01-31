@@ -38,3 +38,5 @@ credentials.md
 # Earl status cache
 .earl-status.json
 node_modules/
+.env.local
+.earl-config
