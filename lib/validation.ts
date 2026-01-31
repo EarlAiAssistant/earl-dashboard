@@ -1,11 +1,14 @@
-import { z } from 'zod'
-
 /**
- * Form Validation Schemas for Call-Content
+ * Form Validation Library
+ * 
+ * Common Zod schemas for form validation throughout the app.
+ * Use with react-hook-form + @hookform/resolvers/zod
  */
 
+import { z } from 'zod'
+
 // ============================================
-// COMMON SCHEMAS
+// Primitive Schemas
 // ============================================
 
 export const emailSchema = z
@@ -16,17 +19,31 @@ export const emailSchema = z
 export const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[a-z]/, 'Password must contain a lowercase letter')
+  .regex(/[A-Z]/, 'Password must contain an uppercase letter')
+  .regex(/[0-9]/, 'Password must contain a number')
+
+export const simplePasswordSchema = z
+  .string()
+  .min(6, 'Password must be at least 6 characters')
 
 export const nameSchema = z
   .string()
   .min(1, 'Name is required')
-  .max(100, 'Name must be less than 100 characters')
+  .max(100, 'Name is too long')
+
+export const urlSchema = z
+  .string()
+  .url('Please enter a valid URL')
+  .or(z.literal(''))
+
+export const phoneSchema = z
+  .string()
+  .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number')
+  .or(z.literal(''))
 
 // ============================================
-// AUTH SCHEMAS
+// Auth Schemas
 // ============================================
 
 export const loginSchema = z.object({
@@ -35,10 +52,10 @@ export const loginSchema = z.object({
 })
 
 export const signupSchema = z.object({
-  name: nameSchema,
   email: emailSchema,
   password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  confirmPassword: z.string(),
+  name: nameSchema.optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -50,128 +67,128 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z.object({
   password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
 })
 
 // ============================================
-// PROFILE SCHEMAS
+// Profile Schemas
 // ============================================
 
 export const profileSchema = z.object({
   name: nameSchema,
   email: emailSchema,
-  company: z.string().max(100, 'Company name must be less than 100 characters').optional(),
-  website: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  company: z.string().max(100).optional(),
+  role: z.string().max(100).optional(),
+  phone: phoneSchema.optional(),
+  website: urlSchema.optional(),
 })
 
 export const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
   newPassword: passwordSchema,
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
 })
 
 // ============================================
-// TRANSCRIPT SCHEMAS
+// Content Schemas
 // ============================================
 
-export const uploadTranscriptSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
-  content: z.string().min(100, 'Transcript must be at least 100 characters'),
-  industry: z.string().optional(),
-  tags: z.array(z.string()).optional(),
+export const transcriptUploadSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title is too long'),
+  description: z.string().max(1000, 'Description is too long').optional(),
+  customerName: z.string().max(100).optional(),
+  customerCompany: z.string().max(100).optional(),
+  tags: z.array(z.string().max(50)).max(10, 'Maximum 10 tags allowed').optional(),
 })
 
-export const transcriptSettingsSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
-  industry: z.string().optional(),
-  speakers: z.array(z.object({
-    label: z.string(),
-    name: z.string(),
-  })).optional(),
-})
-
-// ============================================
-// CONTENT GENERATION SCHEMAS
-// ============================================
-
-export const generateContentSchema = z.object({
-  transcriptId: z.string().min(1, 'Transcript is required'),
-  template: z.enum([
-    'blog_post',
+export const contentGenerationSchema = z.object({
+  transcriptId: z.string().uuid('Invalid transcript ID'),
+  templateType: z.enum([
     'case_study',
-    'linkedin_post',
-    'twitter_thread',
-    'email_sequence',
+    'blog_post',
+    'social_media',
     'testimonial',
-    'press_release',
-    'landing_page',
+    'email',
+    'executive_summary',
+    'key_quotes',
+    'action_items',
   ]),
-  tone: z.enum(['professional', 'casual', 'formal', 'friendly']).optional(),
+  customPrompt: z.string().max(2000).optional(),
+  tone: z.enum(['professional', 'casual', 'friendly', 'formal']).optional(),
   length: z.enum(['short', 'medium', 'long']).optional(),
-  customInstructions: z.string().max(500, 'Instructions must be less than 500 characters').optional(),
+})
+
+export const projectSchema = z.object({
+  name: z.string().min(1, 'Project name is required').max(100),
+  description: z.string().max(500).optional(),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
 })
 
 // ============================================
-// BILLING SCHEMAS
+// Billing Schemas
 // ============================================
 
-export const checkoutSchema = z.object({
-  tier: z.enum(['starter', 'professional', 'agency']),
-  billingPeriod: z.enum(['monthly', 'annual']).optional(),
-})
-
-export const boosterPackSchema = z.object({
-  userId: z.string().min(1),
+export const billingInfoSchema = z.object({
+  name: nameSchema,
   email: emailSchema,
+  address: z.object({
+    line1: z.string().min(1, 'Address is required'),
+    line2: z.string().optional(),
+    city: z.string().min(1, 'City is required'),
+    state: z.string().min(1, 'State is required'),
+    postalCode: z.string().min(1, 'Postal code is required'),
+    country: z.string().min(2).max(2, 'Use 2-letter country code'),
+  }),
+  taxId: z.string().optional(),
 })
 
 // ============================================
-// CONTACT/SUPPORT SCHEMAS
+// Contact/Support Schemas
 // ============================================
 
 export const contactSchema = z.object({
   name: nameSchema,
   email: emailSchema,
-  subject: z.string().min(1, 'Subject is required').max(200, 'Subject must be less than 200 characters'),
-  message: z.string().min(10, 'Message must be at least 10 characters').max(5000, 'Message must be less than 5000 characters'),
+  subject: z.string().min(1, 'Subject is required').max(200),
+  message: z.string().min(10, 'Message must be at least 10 characters').max(5000),
+  category: z.enum(['general', 'support', 'billing', 'feature_request', 'bug_report']).optional(),
 })
 
 export const feedbackSchema = z.object({
-  type: z.enum(['bug', 'feature', 'general']),
-  message: z.string().min(10, 'Feedback must be at least 10 characters').max(2000, 'Feedback must be less than 2000 characters'),
-  email: emailSchema.optional(),
+  rating: z.number().min(1).max(5),
+  feedback: z.string().max(2000).optional(),
+  category: z.enum(['product', 'support', 'content', 'other']).optional(),
 })
 
 // ============================================
-// TYPE EXPORTS
+// Type Exports
 // ============================================
 
-export type LoginInput = z.infer<typeof loginSchema>
-export type SignupInput = z.infer<typeof signupSchema>
-export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
-export type ProfileInput = z.infer<typeof profileSchema>
-export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
-export type UploadTranscriptInput = z.infer<typeof uploadTranscriptSchema>
-export type TranscriptSettingsInput = z.infer<typeof transcriptSettingsSchema>
-export type GenerateContentInput = z.infer<typeof generateContentSchema>
-export type CheckoutInput = z.infer<typeof checkoutSchema>
-export type BoosterPackInput = z.infer<typeof boosterPackSchema>
-export type ContactInput = z.infer<typeof contactSchema>
-export type FeedbackInput = z.infer<typeof feedbackSchema>
+export type LoginFormData = z.infer<typeof loginSchema>
+export type SignupFormData = z.infer<typeof signupSchema>
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
+export type ProfileFormData = z.infer<typeof profileSchema>
+export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>
+export type TranscriptUploadFormData = z.infer<typeof transcriptUploadSchema>
+export type ContentGenerationFormData = z.infer<typeof contentGenerationSchema>
+export type ProjectFormData = z.infer<typeof projectSchema>
+export type BillingInfoFormData = z.infer<typeof billingInfoSchema>
+export type ContactFormData = z.infer<typeof contactSchema>
+export type FeedbackFormData = z.infer<typeof feedbackSchema>
 
 // ============================================
-// VALIDATION HELPERS
+// Validation Helpers
 // ============================================
 
 /**
- * Validate data against a schema and return formatted errors
+ * Validate data against a schema and return typed result
  */
 export function validateForm<T>(
   schema: z.ZodSchema<T>,
@@ -184,10 +201,10 @@ export function validateForm<T>(
   }
   
   const errors: Record<string, string> = {}
-  result.error.errors.forEach((error) => {
-    const path = error.path.join('.')
+  result.error.issues.forEach((issue) => {
+    const path = issue.path.join('.')
     if (!errors[path]) {
-      errors[path] = error.message
+      errors[path] = issue.message
     }
   })
   
@@ -195,22 +212,8 @@ export function validateForm<T>(
 }
 
 /**
- * Get first error message from Zod error
+ * Create a partial schema (all fields optional) for patch operations
  */
-export function getFirstError(error: z.ZodError): string {
-  return error.errors[0]?.message || 'Validation failed'
-}
-
-/**
- * Format Zod errors for display
- */
-export function formatErrors(error: z.ZodError): Record<string, string> {
-  const errors: Record<string, string> = {}
-  error.errors.forEach((err) => {
-    const path = err.path.join('.')
-    if (!errors[path]) {
-      errors[path] = err.message
-    }
-  })
-  return errors
+export function createPartialSchema<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
+  return schema.partial()
 }
