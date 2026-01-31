@@ -34,3 +34,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 credentials.md
+
+# Earl status cache
+.earl-status.json

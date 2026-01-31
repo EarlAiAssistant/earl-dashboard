@@ -1,129 +1,58 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { formatDistanceToNow } from 'date-fns'
 
+interface EarlStatusData {
+  status: 'active' | 'idle' | 'offline'
+  task: string
+  model: string
+  lastPing: string
+  sessionUptime?: string
+  workspace?: string
+}
+
 export default function EarlStatus() {
-  const [lastActivity, setLastActivity] = useState<Date | null>(null)
-  const [currentTask, setCurrentTask] = useState<string | null>(null)
-  const [isActive, setIsActive] = useState(false)
-  const supabase = createClient()
+  const [statusData, setStatusData] = useState<EarlStatusData | null>(null)
 
   useEffect(() => {
-    // Fetch latest activity from multiple sources
+    // Fetch status from Earl's heartbeat API
     const fetchStatus = async () => {
-      let mostRecentActivity: Date | null = null
-      
-      // Source 1: Check activity_log table
-      const { data: activity } = await supabase
-        .from('activity_log')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
-
-      if (activity) {
-        mostRecentActivity = new Date(activity.created_at)
-      }
-
-      // Source 2: Check tasks table for recent updates
-      const { data: recentTask } = await supabase
-        .from('tasks')
-        .select('*')
-        .order('updated_at', { ascending: false })
-        .limit(1)
-        .single()
-
-      if (recentTask) {
-        const taskTime = new Date(recentTask.updated_at)
-        if (!mostRecentActivity || taskTime > mostRecentActivity) {
-          mostRecentActivity = taskTime
-        }
-      }
-
-      // Source 3: Fetch ACTIVITY_LOG.md from GitHub and parse timestamp
       try {
-        const response = await fetch('/ACTIVITY_LOG.md')
+        const response = await fetch('/api/earl/heartbeat')
         if (response.ok) {
-          const content = await response.text()
-          const match = content.match(/\*\*Last Updated:\*\* (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC/)
-          if (match) {
-            const logTime = new Date(match[1] + 'Z') // Add Z for UTC
-            if (!mostRecentActivity || logTime > mostRecentActivity) {
-              mostRecentActivity = logTime
-            }
-          }
+          const data = await response.json()
+          setStatusData(data)
         }
       } catch (error) {
-        console.log('Could not fetch ACTIVITY_LOG.md:', error)
-      }
-
-      if (mostRecentActivity) {
-        setLastActivity(mostRecentActivity)
-        
-        // Consider active if activity within last 5 minutes (increased from 2)
-        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-        setIsActive(mostRecentActivity > fiveMinutesAgo)
-      }
-
-      // Get current in-progress task or latest backlog work
-      const { data: inProgressTask } = await supabase
-        .from('tasks')
-        .select('title')
-        .eq('status', 'in_progress')
-        .limit(1)
-        .single()
-
-      if (inProgressTask) {
-        setCurrentTask(inProgressTask.title)
-      } else {
-        // Fallback: parse ACTIVITY_LOG.md for current task
-        try {
-          const response = await fetch('/ACTIVITY_LOG.md')
-          if (response.ok) {
-            const content = await response.text()
-            const taskMatch = content.match(/\*\*Current Task:\*\* (.+)/)
-            if (taskMatch) {
-              setCurrentTask(taskMatch[1])
-            } else {
-              setCurrentTask('Working on backlog')
-            }
-          }
-        } catch {
-          setCurrentTask(null)
-        }
+        console.error('Failed to fetch Earl status:', error)
       }
     }
 
     fetchStatus()
-    const interval = setInterval(fetchStatus, 15000) // Update every 15 seconds (faster)
+    const interval = setInterval(fetchStatus, 15000) // Poll every 15 seconds
 
     return () => clearInterval(interval)
   }, [])
 
   const getStatusColor = () => {
-    if (!lastActivity) return 'bg-gray-500'
+    if (!statusData) return 'bg-gray-500'
     
-    const now = Date.now()
-    const activityTime = lastActivity.getTime()
-    const minutesAgo = (now - activityTime) / 1000 / 60
-
-    if (minutesAgo < 5) return 'bg-green-500' // Active (within 5 minutes)
-    if (minutesAgo < 60) return 'bg-yellow-500' // Idle (within 1 hour)
-    return 'bg-gray-500' // Offline (>1 hour)
+    switch (statusData.status) {
+      case 'active':
+        return 'bg-green-500'
+      case 'idle':
+        return 'bg-yellow-500'
+      case 'offline':
+      default:
+        return 'bg-gray-500'
+    }
   }
 
   const getStatusText = () => {
-    if (!lastActivity) return 'Offline'
+    if (!statusData) return 'Offline'
     
-    const now = Date.now()
-    const activityTime = lastActivity.getTime()
-    const minutesAgo = (now - activityTime) / 1000 / 60
-
-    if (minutesAgo < 5) return 'Active'
-    if (minutesAgo < 60) return 'Idle'
-    return 'Offline'
+    return statusData.status.charAt(0).toUpperCase() + statusData.status.slice(1)
   }
 
   return (
@@ -136,7 +65,7 @@ export default function EarlStatus() {
           </div>
           {/* Status dot with pulse animation if active */}
           <div className={`absolute bottom-0 right-0 w-4 h-4 ${getStatusColor()} rounded-full border-2 border-gray-900 ${
-            isActive ? 'animate-pulse' : ''
+            statusData?.status === 'active' ? 'animate-pulse' : ''
           }`} />
         </div>
 
@@ -145,26 +74,36 @@ export default function EarlStatus() {
           <div className="flex items-center gap-2">
             <h3 className="text-white font-semibold">Earl</h3>
             <span className={`text-xs font-medium px-2 py-1 rounded ${
-              isActive ? 'bg-green-500/20 text-green-400' :
-              getStatusText() === 'Idle' ? 'bg-yellow-500/20 text-yellow-400' :
+              statusData?.status === 'active' ? 'bg-green-500/20 text-green-400' :
+              statusData?.status === 'idle' ? 'bg-yellow-500/20 text-yellow-400' :
               'bg-gray-500/20 text-gray-400'
             }`}>
               {getStatusText()}
             </span>
           </div>
           
-          {currentTask ? (
+          {statusData ? (
             <>
               <p className="text-sm text-gray-400 mt-1">
-                Working on: <span className="text-blue-400">{currentTask}</span>
+                {statusData.task}
               </p>
+              <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-500">
+                <span>
+                  Model: <span className="text-gray-400 font-mono">{statusData.model}</span>
+                </span>
+                {statusData.sessionUptime && (
+                  <span>
+                    Uptime: <span className="text-gray-400">{statusData.sessionUptime}</span>
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-gray-500 mt-0.5">
-                Model: <span className="text-gray-400 font-mono">claude-sonnet-4-5</span>
+                Last ping: {formatDistanceToNow(new Date(statusData.lastPing), { addSuffix: true })}
               </p>
             </>
           ) : (
             <p className="text-sm text-gray-400 mt-1">
-              {lastActivity ? `Last active ${formatDistanceToNow(lastActivity, { addSuffix: true })}` : 'No recent activity'}
+              Connecting...
             </p>
           )}
         </div>
