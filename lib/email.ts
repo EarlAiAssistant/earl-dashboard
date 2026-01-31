@@ -312,6 +312,303 @@ export function paymentReceiptEmail(
   }
 }
 
+// ============================================
+// DUNNING EMAILS (Payment Recovery)
+// ============================================
+
+/**
+ * Payment failed - Initial notification (Day 0)
+ */
+export function paymentFailedEmail(name: string, amount: number, lastFour?: string): { subject: string; html: string } {
+  return {
+    subject: `⚠️ Your payment of $${amount} failed`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+    .alert { background: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; margin: 20px 0; }
+    .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Call-Content</div>
+    </div>
+    
+    <h1>Hey ${name},</h1>
+    
+    <div class="alert">
+      <p style="margin: 0;"><strong>Your payment of $${amount.toFixed(2)} didn't go through.</strong></p>
+      ${lastFour ? `<p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Card ending in ${lastFour}</p>` : ''}
+    </div>
+    
+    <p>No worries - this happens! Common reasons:</p>
+    
+    <ul>
+      <li>Expired card</li>
+      <li>Insufficient funds</li>
+      <li>Bank flagged it as unusual activity</li>
+    </ul>
+    
+    <p><strong>Your account is still active.</strong> We'll retry the payment in a few days, but you can update your card now to avoid any interruption:</p>
+    
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="https://call-content.com/billing" class="button">Update Payment Method →</a>
+    </p>
+    
+    <p>Questions? Just reply to this email.</p>
+    
+    <p>Best,<br><strong>The Call-Content Team</strong></p>
+    
+    <div class="footer">
+      <p>You're receiving this because your Call-Content payment didn't process.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `,
+  }
+}
+
+/**
+ * Payment still failing - Second notice (Day 3)
+ */
+export function paymentReminderEmail(name: string, amount: number, daysOverdue: number): { subject: string; html: string } {
+  return {
+    subject: `🔴 Action required: Update your payment method`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+    .warning { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; }
+    .button { display: inline-block; background: #ef4444; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Call-Content</div>
+    </div>
+    
+    <h1>Hey ${name},</h1>
+    
+    <div class="warning">
+      <p style="margin: 0;"><strong>We've tried to charge your card multiple times, but it keeps failing.</strong></p>
+      <p style="margin: 5px 0 0 0; font-size: 14px;">$${amount.toFixed(2)} • ${daysOverdue} days overdue</p>
+    </div>
+    
+    <p>Your subscription is at risk of being suspended. To keep your account active and protect your content, please update your payment method:</p>
+    
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="https://call-content.com/billing" class="button">Update Payment Now →</a>
+    </p>
+    
+    <p>If you're having trouble or need more time, just reply to this email - we're happy to help.</p>
+    
+    <p>Best,<br><strong>The Call-Content Team</strong></p>
+    
+    <div class="footer">
+      <p>You're receiving this because your Call-Content payment is overdue.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `,
+  }
+}
+
+/**
+ * Account suspension warning (Day 7)
+ */
+export function suspensionWarningEmail(name: string, amount: number): { subject: string; html: string } {
+  return {
+    subject: `🚨 Your account will be suspended in 7 days`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+    .urgent { background: #fef2f2; border: 2px solid #ef4444; padding: 20px; margin: 20px 0; border-radius: 8px; }
+    .countdown { font-size: 36px; font-weight: bold; color: #ef4444; text-align: center; }
+    .button { display: inline-block; background: #ef4444; color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 18px; }
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Call-Content</div>
+    </div>
+    
+    <h1>Hey ${name},</h1>
+    
+    <div class="urgent">
+      <div class="countdown">7 days until suspension</div>
+      <p style="text-align: center; margin: 10px 0 0 0;">Outstanding balance: <strong>$${amount.toFixed(2)}</strong></p>
+    </div>
+    
+    <p>We haven't been able to process your payment. If we don't receive payment in the next 7 days, your account will be suspended and you'll lose access to:</p>
+    
+    <ul>
+      <li>❌ All your transcripts</li>
+      <li>❌ Generated content</li>
+      <li>❌ Saved templates</li>
+    </ul>
+    
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="https://call-content.com/billing" class="button">Pay Now & Keep Access →</a>
+    </p>
+    
+    <p><strong>Having financial difficulties?</strong> We understand. Reply to this email and let's work something out.</p>
+    
+    <p>Best,<br><strong>The Call-Content Team</strong></p>
+    
+    <div class="footer">
+      <p>You're receiving this because your Call-Content payment is significantly overdue.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `,
+  }
+}
+
+/**
+ * Final notice before cancellation (Day 14)
+ */
+export function finalNoticeEmail(name: string, amount: number): { subject: string; html: string } {
+  return {
+    subject: `⛔ FINAL NOTICE: Your account will be cancelled tomorrow`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+    .critical { background: #1f2937; color: white; padding: 30px; margin: 20px 0; border-radius: 8px; text-align: center; }
+    .critical h2 { color: #ef4444; margin: 0 0 10px 0; }
+    .button { display: inline-block; background: #10b981; color: white; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 18px; }
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Call-Content</div>
+    </div>
+    
+    <h1>${name},</h1>
+    
+    <div class="critical">
+      <h2>⛔ FINAL NOTICE</h2>
+      <p style="margin: 0;">Your account will be <strong>cancelled tomorrow</strong> and all data will be <strong>permanently deleted</strong>.</p>
+      <p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.8;">Outstanding: $${amount.toFixed(2)}</p>
+    </div>
+    
+    <p>This is your last chance to save your account. After cancellation:</p>
+    
+    <ul>
+      <li>🗑️ All transcripts will be deleted</li>
+      <li>🗑️ All generated content will be deleted</li>
+      <li>🗑️ Your account cannot be recovered</li>
+    </ul>
+    
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="https://call-content.com/billing" class="button">Save My Account →</a>
+    </p>
+    
+    <p>If you've already updated your payment method, you can ignore this email.</p>
+    
+    <p>Best,<br><strong>The Call-Content Team</strong></p>
+    
+    <div class="footer">
+      <p>This is an automated final notice for your Call-Content account.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `,
+  }
+}
+
+/**
+ * Account reactivated after payment
+ */
+export function accountReactivatedEmail(name: string): { subject: string; html: string } {
+  return {
+    subject: `✅ Welcome back! Your account is reactivated`,
+    html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+    .success { background: #ecfdf5; border-left: 4px solid #10b981; padding: 20px; margin: 20px 0; }
+    .button { display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+    .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Call-Content</div>
+    </div>
+    
+    <h1>Welcome back, ${name}! 🎉</h1>
+    
+    <div class="success">
+      <p style="margin: 0;"><strong>Great news!</strong> Your payment went through and your account is fully reactivated.</p>
+    </div>
+    
+    <p>All your content is safe and waiting for you:</p>
+    
+    <ul>
+      <li>✅ All transcripts restored</li>
+      <li>✅ All generated content available</li>
+      <li>✅ Full feature access restored</li>
+    </ul>
+    
+    <p style="text-align: center; margin: 30px 0;">
+      <a href="https://call-content.com/dashboard" class="button">Go to Dashboard →</a>
+    </p>
+    
+    <p>Thanks for sticking with us!</p>
+    
+    <p>Best,<br><strong>The Call-Content Team</strong></p>
+    
+    <div class="footer">
+      <p>You're receiving this because your Call-Content account was reactivated.</p>
+    </div>
+  </div>
+</body>
+</html>
+    `,
+  }
+}
+
 /**
  * Booster pack confirmation
  */

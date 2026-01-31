@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { getStripe } from '@/lib/stripe'
+import { 
+  createDunningRecord, 
+  resolveDunningRecord, 
+  reactivateAccount,
+  sendDunningEmail,
+  sendReactivationEmail,
+  getDunningRecord
+} from '@/lib/dunning'
 
 export const dynamic = 'force-dynamic'
 
@@ -171,11 +179,13 @@ export async function POST(request: Request) {
 
         const { data: user } = await supabase
           .from('users')
-          .select('id')
+          .select('id, name, email, subscription_status')
           .eq('stripe_customer_id', customerId)
           .single()
 
         if (user) {
+          const wasPastDue = user.subscription_status === 'past_due' || user.subscription_status === 'suspended'
+
           await supabase
             .from('users')
             .update({
@@ -186,7 +196,19 @@ export async function POST(request: Request) {
             })
             .eq('id', user.id)
 
-          console.log(`✅ Payment succeeded, usage reset for user ${user.id}`)
+          // If recovering from failed payment, resolve dunning and send reactivation email
+          if (wasPastDue) {
+            await resolveDunningRecord(invoice.id)
+            await reactivateAccount(user.id)
+            
+            if (user.email) {
+              await sendReactivationEmail(user.name || 'there', user.email)
+            }
+            
+            console.log(`✅ Payment recovered, account reactivated for user ${user.id}`)
+          } else {
+            console.log(`✅ Payment succeeded, usage reset for user ${user.id}`)
+          }
         }
         break
       }
@@ -194,14 +216,31 @@ export async function POST(request: Request) {
       case 'invoice.payment_failed': {
         const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer as string
+        const amountDue = invoice.amount_due || 0
+        const paymentIntent = invoice.payment_intent as string | undefined
+
+        // Get card info from payment intent
+        let cardLastFour: string | undefined
+        if (paymentIntent) {
+          try {
+            const pi = await getStripe().paymentIntents.retrieve(paymentIntent)
+            if (pi.payment_method && typeof pi.payment_method === 'string') {
+              const pm = await getStripe().paymentMethods.retrieve(pi.payment_method)
+              cardLastFour = pm.card?.last4
+            }
+          } catch {
+            // Ignore errors retrieving card info
+          }
+        }
 
         const { data: user } = await supabase
           .from('users')
-          .select('id')
+          .select('id, name, email')
           .eq('stripe_customer_id', customerId)
           .single()
 
         if (user) {
+          // Update subscription status
           await supabase
             .from('users')
             .update({
@@ -209,7 +248,26 @@ export async function POST(request: Request) {
             })
             .eq('id', user.id)
 
-          console.log(`⚠️ Payment failed for user ${user.id}`)
+          // Create dunning record
+          const dunningRecord = await createDunningRecord(
+            user.id,
+            invoice.id,
+            amountDue,
+            invoice.currency || 'usd',
+            cardLastFour,
+            paymentIntent
+          )
+
+          // Send initial dunning email
+          if (dunningRecord && user.email) {
+            await sendDunningEmail(
+              dunningRecord,
+              user.name || 'there',
+              user.email
+            )
+          }
+
+          console.log(`⚠️ Payment failed for user ${user.id}, dunning started`)
         }
         break
       }
