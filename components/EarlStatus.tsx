@@ -11,9 +11,11 @@ export default function EarlStatus() {
   const supabase = createClient()
 
   useEffect(() => {
-    // Fetch latest activity
+    // Fetch latest activity from multiple sources
     const fetchStatus = async () => {
-      // Get most recent activity
+      let mostRecentActivity: Date | null = null
+      
+      // Source 1: Check activity_log table
       const { data: activity } = await supabase
         .from('activity_log')
         .select('*')
@@ -22,31 +24,80 @@ export default function EarlStatus() {
         .single()
 
       if (activity) {
-        const activityTime = new Date(activity.created_at)
-        setLastActivity(activityTime)
-        
-        // Consider active if activity within last 2 minutes
-        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
-        setIsActive(activityTime > twoMinutesAgo)
+        mostRecentActivity = new Date(activity.created_at)
       }
 
-      // Get current in-progress task
-      const { data: tasks } = await supabase
+      // Source 2: Check tasks table for recent updates
+      const { data: recentTask } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (recentTask) {
+        const taskTime = new Date(recentTask.updated_at)
+        if (!mostRecentActivity || taskTime > mostRecentActivity) {
+          mostRecentActivity = taskTime
+        }
+      }
+
+      // Source 3: Fetch ACTIVITY_LOG.md from GitHub and parse timestamp
+      try {
+        const response = await fetch('/ACTIVITY_LOG.md')
+        if (response.ok) {
+          const content = await response.text()
+          const match = content.match(/\*\*Last Updated:\*\* (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) UTC/)
+          if (match) {
+            const logTime = new Date(match[1] + 'Z') // Add Z for UTC
+            if (!mostRecentActivity || logTime > mostRecentActivity) {
+              mostRecentActivity = logTime
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch ACTIVITY_LOG.md:', error)
+      }
+
+      if (mostRecentActivity) {
+        setLastActivity(mostRecentActivity)
+        
+        // Consider active if activity within last 5 minutes (increased from 2)
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+        setIsActive(mostRecentActivity > fiveMinutesAgo)
+      }
+
+      // Get current in-progress task or latest backlog work
+      const { data: inProgressTask } = await supabase
         .from('tasks')
         .select('title')
         .eq('status', 'in_progress')
         .limit(1)
         .single()
 
-      if (tasks) {
-        setCurrentTask(tasks.title)
+      if (inProgressTask) {
+        setCurrentTask(inProgressTask.title)
       } else {
-        setCurrentTask(null)
+        // Fallback: parse ACTIVITY_LOG.md for current task
+        try {
+          const response = await fetch('/ACTIVITY_LOG.md')
+          if (response.ok) {
+            const content = await response.text()
+            const taskMatch = content.match(/\*\*Current Task:\*\* (.+)/)
+            if (taskMatch) {
+              setCurrentTask(taskMatch[1])
+            } else {
+              setCurrentTask('Working on backlog')
+            }
+          }
+        } catch {
+          setCurrentTask(null)
+        }
       }
     }
 
     fetchStatus()
-    const interval = setInterval(fetchStatus, 30000) // Update every 30 seconds
+    const interval = setInterval(fetchStatus, 15000) // Update every 15 seconds (faster)
 
     return () => clearInterval(interval)
   }, [])
@@ -58,9 +109,9 @@ export default function EarlStatus() {
     const activityTime = lastActivity.getTime()
     const minutesAgo = (now - activityTime) / 1000 / 60
 
-    if (minutesAgo < 2) return 'bg-green-500' // Active
-    if (minutesAgo < 30) return 'bg-yellow-500' // Idle
-    return 'bg-gray-500' // Offline
+    if (minutesAgo < 5) return 'bg-green-500' // Active (within 5 minutes)
+    if (minutesAgo < 60) return 'bg-yellow-500' // Idle (within 1 hour)
+    return 'bg-gray-500' // Offline (>1 hour)
   }
 
   const getStatusText = () => {
@@ -70,8 +121,8 @@ export default function EarlStatus() {
     const activityTime = lastActivity.getTime()
     const minutesAgo = (now - activityTime) / 1000 / 60
 
-    if (minutesAgo < 2) return 'Active'
-    if (minutesAgo < 30) return 'Idle'
+    if (minutesAgo < 5) return 'Active'
+    if (minutesAgo < 60) return 'Idle'
     return 'Offline'
   }
 
