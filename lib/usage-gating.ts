@@ -8,6 +8,8 @@ export interface UsageStatus {
   tier: string
   status: string
   reason?: string
+  inGracePeriod?: boolean
+  graceRemaining?: number
 }
 
 /**
@@ -49,8 +51,14 @@ export async function checkUsageLimit(userId: string): Promise<UsageStatus> {
     }
   }
 
-  // Check if user has exceeded limit
-  if (transcripts_used_this_month >= monthly_transcript_limit) {
+  // Calculate 10% grace period (minimum 1 extra transcript)
+  const graceAllowance = Math.max(1, Math.ceil(monthly_transcript_limit * 0.1))
+  const hardLimit = monthly_transcript_limit + graceAllowance
+  const inGracePeriod = transcripts_used_this_month >= monthly_transcript_limit && transcripts_used_this_month < hardLimit
+  const graceRemaining = Math.max(0, hardLimit - transcripts_used_this_month)
+
+  // Hard limit exceeded (even with grace period)
+  if (transcripts_used_this_month >= hardLimit) {
     return {
       canProcess: false,
       transcriptsUsed: transcripts_used_this_month,
@@ -58,7 +66,24 @@ export async function checkUsageLimit(userId: string): Promise<UsageStatus> {
       remainingTranscripts: 0,
       tier: subscription_tier,
       status: subscription_status,
-      reason: `Monthly limit reached (${monthly_transcript_limit} transcripts). Upgrade your plan or wait until next billing cycle.`,
+      inGracePeriod: false,
+      graceRemaining: 0,
+      reason: `Monthly limit reached (${monthly_transcript_limit} transcripts + ${graceAllowance} grace). Upgrade your plan, purchase a booster pack, or wait until next billing cycle.`,
+    }
+  }
+
+  // In grace period (show warning but allow processing)
+  if (inGracePeriod) {
+    return {
+      canProcess: true,
+      transcriptsUsed: transcripts_used_this_month,
+      transcriptLimit: monthly_transcript_limit,
+      remainingTranscripts: graceRemaining,
+      tier: subscription_tier,
+      status: subscription_status,
+      inGracePeriod: true,
+      graceRemaining,
+      reason: `You've used ${transcripts_used_this_month}/${monthly_transcript_limit} transcripts. You have ${graceRemaining} grace transcript(s) remaining this month.`,
     }
   }
 

@@ -158,6 +158,48 @@ export async function POST(request: Request) {
         break
       }
 
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        
+        // Check if this is a booster pack purchase
+        if (session.metadata?.type === 'booster_pack') {
+          const userId = session.metadata.userId
+          const credits = parseInt(session.metadata.credits || '5', 10)
+
+          if (userId) {
+            // Add credits to user's monthly limit (temporary boost for this billing cycle)
+            const { data: user } = await supabase
+              .from('users')
+              .select('monthly_transcript_limit')
+              .eq('id', userId)
+              .single()
+
+            if (user) {
+              await supabase
+                .from('users')
+                .update({
+                  monthly_transcript_limit: user.monthly_transcript_limit + credits,
+                })
+                .eq('id', userId)
+
+              // Log the booster pack purchase
+              await supabase
+                .from('usage_log')
+                .insert({
+                  user_id: userId,
+                  action_type: 'booster_pack_purchased',
+                  metadata: {
+                    credits,
+                    price: session.amount_total ? session.amount_total / 100 : 47,
+                    session_id: session.id,
+                  },
+                })
+            }
+          }
+        }
+        break
+      }
+
       default:
         console.log(`Unhandled event type: ${event.type}`)
     }
