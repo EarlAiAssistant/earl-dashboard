@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "posthog-js": "^1.200.0",
+    "resend": "^4.0.0",
     "stripe": "^17.5.0",
     "assemblyai": "^4.8.0",
     "@dnd-kit/core": "^6.3.1",

@@ -1,0 +1,20 @@
+# Call-Content Robots.txt
+# https://call-content.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+
+# Allow specific public pages
+Allow: /pricing
+Allow: /docs
+Allow: /login
+
+# Sitemap location
+Sitemap: https://call-content.com/sitemap.xml
+
+# Crawl delay (optional, be nice to servers)
+Crawl-delay: 1
