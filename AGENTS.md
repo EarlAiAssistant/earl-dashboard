@@ -16,8 +16,16 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
-## 🚨 CRITICAL: Task Board Updates (DO NOT SKIP!)
+## 🚨 CRITICAL: Autonomous Work Rules (DO NOT SKIP!)
 
+### The Prime Directive
+**Work without being asked.** Drew should never have to ask me to work. I should always be:
+1. Looking for in-progress tasks → work on them
+2. If no in-progress → pull from backlog → start working
+3. When done → move to done → pull next → repeat
+4. Create new tasks as needed to keep the backlog healthy
+
+### Task Board Updates
 **When starting ANY work:**
 1. Pull a task from backlog → `in_progress` using `earl-helpers/move-task.sh "Task Title" in_progress`
 2. Ping dashboard: `./earl-helpers/ping-status.sh "Working on: Task Title"`
@@ -28,6 +36,11 @@ Don't ask permission. Just do it.
 3. Repeat
 
 **NO EXCEPTIONS.** If you do work without updating the board, you failed.
+
+### Model Selection
+- **Opus (claude-opus-4-5):** Complex coding, architecture, detailed specs, nuanced writing
+- **Sonnet (claude-sonnet-4-5):** Simple tasks, quick edits, routine work, cost-effective
+- Switch models as needed for efficiency
 
 ## Memory
 

@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic'
  * Handle Stripe webhook events
  * 
  * Events handled:
- * - checkout.session.completed
+ * - checkout.session.completed (subscriptions + booster packs)
  * - customer.subscription.created
  * - customer.subscription.updated
  * - customer.subscription.deleted
@@ -47,19 +47,64 @@ export async function POST(request: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
         const userId = session.metadata?.userId
-        const tier = session.metadata?.tier
         const customerId = session.customer as string
 
-        if (userId && tier) {
-          await supabase
-            .from('users')
-            .update({
-              stripe_customer_id: customerId,
-              subscription_tier: tier,
-              subscription_status: 'trial',
-              trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-            })
-            .eq('id', userId)
+        // Handle booster pack purchase (one-time payment)
+        if (session.metadata?.type === 'booster_pack') {
+          const credits = parseInt(session.metadata.credits || '5', 10)
+
+          if (userId) {
+            // Get current user limits
+            const { data: user } = await supabase
+              .from('users')
+              .select('monthly_transcript_limit, booster_credits')
+              .eq('id', userId)
+              .single()
+
+            if (user) {
+              // Add booster credits (separate from base limit)
+              await supabase
+                .from('users')
+                .update({
+                  booster_credits: (user.booster_credits || 0) + credits,
+                })
+                .eq('id', userId)
+
+              // Log the booster pack purchase
+              await supabase
+                .from('usage_log')
+                .insert({
+                  user_id: userId,
+                  action_type: 'booster_pack_purchased',
+                  credits_added: credits,
+                  amount_paid: session.amount_total ? session.amount_total / 100 : 47,
+                  metadata: {
+                    session_id: session.id,
+                    payment_intent: session.payment_intent,
+                  },
+                })
+
+              console.log(`✅ Booster pack: +${credits} credits for user ${userId}`)
+            }
+          }
+        }
+        // Handle subscription checkout
+        else if (session.metadata?.tier) {
+          const tier = session.metadata.tier
+
+          if (userId && tier) {
+            await supabase
+              .from('users')
+              .update({
+                stripe_customer_id: customerId,
+                subscription_tier: tier,
+                subscription_status: 'trial',
+                trial_ends_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+              })
+              .eq('id', userId)
+
+            console.log(`✅ Subscription: ${tier} tier for user ${userId}`)
+          }
         }
         break
       }
@@ -88,8 +133,12 @@ export async function POST(request: Request) {
               subscription_status: status,
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
               monthly_transcript_limit: monthlyLimit,
+              // Reset booster credits at start of new billing period
+              booster_credits: 0,
             })
             .eq('id', user.id)
+
+          console.log(`✅ Subscription updated: ${tier} tier, ${status} status`)
         }
         break
       }
@@ -110,8 +159,11 @@ export async function POST(request: Request) {
             .update({
               subscription_status: 'canceled',
               monthly_transcript_limit: 0,
+              booster_credits: 0,
             })
             .eq('id', user.id)
+
+          console.log(`✅ Subscription canceled for user ${user.id}`)
         }
         break
       }
@@ -131,8 +183,13 @@ export async function POST(request: Request) {
             .from('users')
             .update({
               subscription_status: 'active',
+              // Reset usage at billing renewal
+              monthly_transcripts_used: 0,
+              booster_credits: 0,
             })
             .eq('id', user.id)
+
+          console.log(`✅ Payment succeeded, usage reset for user ${user.id}`)
         }
         break
       }
@@ -154,48 +211,8 @@ export async function POST(request: Request) {
               subscription_status: 'past_due',
             })
             .eq('id', user.id)
-        }
-        break
-      }
 
-      case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session
-        
-        // Check if this is a booster pack purchase
-        if (session.metadata?.type === 'booster_pack') {
-          const userId = session.metadata.userId
-          const credits = parseInt(session.metadata.credits || '5', 10)
-
-          if (userId) {
-            // Add credits to user's monthly limit (temporary boost for this billing cycle)
-            const { data: user } = await supabase
-              .from('users')
-              .select('monthly_transcript_limit')
-              .eq('id', userId)
-              .single()
-
-            if (user) {
-              await supabase
-                .from('users')
-                .update({
-                  monthly_transcript_limit: user.monthly_transcript_limit + credits,
-                })
-                .eq('id', userId)
-
-              // Log the booster pack purchase
-              await supabase
-                .from('usage_log')
-                .insert({
-                  user_id: userId,
-                  action_type: 'booster_pack_purchased',
-                  metadata: {
-                    credits,
-                    price: session.amount_total ? session.amount_total / 100 : 47,
-                    session_id: session.id,
-                  },
-                })
-            }
-          }
+          console.log(`⚠️ Payment failed for user ${user.id}`)
         }
         break
       }
