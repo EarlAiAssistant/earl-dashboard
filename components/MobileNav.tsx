@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Documents', href: '/docs', icon: FileText },
+  { name: 'Documents', href: '/documents', icon: FileText },
   { name: 'Activity Log', href: '/activity', icon: Activity },
 ]
 
