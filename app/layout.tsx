@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar'
 import MobileNav from '@/components/MobileNav'
 import PostHogProvider from '@/components/providers/PostHogProvider'
 import { ToastProvider } from '@/components/ui/Toast'
+import CommandPalette from '@/components/CommandPalette'
 import { createClient } from '@/lib/supabase/server'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -34,19 +35,22 @@ export default async function RootLayout({
             {isLoginPage ? (
               children
             ) : (
-              <div className="flex h-screen bg-gray-950">
-                {/* Desktop sidebar - hidden on mobile */}
-                <aside className="hidden md:block w-64 flex-shrink-0">
-                  <Sidebar />
-                </aside>
-                
-                {/* Mobile navigation */}
-                <MobileNav />
-                
-                <main className="flex-1 overflow-auto pt-16 md:pt-0">
-                  {children}
-                </main>
-              </div>
+              <>
+                <CommandPalette />
+                <div className="flex h-screen bg-gray-950">
+                  {/* Desktop sidebar - hidden on mobile */}
+                  <aside className="hidden md:block w-64 flex-shrink-0">
+                    <Sidebar />
+                  </aside>
+                  
+                  {/* Mobile navigation */}
+                  <MobileNav />
+                  
+                  <main className="flex-1 overflow-auto pt-16 md:pt-0">
+                    {children}
+                  </main>
+                </div>
+              </>
             )}
           </ToastProvider>
         </PostHogProvider>
