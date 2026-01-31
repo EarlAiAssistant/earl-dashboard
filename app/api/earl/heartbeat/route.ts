@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import { kv } from '@vercel/kv'
 
 export const dynamic = 'force-dynamic'
 
-// Simple file-based cache for status
-const STATUS_FILE = path.join(process.cwd(), '.earl-status.json')
+const STATUS_KEY = 'earl:status'
 
 interface EarlStatus {
   status: 'active' | 'idle' | 'offline'
@@ -16,12 +14,11 @@ interface EarlStatus {
   workspace?: string
 }
 
-function getStatus(): EarlStatus {
+async function getStatus(): Promise<EarlStatus> {
   try {
-    if (fs.existsSync(STATUS_FILE)) {
-      const data = fs.readFileSync(STATUS_FILE, 'utf-8')
-      const status = JSON.parse(data) as EarlStatus
-      
+    const status = await kv.get<EarlStatus>(STATUS_KEY)
+    
+    if (status) {
       // Auto-mark as idle if no ping in 5 minutes
       const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
       const lastPingTime = new Date(status.lastPing).getTime()
@@ -39,7 +36,7 @@ function getStatus(): EarlStatus {
       return status
     }
   } catch (error) {
-    console.error('Error reading status file:', error)
+    console.error('Error reading status from KV:', error)
   }
   
   // Default status
@@ -51,11 +48,11 @@ function getStatus(): EarlStatus {
   }
 }
 
-function saveStatus(status: EarlStatus) {
+async function saveStatus(status: EarlStatus) {
   try {
-    fs.writeFileSync(STATUS_FILE, JSON.stringify(status, null, 2))
+    await kv.set(STATUS_KEY, status)
   } catch (error) {
-    console.error('Error writing status file:', error)
+    console.error('Error writing status to KV:', error)
   }
 }
 
@@ -64,7 +61,7 @@ function saveStatus(status: EarlStatus) {
  * Returns Earl's current status (public read)
  */
 export async function GET() {
-  const status = getStatus()
+  const status = await getStatus()
   
   // Calculate session uptime if available
   let sessionUptime = null
@@ -122,7 +119,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    const currentStatus = getStatus()
+    const currentStatus = await getStatus()
     
     const newStatus: EarlStatus = {
       status: 'active',
@@ -133,7 +130,7 @@ export async function POST(request: Request) {
       workspace: body.workspace || currentStatus.workspace,
     }
     
-    saveStatus(newStatus)
+    await saveStatus(newStatus)
     
     return NextResponse.json({
       success: true,
