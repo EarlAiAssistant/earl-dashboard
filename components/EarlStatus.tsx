@@ -17,12 +17,12 @@ export default function EarlStatus() {
       const { data: activity } = await supabase
         .from('activity_log')
         .select('*')
-        .order('timestamp', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(1)
         .single()
 
       if (activity) {
-        const activityTime = new Date(activity.timestamp)
+        const activityTime = new Date(activity.created_at)
         setLastActivity(activityTime)
         
         // Consider active if activity within last 2 minutes
