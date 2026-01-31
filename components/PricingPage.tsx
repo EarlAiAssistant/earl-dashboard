@@ -116,12 +116,12 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-blue-50 to-white py-20">
+      <section className="bg-gradient-to-b from-blue-50 to-white py-12 sm:py-20">
         <div className="max-w-4xl mx-auto text-center px-4">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Turn Every Customer Call Into a Complete Marketing Campaign
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8">
             Upload once. Get 12 ready-to-use assets. In 10 minutes.
           </p>
           <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold mb-4 transition-colors inline-flex items-center gap-2">
@@ -145,12 +145,12 @@ export default function PricingPage() {
       </section>
 
       {/* ROI Calculator */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 sm:py-16 bg-gray-50">
         <div className="max-w-3xl mx-auto px-4">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8 flex flex-col sm:flex-row items-center justify-center gap-2">
               <Calculator className="text-blue-600" />
-              How Much Time (and Money) Will You Save?
+              <span>How Much Time (and Money) Will You Save?</span>
             </h2>
 
             <div className="space-y-6">
@@ -225,22 +225,22 @@ export default function PricingPage() {
       </section>
 
       {/* Pricing Tiers */}
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-center text-gray-600 mb-12">
+          <p className="text-center text-gray-600 mb-8 sm:mb-12">
             All plans include a 14-day free trial. No credit card required.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {plans.map((plan, idx) => (
               <div
                 key={idx}
-                className={`relative rounded-xl border-2 p-8 ${
+                className={`relative rounded-xl border-2 p-6 sm:p-8 ${
                   plan.popular
-                    ? 'border-blue-600 shadow-xl scale-105'
+                    ? 'border-blue-600 shadow-xl md:scale-105'
                     : 'border-gray-200 shadow-lg'
                 }`}
               >
@@ -250,9 +250,9 @@ export default function PricingPage() {
                   </div>
                 )}
 
-                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">{plan.name}</h3>
                 <div className="mb-4">
-                  <span className="text-5xl font-bold">${plan.price}</span>
+                  <span className="text-4xl sm:text-5xl font-bold">${plan.price}</span>
                   <span className="text-gray-600">/month</span>
                 </div>
                 <p className="text-sm text-gray-600 mb-6">

@@ -173,15 +173,15 @@ export default function BillingPage() {
 
         {/* Upgrade CTA (if on trial or lower tier) */}
         {billingData.status === 'trial' && (
-          <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-lg shadow-lg p-6 mb-8">
-            <div className="flex items-center justify-between">
+          <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-lg shadow-lg p-4 sm:p-6 mb-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-2xl font-bold mb-2">Upgrade to Continue Using Call-Content</h3>
-                <p className="text-blue-100">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2">Upgrade to Continue Using Call-Content</h3>
+                <p className="text-blue-100 text-sm sm:text-base">
                   Your trial ends in {daysLeft} days. Upgrade now and save 30% with code TRIAL30
                 </p>
               </div>
-              <button className="bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2">
+              <button className="w-full sm:w-auto bg-white text-blue-600 hover:bg-gray-100 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2">
                 Upgrade Now <ArrowRight size={20} />
               </button>
             </div>
