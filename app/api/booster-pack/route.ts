@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { getStripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
 
 export const dynamic = 'force-dynamic'
 
@@ -46,7 +42,7 @@ export async function POST(request: Request) {
     if (user?.stripe_customer_id) {
       customerId = user.stripe_customer_id
     } else {
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email,
         metadata: { userId },
       })
@@ -59,7 +55,7 @@ export async function POST(request: Request) {
     }
 
     // Create one-time payment session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: 'payment',
       payment_method_types: ['card'],

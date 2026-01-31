@@ -1,12 +1,8 @@
 import { NextResponse } from 'next/server'
-import { AssemblyAI } from 'assemblyai'
+import { getAssemblyAI } from '@/lib/assemblyai'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 5 minutes max
-
-const client = new AssemblyAI({
-  apiKey: process.env.ASSEMBLYAI_API_KEY!,
-})
 
 /**
  * POST /api/transcribe
@@ -45,10 +41,10 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(arrayBuffer)
 
     // Upload file to AssemblyAI
-    const uploadUrl = await client.files.upload(buffer)
+    const uploadUrl = await getAssemblyAI().files.upload(buffer)
 
     // Start transcription
-    const transcript = await client.transcripts.transcribe({
+    const transcript = await getAssemblyAI().transcripts.transcribe({
       audio: uploadUrl,
       language_code: language as any,
       speaker_labels,
@@ -96,7 +92,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const transcript = await client.transcripts.get(transcriptId)
+    const transcript = await getAssemblyAI().transcripts.get(transcriptId)
 
     return NextResponse.json({
       transcriptId: transcript.id,

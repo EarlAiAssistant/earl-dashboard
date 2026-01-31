@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
-})
+import { getStripe } from '@/lib/stripe'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,7 +53,7 @@ export async function POST(request: Request) {
 
     // Create or retrieve customer
     let customer: Stripe.Customer
-    const existingCustomers = await stripe.customers.list({
+    const existingCustomers = await getStripe().customers.list({
       email,
       limit: 1,
     })
@@ -64,7 +61,7 @@ export async function POST(request: Request) {
     if (existingCustomers.data.length > 0) {
       customer = existingCustomers.data[0]
     } else {
-      customer = await stripe.customers.create({
+      customer = await getStripe().customers.create({
         email,
         metadata: {
           userId,
@@ -73,7 +70,7 @@ export async function POST(request: Request) {
     }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
       payment_method_types: ['card'],

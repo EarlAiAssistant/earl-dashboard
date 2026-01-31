@@ -93,15 +93,15 @@ export default function PricingPage() {
     },
     {
       q: 'Do you offer refunds?',
-      a: 'Yes. 14-day money-back guarantee, no questions asked. If you process fewer than 3 calls and decide it's not for you, we'll refund you in full.',
+      a: "Yes. 14-day money-back guarantee, no questions asked. If you process fewer than 3 calls and decide it's not for you, we'll refund you in full.",
     },
     {
       q: 'What if I go over my monthly limit?',
-      a: 'You'll get a notification at 80% and 100% usage. You can either upgrade your plan mid-month (prorated) or purchase a booster pack ($10 for 5 extra calls).',
+      a: "You'll get a notification at 80% and 100% usage. You can either upgrade your plan mid-month (prorated) or purchase a booster pack ($10 for 5 extra calls).",
     },
     {
       q: 'Is my data secure?',
-      a: 'Yes. All uploads are encrypted in transit (TLS 1.3) and at rest (AES-256). We're SOC 2 Type II compliant. We never train our AI on your data without explicit permission.',
+      a: "Yes. All uploads are encrypted in transit (TLS 1.3) and at rest (AES-256). We're SOC 2 Type II compliant. We never train our AI on your data without explicit permission.",
     },
     {
       q: 'Can I export content to other tools?',
