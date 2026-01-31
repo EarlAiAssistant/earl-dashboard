@@ -2,14 +2,18 @@
 
 import { useState, useEffect } from 'react'
 import { CreditCard, TrendingUp, AlertTriangle, CheckCircle, ArrowRight } from 'lucide-react'
+import BoosterPackCard from '@/components/billing/BoosterPackCard'
 
 interface BillingData {
   tier: 'starter' | 'professional' | 'agency'
   status: 'trial' | 'active' | 'past_due' | 'canceled'
   transcriptsUsed: number
   transcriptLimit: number
+  boosterCredits: number
   currentPeriodEnd: string
   trialEndsAt?: string
+  userId: string
+  email: string
 }
 
 export default function BillingPage() {
@@ -22,10 +26,13 @@ export default function BillingPage() {
     setBillingData({
       tier: 'professional',
       status: 'trial',
-      transcriptsUsed: 12,
+      transcriptsUsed: 25,
       transcriptLimit: 30,
+      boosterCredits: 0,
       currentPeriodEnd: '2026-02-14T00:00:00Z',
       trialEndsAt: '2026-02-14T00:00:00Z',
+      userId: 'mock-user-id',
+      email: 'user@example.com',
     })
     setLoading(false)
   }, [])
@@ -42,7 +49,8 @@ export default function BillingPage() {
     return <div>Error loading billing data</div>
   }
 
-  const usagePercent = (billingData.transcriptsUsed / billingData.transcriptLimit) * 100
+  const effectiveLimit = billingData.transcriptLimit + billingData.boosterCredits
+  const usagePercent = (billingData.transcriptsUsed / effectiveLimit) * 100
   const daysLeft = billingData.trialEndsAt
     ? Math.ceil((new Date(billingData.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : 0
@@ -131,6 +139,11 @@ export default function BillingPage() {
                 You're at {Math.round(usagePercent)}% of your monthly limit
               </p>
             )}
+            {billingData.boosterCredits > 0 && (
+              <p className="text-sm text-amber-600 mt-1">
+                Includes +{billingData.boosterCredits} booster credits
+              </p>
+            )}
           </div>
 
           {/* Next Billing Date */}
@@ -143,6 +156,20 @@ export default function BillingPage() {
             </span>
           </div>
         </div>
+
+        {/* Booster Pack Card - shown when near limit */}
+        {usagePercent >= 60 && (
+          <div className="mb-8">
+            <BoosterPackCard
+              userId={billingData.userId}
+              email={billingData.email}
+              currentUsage={billingData.transcriptsUsed}
+              limit={billingData.transcriptLimit}
+              boosterCredits={billingData.boosterCredits}
+              variant="full"
+            />
+          </div>
+        )}
 
         {/* Upgrade CTA (if on trial or lower tier) */}
         {billingData.status === 'trial' && (
