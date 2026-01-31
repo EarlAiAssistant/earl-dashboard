@@ -1,336 +1,443 @@
-'use client'
-
-import { useState, useCallback, useRef } from 'react'
-
 /**
  * Optimistic UI Utilities
  * 
- * Provides hooks and helpers for implementing optimistic updates
- * that make the app feel faster by updating the UI immediately
- * before the server confirms the change.
+ * Patterns and hooks for optimistic updates - update UI immediately,
+ * then sync with server, rolling back on error.
  */
 
-interface OptimisticState<T> {
-  data: T
-  isOptimistic: boolean
-  error: string | null
+import { useOptimistic, useTransition, useCallback, useState } from 'react'
+import { toast } from '@/components/ui/Toast'
+
+// ============================================
+// Types
+// ============================================
+
+export interface OptimisticAction<T> {
+  type: 'add' | 'update' | 'delete'
+  item: T
+  previousItem?: T
 }
 
-/**
- * Hook for optimistic state management
- * 
- * Usage:
- * ```
- * const { data, update, rollback, isOptimistic } = useOptimistic(initialItems)
- * 
- * const handleDelete = async (id) => {
- *   // Optimistically remove item
- *   const removed = data.find(item => item.id === id)
- *   update(data.filter(item => item.id !== id))
- *   
- *   try {
- *     await api.delete(id)
- *   } catch (error) {
- *     // Rollback on error
- *     rollback()
- *     toast.error('Failed to delete')
- *   }
- * }
- * ```
- */
-export function useOptimistic<T>(initialData: T) {
-  const [state, setState] = useState<OptimisticState<T>>({
-    data: initialData,
-    isOptimistic: false,
-    error: null,
-  })
-  
-  const previousDataRef = useRef<T>(initialData)
-
-  const update = useCallback((newData: T) => {
-    previousDataRef.current = state.data
-    setState({
-      data: newData,
-      isOptimistic: true,
-      error: null,
-    })
-  }, [state.data])
-
-  const confirm = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      isOptimistic: false,
-    }))
-  }, [])
-
-  const rollback = useCallback((error?: string) => {
-    setState({
-      data: previousDataRef.current,
-      isOptimistic: false,
-      error: error || 'Operation failed',
-    })
-  }, [])
-
-  const set = useCallback((data: T) => {
-    previousDataRef.current = data
-    setState({
-      data,
-      isOptimistic: false,
-      error: null,
-    })
-  }, [])
-
-  return {
-    data: state.data,
-    isOptimistic: state.isOptimistic,
-    error: state.error,
-    update,
-    confirm,
-    rollback,
-    set,
-  }
+export interface MutationOptions<T, TInput = unknown> {
+  /** Server mutation function */
+  mutationFn: (input: TInput) => Promise<T>
+  /** Called immediately with optimistic data */
+  onMutate?: (input: TInput) => T | void
+  /** Called on success with server response */
+  onSuccess?: (data: T, input: TInput) => void
+  /** Called on error with rollback option */
+  onError?: (error: Error, input: TInput, rollback: () => void) => void
+  /** Show toast on success */
+  successMessage?: string
+  /** Show toast on error */
+  errorMessage?: string
 }
 
+// ============================================
+// useOptimisticList Hook
+// ============================================
+
 /**
- * Hook for optimistic list operations
+ * Hook for optimistic list operations (add, update, delete)
  * 
- * Specialized for arrays with common operations like add, remove, update
- */
-export function useOptimisticList<T extends { id: string }>(initialItems: T[] = []) {
-  const {
-    data: items,
-    isOptimistic,
-    error,
-    update,
-    confirm,
-    rollback,
-    set,
-  } = useOptimistic(initialItems)
-
-  const addItem = useCallback((item: T) => {
-    update([...items, item])
-  }, [items, update])
-
-  const removeItem = useCallback((id: string) => {
-    update(items.filter((item) => item.id !== id))
-  }, [items, update])
-
-  const updateItem = useCallback((id: string, updates: Partial<T>) => {
-    update(
-      items.map((item) =>
-        item.id === id ? { ...item, ...updates } : item
-      )
-    )
-  }, [items, update])
-
-  const moveItem = useCallback((fromIndex: number, toIndex: number) => {
-    const newItems = [...items]
-    const [movedItem] = newItems.splice(fromIndex, 1)
-    newItems.splice(toIndex, 0, movedItem)
-    update(newItems)
-  }, [items, update])
-
-  return {
-    items,
-    isOptimistic,
-    error,
-    addItem,
-    removeItem,
-    updateItem,
-    moveItem,
-    confirm,
-    rollback,
-    set,
-  }
-}
-
-/**
- * Hook for optimistic async operations with loading state
- */
-export function useOptimisticAction<T, R>(
-  action: (data: T) => Promise<R>,
-  options: {
-    onOptimisticUpdate?: (data: T) => void
-    onSuccess?: (result: R) => void
-    onError?: (error: Error) => void
-    onRollback?: () => void
-  } = {}
-) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const execute = useCallback(async (data: T): Promise<R | null> => {
-    setIsLoading(true)
-    setError(null)
-
-    // Apply optimistic update
-    options.onOptimisticUpdate?.(data)
-
-    try {
-      const result = await action(data)
-      options.onSuccess?.(result)
-      return result
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Operation failed'
-      setError(errorMessage)
-      options.onRollback?.()
-      options.onError?.(err instanceof Error ? err : new Error(errorMessage))
-      return null
-    } finally {
-      setIsLoading(false)
-    }
-  }, [action, options])
-
-  return {
-    execute,
-    isLoading,
-    error,
-  }
-}
-
-/**
- * Higher-order function to wrap an API call with optimistic update
- * 
- * Usage:
- * ```
- * const deleteItem = withOptimisticUpdate(
- *   async (id: string) => api.delete(id),
- *   {
- *     optimistic: (id) => setItems(items.filter(i => i.id !== id)),
- *     rollback: () => setItems(originalItems),
+ * @example
+ * ```tsx
+ * const { items, addItem, updateItem, deleteItem, isPending } = useOptimisticList(
+ *   serverItems,
+ *   (items, action) => {
+ *     if (action.type === 'add') return [...items, action.item]
+ *     if (action.type === 'update') return items.map(i => i.id === action.item.id ? action.item : i)
+ *     if (action.type === 'delete') return items.filter(i => i.id !== action.item.id)
+ *     return items
  *   }
  * )
  * ```
  */
-export function withOptimisticUpdate<T extends any[], R>(
-  asyncFn: (...args: T) => Promise<R>,
-  handlers: {
-    optimistic: (...args: T) => void
-    rollback: (...args: T) => void
-    onSuccess?: (result: R) => void
-    onError?: (error: Error) => void
-  }
-): (...args: T) => Promise<R | null> {
-  return async (...args: T) => {
-    // Apply optimistic update immediately
-    handlers.optimistic(...args)
+export function useOptimisticList<T extends { id: string }>(
+  serverItems: T[],
+  reducer: (items: T[], action: OptimisticAction<T>) => T[]
+) {
+  const [optimisticItems, addOptimisticAction] = useOptimistic(
+    serverItems,
+    reducer
+  )
+  const [isPending, startTransition] = useTransition()
 
-    try {
-      const result = await asyncFn(...args)
-      handlers.onSuccess?.(result)
-      return result
-    } catch (err) {
-      // Rollback on error
-      handlers.rollback(...args)
-      handlers.onError?.(err instanceof Error ? err : new Error('Operation failed'))
-      return null
-    }
+  const addItem = useCallback(
+    async (
+      item: T,
+      serverAction: () => Promise<T>,
+      options?: { onSuccess?: (item: T) => void; onError?: (error: Error) => void }
+    ) => {
+      startTransition(() => {
+        addOptimisticAction({ type: 'add', item })
+      })
+
+      try {
+        const result = await serverAction()
+        options?.onSuccess?.(result)
+        return result
+      } catch (error) {
+        options?.onError?.(error as Error)
+        throw error
+      }
+    },
+    [addOptimisticAction]
+  )
+
+  const updateItem = useCallback(
+    async (
+      item: T,
+      serverAction: () => Promise<T>,
+      options?: { onSuccess?: (item: T) => void; onError?: (error: Error) => void }
+    ) => {
+      const previousItem = serverItems.find((i) => i.id === item.id)
+      
+      startTransition(() => {
+        addOptimisticAction({ type: 'update', item, previousItem })
+      })
+
+      try {
+        const result = await serverAction()
+        options?.onSuccess?.(result)
+        return result
+      } catch (error) {
+        options?.onError?.(error as Error)
+        throw error
+      }
+    },
+    [addOptimisticAction, serverItems]
+  )
+
+  const deleteItem = useCallback(
+    async (
+      item: T,
+      serverAction: () => Promise<void>,
+      options?: { onSuccess?: () => void; onError?: (error: Error) => void }
+    ) => {
+      startTransition(() => {
+        addOptimisticAction({ type: 'delete', item })
+      })
+
+      try {
+        await serverAction()
+        options?.onSuccess?.()
+      } catch (error) {
+        options?.onError?.(error as Error)
+        throw error
+      }
+    },
+    [addOptimisticAction]
+  )
+
+  return {
+    items: optimisticItems,
+    addItem,
+    updateItem,
+    deleteItem,
+    isPending,
   }
 }
 
+// ============================================
+// useOptimisticMutation Hook
+// ============================================
+
 /**
- * Debounced optimistic update for frequent changes (e.g., text input)
+ * Hook for single optimistic mutations with automatic rollback
  * 
- * Updates locally immediately, but debounces the server call
+ * @example
+ * ```tsx
+ * const { mutate, isPending, error } = useOptimisticMutation({
+ *   mutationFn: async (data) => await api.updateProfile(data),
+ *   onMutate: (data) => setProfile({ ...profile, ...data }),
+ *   onError: (error, data, rollback) => {
+ *     rollback() // Restore previous state
+ *     toast.error('Failed to update profile')
+ *   },
+ *   successMessage: 'Profile updated!'
+ * })
+ * 
+ * // Usage
+ * mutate({ name: 'New Name' })
+ * ```
  */
-export function useDebouncedOptimistic<T>(
-  initialValue: T,
-  saveToServer: (value: T) => Promise<void>,
-  debounceMs: number = 500
+export function useOptimisticMutation<T, TInput = unknown>(
+  options: MutationOptions<T, TInput>
 ) {
-  const [localValue, setLocalValue] = useState(initialValue)
-  const [isSaving, setIsSaving] = useState(false)
-  const [lastSaved, setLastSaved] = useState(initialValue)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [isPending, setIsPending] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const [previousState, setPreviousState] = useState<T | null>(null)
 
-  const setValue = useCallback((value: T) => {
-    // Update local state immediately
-    setLocalValue(value)
+  const mutate = useCallback(
+    async (input: TInput): Promise<T | undefined> => {
+      setIsPending(true)
+      setError(null)
 
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-
-    // Debounce server save
-    timeoutRef.current = setTimeout(async () => {
-      setIsSaving(true)
-      try {
-        await saveToServer(value)
-        setLastSaved(value)
-      } catch (error) {
-        // Optionally rollback to last saved value
-        console.error('Failed to save:', error)
-      } finally {
-        setIsSaving(false)
+      // Apply optimistic update
+      const optimisticResult = options.onMutate?.(input)
+      if (optimisticResult !== undefined) {
+        setPreviousState(optimisticResult as T)
       }
-    }, debounceMs)
-  }, [saveToServer, debounceMs])
 
-  // Cleanup on unmount
-  const cleanup = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
+      try {
+        const result = await options.mutationFn(input)
+        
+        options.onSuccess?.(result, input)
+        
+        if (options.successMessage) {
+          toast.success(options.successMessage)
+        }
+        
+        return result
+      } catch (err) {
+        const error = err as Error
+        setError(error)
+        
+        const rollback = () => {
+          if (previousState !== null) {
+            options.onMutate?.(previousState as unknown as TInput)
+          }
+        }
+        
+        options.onError?.(error, input, rollback)
+        
+        if (options.errorMessage) {
+          toast.error(options.errorMessage)
+        }
+        
+        throw error
+      } finally {
+        setIsPending(false)
+      }
+    },
+    [options, previousState]
+  )
+
+  const reset = useCallback(() => {
+    setError(null)
+    setPreviousState(null)
   }, [])
 
   return {
-    value: localValue,
-    setValue,
-    isSaving,
-    isDirty: localValue !== lastSaved,
-    cleanup,
+    mutate,
+    isPending,
+    error,
+    reset,
   }
 }
 
-/**
- * Type for optimistic mutation result
- */
-export interface OptimisticResult<T> {
-  data: T | null
-  error: string | null
-  isLoading: boolean
-  isSuccess: boolean
-}
+// ============================================
+// useOptimisticToggle Hook
+// ============================================
 
 /**
- * Create an optimistic mutation
+ * Hook for optimistic toggle operations (like/favorite/checkbox)
+ * 
+ * @example
+ * ```tsx
+ * const { isActive, toggle, isPending } = useOptimisticToggle(
+ *   item.isFavorited,
+ *   async (newValue) => {
+ *     await api.setFavorite(item.id, newValue)
+ *   }
+ * )
+ * 
+ * <button onClick={toggle} disabled={isPending}>
+ *   {isActive ? '★' : '☆'}
+ * </button>
+ * ```
  */
-export function createOptimisticMutation<TInput, TOutput, TOptimistic>(
-  mutationFn: (input: TInput) => Promise<TOutput>,
-  options: {
-    getOptimisticData: (input: TInput) => TOptimistic
-    applyOptimistic: (data: TOptimistic) => void
-    revertOptimistic: (data: TOptimistic) => void
-    applyResult?: (result: TOutput) => void
+export function useOptimisticToggle(
+  initialValue: boolean,
+  onToggle: (newValue: boolean) => Promise<void>,
+  options?: {
+    onError?: (error: Error) => void
+    successMessage?: string
+    errorMessage?: string
   }
 ) {
-  return async (input: TInput): Promise<OptimisticResult<TOutput>> => {
-    const optimisticData = options.getOptimisticData(input)
+  const [optimisticValue, setOptimisticValue] = useOptimistic(
+    initialValue,
+    (_, newValue: boolean) => newValue
+  )
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<Error | null>(null)
+
+  const toggle = useCallback(async () => {
+    const newValue = !optimisticValue
+    setError(null)
     
-    // Apply optimistic update
-    options.applyOptimistic(optimisticData)
-    
+    startTransition(() => {
+      setOptimisticValue(newValue)
+    })
+
     try {
-      const result = await mutationFn(input)
-      options.applyResult?.(result)
+      await onToggle(newValue)
       
-      return {
-        data: result,
-        error: null,
-        isLoading: false,
-        isSuccess: true,
+      if (options?.successMessage) {
+        toast.success(options.successMessage)
       }
     } catch (err) {
-      // Revert on error
-      options.revertOptimistic(optimisticData)
+      const error = err as Error
+      setError(error)
+      options?.onError?.(error)
       
-      return {
-        data: null,
-        error: err instanceof Error ? err.message : 'Mutation failed',
-        isLoading: false,
-        isSuccess: false,
+      if (options?.errorMessage) {
+        toast.error(options.errorMessage)
       }
+    }
+  }, [optimisticValue, onToggle, options, setOptimisticValue])
+
+  return {
+    isActive: optimisticValue,
+    toggle,
+    isPending,
+    error,
+  }
+}
+
+// ============================================
+// useOptimisticCounter Hook
+// ============================================
+
+/**
+ * Hook for optimistic counter operations (upvotes, quantity)
+ * 
+ * @example
+ * ```tsx
+ * const { count, increment, decrement, isPending } = useOptimisticCounter(
+ *   item.votes,
+ *   async (newCount) => {
+ *     await api.setVotes(item.id, newCount)
+ *   }
+ * )
+ * 
+ * <button onClick={increment}>+</button>
+ * <span>{count}</span>
+ * <button onClick={decrement}>-</button>
+ * ```
+ */
+export function useOptimisticCounter(
+  initialValue: number,
+  onUpdate: (newValue: number) => Promise<void>,
+  options?: {
+    min?: number
+    max?: number
+    onError?: (error: Error) => void
+  }
+) {
+  const [optimisticCount, setOptimisticCount] = useOptimistic(
+    initialValue,
+    (_, newValue: number) => newValue
+  )
+  const [isPending, startTransition] = useTransition()
+  const [error, setError] = useState<Error | null>(null)
+
+  const updateCount = useCallback(
+    async (newValue: number) => {
+      const { min = -Infinity, max = Infinity } = options || {}
+      const clampedValue = Math.min(Math.max(newValue, min), max)
+      
+      if (clampedValue === optimisticCount) return
+      
+      setError(null)
+      
+      startTransition(() => {
+        setOptimisticCount(clampedValue)
+      })
+
+      try {
+        await onUpdate(clampedValue)
+      } catch (err) {
+        const error = err as Error
+        setError(error)
+        options?.onError?.(error)
+      }
+    },
+    [optimisticCount, onUpdate, options, setOptimisticCount]
+  )
+
+  const increment = useCallback(
+    (amount = 1) => updateCount(optimisticCount + amount),
+    [optimisticCount, updateCount]
+  )
+
+  const decrement = useCallback(
+    (amount = 1) => updateCount(optimisticCount - amount),
+    [optimisticCount, updateCount]
+  )
+
+  const setCount = useCallback(
+    (value: number) => updateCount(value),
+    [updateCount]
+  )
+
+  return {
+    count: optimisticCount,
+    increment,
+    decrement,
+    setCount,
+    isPending,
+    error,
+  }
+}
+
+// ============================================
+// Higher-Order Action Wrapper
+// ============================================
+
+/**
+ * Wrap a server action with optimistic UI handling
+ * 
+ * @example
+ * ```tsx
+ * const saveWithOptimism = withOptimistic(
+ *   saveToServer,
+ *   {
+ *     onOptimistic: (data) => updateLocalState(data),
+ *     onSuccess: () => toast.success('Saved!'),
+ *     onError: (err, rollback) => {
+ *       rollback()
+ *       toast.error('Save failed')
+ *     }
+ *   }
+ * )
+ * 
+ * // Usage
+ * await saveWithOptimism(myData)
+ * ```
+ */
+export function withOptimistic<TInput, TOutput>(
+  serverFn: (input: TInput) => Promise<TOutput>,
+  handlers: {
+    onOptimistic?: (input: TInput) => TInput
+    onSuccess?: (result: TOutput, input: TInput) => void
+    onError?: (error: Error, input: TInput, rollback: () => void) => void
+  }
+) {
+  let previousInput: TInput | undefined
+
+  return async (input: TInput): Promise<TOutput> => {
+    // Store previous and apply optimistic update
+    if (handlers.onOptimistic) {
+      previousInput = { ...input }
+      handlers.onOptimistic(input)
+    }
+
+    try {
+      const result = await serverFn(input)
+      handlers.onSuccess?.(result, input)
+      return result
+    } catch (err) {
+      const error = err as Error
+      const rollback = () => {
+        if (previousInput && handlers.onOptimistic) {
+          handlers.onOptimistic(previousInput)
+        }
+      }
+      handlers.onError?.(error, input, rollback)
+      throw error
     }
   }
 }
