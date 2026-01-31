@@ -44,7 +44,7 @@ export const DEMO_TRANSCRIPTS = [
     duration: 1800, // 30 minutes
     word_count: 3200,
     created_at: '2026-01-25T14:30:00Z',
-    excerpt: 'The ROI we've seen since implementing this solution has been remarkable. We reduced patient wait times by 40% and our staff satisfaction scores went up significantly...',
+    excerpt: "The ROI we've seen since implementing this solution has been remarkable. We reduced patient wait times by 40% and our staff satisfaction scores went up significantly...",
     speakers: ['Sales Rep (John)', 'Prospect (Dr. Chen, Hospital Administrator)'],
   },
   {

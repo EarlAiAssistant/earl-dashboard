@@ -56,7 +56,8 @@ export function Form<T extends FieldValues>({
   mode = 'onBlur',
 }: FormProps<T>) {
   const form = useForm<T>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema as any),
     defaultValues,
     mode,
   })
@@ -381,7 +382,8 @@ export function useZodForm<T extends FieldValues>(
   options?: Omit<UseFormProps<T>, 'resolver'>
 ) {
   return useForm<T>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema as any),
     ...options,
   })
 }

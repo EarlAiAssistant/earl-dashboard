@@ -6,6 +6,7 @@ import MobileNav from '@/components/MobileNav'
 import PostHogProvider from '@/components/providers/PostHogProvider'
 import { ToastProvider } from '@/components/ui/Toast'
 import CommandPalette from '@/components/CommandPalette'
+import KeyboardShortcuts from '@/components/KeyboardShortcuts'
 import { createClient } from '@/lib/supabase/server'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -37,6 +38,7 @@ export default async function RootLayout({
             ) : (
               <>
                 <CommandPalette />
+                <KeyboardShortcuts />
                 <div className="flex h-screen bg-gray-950">
                   {/* Desktop sidebar - hidden on mobile */}
                   <aside className="hidden md:block w-64 flex-shrink-0">

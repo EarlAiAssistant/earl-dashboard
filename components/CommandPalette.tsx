@@ -121,8 +121,8 @@ export default function CommandPalette() {
       icon: <Keyboard className="w-4 h-4" />,
       shortcut: SHORTCUTS.SHOW_SHORTCUTS,
       action: () => {
-        // Could open a shortcuts modal
-        alert('Keyboard shortcuts:\n\n⌘K - Open command palette\n⌘N - New transcript\n⌘D - Toggle dark mode\nEsc - Close')
+        // Dispatch custom event to open shortcuts modal
+        window.dispatchEvent(new CustomEvent('open-shortcuts-modal'))
       },
       category: 'help',
     },
