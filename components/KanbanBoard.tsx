@@ -104,11 +104,13 @@ function SortableTaskCard({ task, onView }: { task: Task; onView: (task: Task) =
   )
 }
 
-function Column({ status, tasks, isOver, onViewTask }: { 
+function Column({ status, tasks, isOver, onViewTask, hasMore, onShowMore }: { 
   status: TaskStatus; 
   tasks: Task[]; 
   isOver?: boolean;
   onViewTask: (task: Task) => void;
+  hasMore?: boolean;
+  onShowMore?: () => void;
 }) {
   const config = statusConfig[status]
   const Icon = config.icon
@@ -144,6 +146,14 @@ function Column({ status, tasks, isOver, onViewTask }: {
               </div>
             ) : (
               tasks.map((task) => <SortableTaskCard key={task.id} task={task} onView={onViewTask} />)
+            )}
+            {hasMore && onShowMore && (
+              <button
+                onClick={onShowMore}
+                className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm font-medium"
+              >
+                Show {status === 'done' ? 'Older' : 'More'} Tasks
+              </button>
             )}
           </div>
         </SortableContext>
@@ -496,11 +506,16 @@ export default function KanbanBoard() {
     }
   }
 
+  const [doneTasksLimit, setDoneTasksLimit] = useState(10)
+  
   const tasksByStatus = {
     backlog: tasks.filter((t) => t.status === 'backlog'),
     in_progress: tasks.filter((t) => t.status === 'in_progress'),
-    done: tasks.filter((t) => t.status === 'done'),
+    done: tasks.filter((t) => t.status === 'done').slice(0, doneTasksLimit),
   }
+  
+  const totalDoneTasks = tasks.filter((t) => t.status === 'done').length
+  const hasMoreDoneTasks = totalDoneTasks > doneTasksLimit
 
   if (loading) {
     return (
@@ -546,6 +561,8 @@ export default function KanbanBoard() {
             tasks={tasksByStatus.done}
             isOver={overId === 'done'}
             onViewTask={setViewingTask}
+            hasMore={hasMoreDoneTasks}
+            onShowMore={() => setDoneTasksLimit(prev => prev + 10)}
           />
         </div>
 
