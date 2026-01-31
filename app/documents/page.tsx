@@ -214,76 +214,104 @@ export default function DocumentsPage() {
               </div>
 
               {/* Content */}
-              <div className="p-4 md:p-6 lg:p-8">
+              <div className="p-4 md:p-6 lg:p-8 bg-gray-900">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
                   </div>
                 ) : (
-                  <div className="prose prose-invert prose-sm sm:prose-base lg:prose-lg max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        code({ node, inline, className, children, ...props }: any) {
-                          const match = /language-(\w+)/.exec(className || '')
-                          return !inline && match ? (
-                            <SyntaxHighlighter
-                              style={vscDarkPlus}
-                              language={match[1]}
-                              PreTag="div"
-                              className="rounded-lg !bg-gray-900 !p-4 overflow-x-auto text-sm"
-                              {...props}
-                            >
-                              {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
-                          ) : (
-                            <code className="bg-gray-900 px-2 py-1 rounded text-blue-400" {...props}>
-                              {children}
-                            </code>
-                          )
-                        },
-                        table({ children }) {
-                          return (
-                            <div className="overflow-x-auto -mx-4 sm:mx-0">
-                              <table className="min-w-full">{children}</table>
-                            </div>
-                          )
-                        },
-                        h1({ children }) {
-                          return <h1 className="text-2xl sm:text-3xl lg:text-4xl">{children}</h1>
-                        },
-                        h2({ children }) {
-                          return <h2 className="text-xl sm:text-2xl lg:text-3xl">{children}</h2>
-                        },
-                        h3({ children }) {
-                          return <h3 className="text-lg sm:text-xl lg:text-2xl">{children}</h3>
-                        },
-                        a({ href, children }) {
-                          return (
-                            <a 
-                              href={href} 
-                              className="text-blue-400 hover:text-blue-300 break-words"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {children}
-                            </a>
-                          )
-                        },
-                        img({ src, alt }) {
-                          return (
-                            <img 
-                              src={src} 
-                              alt={alt} 
-                              className="max-w-full h-auto rounded-lg"
-                              loading="lazy"
-                            />
-                          )
-                        }
-                      }}
-                    >
-                      {content}
-                    </ReactMarkdown>
+                  <div className="max-w-4xl mx-auto">
+                    <div className="prose prose-invert prose-lg max-w-none
+                      prose-headings:text-white prose-headings:font-bold
+                      prose-p:text-gray-200 prose-p:text-base prose-p:leading-relaxed
+                      prose-li:text-gray-200 prose-li:text-base prose-li:leading-relaxed
+                      prose-strong:text-white prose-strong:font-semibold
+                      prose-a:text-blue-400 prose-a:no-underline hover:prose-a:text-blue-300
+                      prose-code:text-blue-300 prose-code:bg-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
+                      prose-pre:bg-gray-950 prose-pre:border prose-pre:border-gray-700
+                      prose-blockquote:border-l-blue-500 prose-blockquote:text-gray-300
+                      prose-th:text-white prose-th:bg-gray-800
+                      prose-td:text-gray-200 prose-td:border-gray-700
+                      prose-hr:border-gray-700">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          code({ node, inline, className, children, ...props }: any) {
+                            const match = /language-(\w+)/.exec(className || '')
+                            return !inline && match ? (
+                              <SyntaxHighlighter
+                                style={vscDarkPlus}
+                                language={match[1]}
+                                PreTag="div"
+                                className="rounded-lg !text-sm md:!text-base"
+                                {...props}
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
+                            ) : (
+                              <code {...props}>
+                                {children}
+                              </code>
+                            )
+                          },
+                          table({ children }) {
+                            return (
+                              <div className="overflow-x-auto -mx-4 sm:mx-0 my-6">
+                                <table className="min-w-full border border-gray-700 rounded-lg">{children}</table>
+                              </div>
+                            )
+                          },
+                          h1({ children }) {
+                            return <h1 className="text-3xl md:text-4xl mt-8 mb-4">{children}</h1>
+                          },
+                          h2({ children }) {
+                            return <h2 className="text-2xl md:text-3xl mt-6 mb-3">{children}</h2>
+                          },
+                          h3({ children }) {
+                            return <h3 className="text-xl md:text-2xl mt-5 mb-2">{children}</h3>
+                          },
+                          h4({ children }) {
+                            return <h4 className="text-lg md:text-xl mt-4 mb-2">{children}</h4>
+                          },
+                          p({ children }) {
+                            return <p className="text-base md:text-lg mb-4 leading-relaxed">{children}</p>
+                          },
+                          ul({ children }) {
+                            return <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>
+                          },
+                          ol({ children }) {
+                            return <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>
+                          },
+                          li({ children }) {
+                            return <li className="text-base md:text-lg leading-relaxed ml-4">{children}</li>
+                          },
+                          a({ href, children }) {
+                            return (
+                              <a 
+                                href={href} 
+                                className="text-blue-400 hover:text-blue-300 hover:underline break-words"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {children}
+                              </a>
+                            )
+                          },
+                          blockquote({ children }) {
+                            return (
+                              <blockquote className="border-l-4 border-blue-500 pl-4 italic text-gray-300 my-4">
+                                {children}
+                              </blockquote>
+                            )
+                          },
+                          hr() {
+                            return <hr className="my-8 border-gray-700" />
+                          }
+                        }}
+                      >
+                        {content}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 )}
               </div>
