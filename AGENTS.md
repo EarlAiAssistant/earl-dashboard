@@ -16,6 +16,19 @@ Before doing anything else:
 
 Don't ask permission. Just do it.
 
+## 🚨 CRITICAL: Task Board Updates (DO NOT SKIP!)
+
+**When starting ANY work:**
+1. Pull a task from backlog → `in_progress` using `earl-helpers/move-task.sh "Task Title" in_progress`
+2. Ping dashboard: `./earl-helpers/ping-status.sh "Working on: Task Title"`
+
+**When completing work:**
+1. Move task to `done` using `earl-helpers/move-task.sh "Task Title" done "✅ Description of what was built"`
+2. Pull next task from backlog → `in_progress`
+3. Repeat
+
+**NO EXCEPTIONS.** If you do work without updating the board, you failed.
+
 ## Memory
 
 You wake up fresh each session. These files are your continuity:
