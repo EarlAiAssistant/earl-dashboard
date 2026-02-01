@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Documents', href: '/documents', icon: FileText },
 ]
 
