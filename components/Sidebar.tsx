@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import { 
   LayoutDashboard, 
   FileText, 
-  Activity, 
   LogOut,
   Moon,
   Sun,
@@ -18,7 +17,6 @@ import { useState, useEffect } from 'react'
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'Activity Log', href: '/activity', icon: Activity },
 ]
 
 export default function Sidebar() {

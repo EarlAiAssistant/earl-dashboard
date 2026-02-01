@@ -8,7 +8,6 @@ import {
   X, 
   LayoutDashboard, 
   FileText, 
-  Activity, 
   LogOut 
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
@@ -17,7 +16,6 @@ import { useRouter } from 'next/navigation'
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
   { name: 'Documents', href: '/documents', icon: FileText },
-  { name: 'Activity Log', href: '/activity', icon: Activity },
 ]
 
 export default function MobileNav() {
