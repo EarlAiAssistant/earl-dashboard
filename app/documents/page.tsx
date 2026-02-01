@@ -16,6 +16,12 @@ interface DocumentInfo {
 
 const DOCUMENTS: DocumentInfo[] = [
   {
+    name: 'LAUNCH-READY.md',
+    title: '🚀 Launch Ready Summary',
+    category: 'Strategy',
+    size: '4KB'
+  },
+  {
     name: 'call-content-pricing-page.md',
     title: 'Pricing Page Copy (Call-Content)',
     category: 'Marketing',
