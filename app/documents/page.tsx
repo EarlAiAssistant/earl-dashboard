@@ -5,13 +5,14 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { FileText, Loader2, X, ChevronLeft, FolderOpen } from 'lucide-react'
+import { FileText, Loader2, X, ChevronLeft, Tag } from 'lucide-react'
 
 interface DocumentInfo {
   name: string
   path: string
   title: string
   category: string
+  project: string
   size: string
 }
 
@@ -22,6 +23,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/launch/LAUNCH-PLAN.md',
     title: '🚀 Voxify Launch Plan (30-Day GTM)',
     category: 'Launch',
+    project: 'Voxify',
     size: '10KB'
   },
   {
@@ -29,6 +31,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/launch/PRODUCT-HUNT-ASSETS.md',
     title: '🏆 Product Hunt Assets',
     category: 'Launch',
+    project: 'Voxify',
     size: '6KB'
   },
   {
@@ -36,6 +39,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/launch/SOCIAL-MEDIA-TEMPLATES.md',
     title: '📱 Social Media Templates',
     category: 'Launch',
+    project: 'Voxify',
     size: '9KB'
   },
   {
@@ -43,6 +47,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/launch/PRE_LAUNCH_CHECKLIST.md',
     title: '✅ Pre-Launch Checklist',
     category: 'Launch',
+    project: 'Voxify',
     size: '7KB'
   },
   {
@@ -50,7 +55,24 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/launch/call-content-ACTION-PLAN.md',
     title: '📋 90-Day Action Plan',
     category: 'Launch',
+    project: 'Voxify',
     size: '17KB'
+  },
+  {
+    name: 'call-content-customer-outreach-emails.md',
+    path: 'docs/voxify/launch/call-content-customer-outreach-emails.md',
+    title: '📧 Customer Outreach Emails',
+    category: 'Launch',
+    project: 'Voxify',
+    size: '15KB'
+  },
+  {
+    name: 'call-content-partnership-outreach.md',
+    path: 'docs/voxify/launch/call-content-partnership-outreach.md',
+    title: '🤝 Partnership Outreach',
+    category: 'Launch',
+    project: 'Voxify',
+    size: '12KB'
   },
   
   // Voxify Business
@@ -59,13 +81,15 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/business/EXPENSES.md',
     title: '💰 Monthly Expenses',
     category: 'Business',
+    project: 'Voxify',
     size: '2KB'
   },
   {
     name: 'INFRASTRUCTURE-SCALABILITY.md',
     path: 'docs/voxify/technical/INFRASTRUCTURE-SCALABILITY.md',
     title: '📈 Infrastructure & Scaling Analysis',
-    category: 'Business',
+    category: 'Technical',
+    project: 'Voxify',
     size: '8KB'
   },
   {
@@ -73,6 +97,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/business/call-content-STRATEGIC-ANALYSIS.md',
     title: '📊 Strategic Analysis (18k words)',
     category: 'Business',
+    project: 'Voxify',
     size: '29KB'
   },
   {
@@ -80,6 +105,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/business/call-content-EXECUTIVE-SUMMARY.md',
     title: '📝 Executive Summary',
     category: 'Business',
+    project: 'Voxify',
     size: '10KB'
   },
   {
@@ -87,6 +113,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/business/call-content-competitor-analysis.md',
     title: '🔍 Competitor Analysis',
     category: 'Business',
+    project: 'Voxify',
     size: '14KB'
   },
   {
@@ -94,7 +121,24 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/business/pricing-strategy-research.md',
     title: '💵 Pricing Strategy Research',
     category: 'Business',
+    project: 'Voxify',
     size: '24KB'
+  },
+  {
+    name: 'booster-pack-system-spec.md',
+    path: 'docs/voxify/business/booster-pack-system-spec.md',
+    title: '📦 Booster Pack System Spec',
+    category: 'Technical',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
+    name: 'customer-health-dashboard-spec.md',
+    path: 'docs/voxify/business/customer-health-dashboard-spec.md',
+    title: '📊 Customer Health Dashboard',
+    category: 'Technical',
+    project: 'Voxify',
+    size: '7KB'
   },
   
   // Voxify Brand
@@ -103,6 +147,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/brand/BRAND-IDENTITY.md',
     title: '🎨 Brand Identity Guidelines',
     category: 'Brand',
+    project: 'Voxify',
     size: '9KB'
   },
   {
@@ -110,6 +155,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/brand/NAME-RESEARCH.md',
     title: '✨ Name Research (Voxify)',
     category: 'Brand',
+    project: 'Voxify',
     size: '6KB'
   },
   {
@@ -117,6 +163,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/brand/LOGO-CONCEPTS.md',
     title: '🖼️ Logo Concepts (V→)',
     category: 'Brand',
+    project: 'Voxify',
     size: '2KB'
   },
   {
@@ -124,6 +171,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/brand/DOMAIN-TLD-RESEARCH.md',
     title: '🌐 Domain Strategy',
     category: 'Brand',
+    project: 'Voxify',
     size: '5KB'
   },
   
@@ -133,13 +181,15 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/technical/GOOGLE-DOCS-INTEGRATION.md',
     title: '📄 Google Docs Integration',
     category: 'Technical',
+    project: 'Voxify',
     size: '2KB'
   },
   {
     name: 'call-content-INTEGRATION-GUIDE.md',
     path: 'docs/voxify/technical/call-content-INTEGRATION-GUIDE.md',
-    title: '🔌 Integration Guide',
+    title: '🔌 Stripe Integration Guide',
     category: 'Technical',
+    project: 'Voxify',
     size: '10KB'
   },
   {
@@ -147,7 +197,24 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/technical/analytics-tracking-plan.md',
     title: '📊 Analytics Tracking Plan',
     category: 'Technical',
+    project: 'Voxify',
     size: '17KB'
+  },
+  {
+    name: 'call-content-zapier-integration.md',
+    path: 'docs/voxify/technical/call-content-zapier-integration.md',
+    title: '⚡ Zapier Integration',
+    category: 'Technical',
+    project: 'Voxify',
+    size: '14KB'
+  },
+  {
+    name: 'assemblyai-integration-spec.md',
+    path: 'docs/voxify/technical/assemblyai-integration-spec.md',
+    title: '🎙️ AssemblyAI Integration',
+    category: 'Technical',
+    project: 'Voxify',
+    size: '20KB'
   },
   
   // Voxify Marketing
@@ -156,6 +223,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/marketing/call-content-seo-strategy.md',
     title: '🔍 SEO Strategy',
     category: 'Marketing',
+    project: 'Voxify',
     size: '15KB'
   },
   {
@@ -163,6 +231,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/marketing/call-content-email-sequences.md',
     title: '📧 Email Sequences',
     category: 'Marketing',
+    project: 'Voxify',
     size: '17KB'
   },
   {
@@ -170,6 +239,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/marketing/call-content-demo-transcripts.md',
     title: '🎙️ Demo Transcript Library',
     category: 'Marketing',
+    project: 'Voxify',
     size: '23KB'
   },
   {
@@ -177,7 +247,24 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/voxify/marketing/call-content-getting-started-guide.md',
     title: '📚 Getting Started Guide',
     category: 'Marketing',
+    project: 'Voxify',
     size: '15KB'
+  },
+  {
+    name: 'call-content-privacy-policy.md',
+    path: 'docs/voxify/marketing/call-content-privacy-policy.md',
+    title: '🔒 Privacy Policy',
+    category: 'Legal',
+    project: 'Voxify',
+    size: '10KB'
+  },
+  {
+    name: 'call-content-terms-of-service.md',
+    path: 'docs/voxify/marketing/call-content-terms-of-service.md',
+    title: '📜 Terms of Service',
+    category: 'Legal',
+    project: 'Voxify',
+    size: '13KB'
   },
   
   // Setup Guides
@@ -186,13 +273,23 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/setup/STRIPE_ENV_SETUP.md',
     title: '💳 Stripe Setup',
     category: 'Setup',
+    project: 'Infrastructure',
     size: '3KB'
+  },
+  {
+    name: 'STRIPE_CHECKOUT_TESTING.md',
+    path: 'docs/setup/STRIPE_CHECKOUT_TESTING.md',
+    title: '🧪 Stripe Checkout Testing',
+    category: 'Setup',
+    project: 'Infrastructure',
+    size: '7KB'
   },
   {
     name: 'VERCEL_ENV_SETUP.md',
     path: 'docs/setup/VERCEL_ENV_SETUP.md',
     title: '▲ Vercel Setup',
     category: 'Setup',
+    project: 'Infrastructure',
     size: '1KB'
   },
   {
@@ -200,6 +297,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/setup/POSTHOG_SETUP.md',
     title: '📈 PostHog Setup',
     category: 'Setup',
+    project: 'Infrastructure',
     size: '6KB'
   },
   {
@@ -207,6 +305,7 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/setup/EMAIL_SETUP.md',
     title: '✉️ Email (Resend) Setup',
     category: 'Setup',
+    project: 'Infrastructure',
     size: '6KB'
   },
   {
@@ -214,7 +313,16 @@ const DOCUMENTS: DocumentInfo[] = [
     path: 'docs/setup/RUN_SQL_MIGRATION_GUIDE.md',
     title: '🗄️ SQL Migration Guide',
     category: 'Setup',
+    project: 'Infrastructure',
     size: '6KB'
+  },
+  {
+    name: 'ASSEMBLYAI_SETUP.md',
+    path: 'docs/setup/ASSEMBLYAI_SETUP.md',
+    title: '🎙️ AssemblyAI Setup',
+    category: 'Setup',
+    project: 'Infrastructure',
+    size: '7KB'
   },
   
   // Earl
@@ -222,15 +330,25 @@ const DOCUMENTS: DocumentInfo[] = [
     name: 'DASHBOARD-USER-GUIDE.md',
     path: 'docs/earl/DASHBOARD-USER-GUIDE.md',
     title: '🤖 Dashboard User Guide',
-    category: 'Earl',
+    category: 'Documentation',
+    project: 'Earl',
     size: '7KB'
   },
   {
     name: 'EARL-WORKFLOW.md',
     path: 'docs/earl/EARL-WORKFLOW.md',
     title: '⚙️ Earl Workflow',
-    category: 'Earl',
+    category: 'Documentation',
+    project: 'Earl',
     size: '4KB'
+  },
+  {
+    name: 'STATUS_API.md',
+    path: 'docs/earl/STATUS_API.md',
+    title: '📡 Status API',
+    category: 'Technical',
+    project: 'Earl',
+    size: '2KB'
   },
   
   // Personal
@@ -238,26 +356,30 @@ const DOCUMENTS: DocumentInfo[] = [
     name: 'drew-income-acceleration-ideas.md',
     path: 'docs/personal/drew-income-acceleration-ideas.md',
     title: '💡 Income Acceleration Ideas',
-    category: 'Personal',
+    category: 'Ideas',
+    project: 'Personal',
     size: '8KB'
   },
   {
     name: 'michigan-up-land-research.md',
     path: 'docs/personal/michigan-up-land-research.md',
     title: '🏔️ Michigan UP Land Research',
-    category: 'Personal',
+    category: 'Research',
+    project: 'Personal',
     size: '5KB'
   },
   {
     name: 'land-savings-roadmap.md',
     path: 'docs/personal/land-savings-roadmap.md',
     title: '🗺️ Land Savings Roadmap',
-    category: 'Personal',
+    category: 'Finance',
+    project: 'Personal',
     size: '9KB'
   }
 ]
 
-const CATEGORIES = ['All', 'Launch', 'Business', 'Brand', 'Technical', 'Marketing', 'Setup', 'Earl', 'Personal']
+const CATEGORIES = ['All', 'Launch', 'Business', 'Brand', 'Technical', 'Marketing', 'Setup', 'Legal', 'Documentation', 'Ideas', 'Research', 'Finance']
+const PROJECTS = ['All', 'Voxify', 'Earl', 'Infrastructure', 'Personal']
 
 export default function DocumentsPage() {
   const [documents] = useState<DocumentInfo[]>(DOCUMENTS)
@@ -265,13 +387,13 @@ export default function DocumentsPage() {
   const [content, setContent] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('All')
+  const [selectedProject, setSelectedProject] = useState('All')
 
   const fetchDocument = async (doc: DocumentInfo) => {
     setLoading(true)
     setSelectedDoc(doc)
     
     try {
-      // Fetch from GitHub raw content
       const response = await fetch(`https://raw.githubusercontent.com/EarlAiAssistant/earl-dashboard/main/${doc.path}`)
       if (!response.ok) throw new Error('Failed to fetch document')
       const text = await response.text()
@@ -284,9 +406,21 @@ export default function DocumentsPage() {
     }
   }
 
-  const filteredDocs = selectedCategory === 'All' 
-    ? documents 
-    : documents.filter(d => d.category === selectedCategory)
+  const filteredDocs = documents.filter(d => {
+    const categoryMatch = selectedCategory === 'All' || d.category === selectedCategory
+    const projectMatch = selectedProject === 'All' || d.project === selectedProject
+    return categoryMatch && projectMatch
+  })
+
+  const getProjectColor = (project: string) => {
+    const colors: Record<string, string> = {
+      'Voxify': 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+      'Earl': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+      'Infrastructure': 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+      'Personal': 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+    }
+    return colors[project] || 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+  }
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -296,8 +430,11 @@ export default function DocumentsPage() {
       'Technical': 'bg-orange-500/10 text-orange-400',
       'Marketing': 'bg-pink-500/10 text-pink-400',
       'Setup': 'bg-yellow-500/10 text-yellow-400',
-      'Earl': 'bg-cyan-500/10 text-cyan-400',
-      'Personal': 'bg-gray-500/10 text-gray-400'
+      'Legal': 'bg-red-500/10 text-red-400',
+      'Documentation': 'bg-cyan-500/10 text-cyan-400',
+      'Ideas': 'bg-amber-500/10 text-amber-400',
+      'Research': 'bg-indigo-500/10 text-indigo-400',
+      'Finance': 'bg-emerald-500/10 text-emerald-400'
     }
     return colors[category] || 'bg-blue-500/10 text-blue-400'
   }
@@ -307,26 +444,63 @@ export default function DocumentsPage() {
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">📄 Documents</h1>
-          <p className="text-gray-400 text-lg">Organized documentation for Voxify and Earl</p>
+          <p className="text-gray-400 text-lg">Organized documentation for all projects</p>
         </div>
 
         {!selectedDoc ? (
           <>
+            {/* Project Filter */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Tag className="w-4 h-4 text-gray-400" />
+                <span className="text-sm text-gray-400 font-medium">Project:</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {PROJECTS.map(proj => (
+                  <button
+                    key={proj}
+                    onClick={() => setSelectedProject(proj)}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
+                      selectedProject === proj
+                        ? proj === 'All' 
+                          ? 'bg-white text-black border-white'
+                          : getProjectColor(proj)
+                        : 'bg-gray-900 text-gray-400 hover:bg-gray-800 border-gray-800 hover:border-gray-700'
+                    }`}
+                  >
+                    {proj}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Category Filter */}
-            <div className="mb-8 flex flex-wrap gap-3">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                    selectedCategory === cat
-                      ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
-                      : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800 hover:border-gray-700'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-gray-400 font-medium">Category:</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      selectedCategory === cat
+                        ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
+                        : 'bg-gray-900 text-gray-400 hover:bg-gray-800 border border-gray-800 hover:border-gray-700'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Results count */}
+            <div className="mb-4 text-sm text-gray-500">
+              Showing {filteredDocs.length} document{filteredDocs.length !== 1 ? 's' : ''}
+              {selectedProject !== 'All' && ` in ${selectedProject}`}
+              {selectedCategory !== 'All' && ` • ${selectedCategory}`}
             </div>
 
             {/* Document Grid */}
@@ -343,8 +517,11 @@ export default function DocumentsPage() {
                       <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2">
                         {doc.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className={`px-2 py-1 rounded-md font-medium ${getCategoryColor(doc.category)}`}>
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
+                        <span className={`px-2 py-0.5 rounded border text-xs font-medium ${getProjectColor(doc.project)}`}>
+                          {doc.project}
+                        </span>
+                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(doc.category)}`}>
                           {doc.category}
                         </span>
                         <span className="text-gray-500">{doc.size}</span>
@@ -357,7 +534,7 @@ export default function DocumentsPage() {
 
             {filteredDocs.length === 0 && (
               <div className="text-center py-12 text-gray-400">
-                No documents in this category
+                No documents match your filters
               </div>
             )}
           </>
@@ -381,9 +558,13 @@ export default function DocumentsPage() {
                     <h2 className="text-lg font-semibold text-white truncate">
                       {selectedDoc.title}
                     </h2>
-                    <p className="text-sm text-gray-400">
-                      {selectedDoc.category} • {selectedDoc.size}
-                    </p>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className={`px-2 py-0.5 rounded border text-xs font-medium ${getProjectColor(selectedDoc.project)}`}>
+                        {selectedDoc.project}
+                      </span>
+                      <span className="text-gray-400">{selectedDoc.category}</span>
+                      <span className="text-gray-500">• {selectedDoc.size}</span>
+                    </div>
                   </div>
                   <button
                     onClick={() => {
