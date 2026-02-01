@@ -5,97 +5,259 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { FileText, Loader2, X, ChevronLeft } from 'lucide-react'
+import { FileText, Loader2, X, ChevronLeft, FolderOpen } from 'lucide-react'
 
 interface DocumentInfo {
   name: string
+  path: string
   title: string
   category: string
   size: string
 }
 
 const DOCUMENTS: DocumentInfo[] = [
+  // Voxify Launch
   {
-    name: 'LAUNCH-READY.md',
-    title: '🚀 Launch Ready Summary',
-    category: 'Strategy',
-    size: '4KB'
+    name: 'LAUNCH-PLAN.md',
+    path: 'docs/voxify/launch/LAUNCH-PLAN.md',
+    title: '🚀 Voxify Launch Plan (30-Day GTM)',
+    category: 'Launch',
+    size: '10KB'
   },
   {
-    name: 'call-content-pricing-page.md',
-    title: 'Pricing Page Copy (Call-Content)',
-    category: 'Marketing',
-    size: '12KB'
+    name: 'PRODUCT-HUNT-ASSETS.md',
+    path: 'docs/voxify/launch/PRODUCT-HUNT-ASSETS.md',
+    title: '🏆 Product Hunt Assets',
+    category: 'Launch',
+    size: '6KB'
   },
   {
-    name: 'call-content-demo-transcripts.md',
-    title: 'Demo Transcript Library',
-    category: 'Product',
-    size: '23KB'
+    name: 'SOCIAL-MEDIA-TEMPLATES.md',
+    path: 'docs/voxify/launch/SOCIAL-MEDIA-TEMPLATES.md',
+    title: '📱 Social Media Templates',
+    category: 'Launch',
+    size: '9KB'
   },
   {
-    name: 'call-content-email-sequences.md',
-    title: 'Email Automation Sequences',
-    category: 'Marketing',
-    size: '17KB'
+    name: 'PRE_LAUNCH_CHECKLIST.md',
+    path: 'docs/voxify/launch/PRE_LAUNCH_CHECKLIST.md',
+    title: '✅ Pre-Launch Checklist',
+    category: 'Launch',
+    size: '7KB'
   },
   {
     name: 'call-content-ACTION-PLAN.md',
-    title: '90-Day Launch Action Plan',
-    category: 'Strategy',
+    path: 'docs/voxify/launch/call-content-ACTION-PLAN.md',
+    title: '📋 90-Day Action Plan',
+    category: 'Launch',
     size: '17KB'
+  },
+  
+  // Voxify Business
+  {
+    name: 'EXPENSES.md',
+    path: 'docs/voxify/business/EXPENSES.md',
+    title: '💰 Monthly Expenses',
+    category: 'Business',
+    size: '2KB'
+  },
+  {
+    name: 'INFRASTRUCTURE-SCALABILITY.md',
+    path: 'docs/voxify/technical/INFRASTRUCTURE-SCALABILITY.md',
+    title: '📈 Infrastructure & Scaling Analysis',
+    category: 'Business',
+    size: '8KB'
   },
   {
     name: 'call-content-STRATEGIC-ANALYSIS.md',
-    title: 'Strategic Analysis (18k words)',
-    category: 'Strategy',
+    path: 'docs/voxify/business/call-content-STRATEGIC-ANALYSIS.md',
+    title: '📊 Strategic Analysis (18k words)',
+    category: 'Business',
     size: '29KB'
   },
   {
     name: 'call-content-EXECUTIVE-SUMMARY.md',
-    title: 'Executive Summary',
-    category: 'Strategy',
+    path: 'docs/voxify/business/call-content-EXECUTIVE-SUMMARY.md',
+    title: '📝 Executive Summary',
+    category: 'Business',
     size: '10KB'
   },
   {
+    name: 'call-content-competitor-analysis.md',
+    path: 'docs/voxify/business/call-content-competitor-analysis.md',
+    title: '🔍 Competitor Analysis',
+    category: 'Business',
+    size: '14KB'
+  },
+  {
+    name: 'pricing-strategy-research.md',
+    path: 'docs/voxify/business/pricing-strategy-research.md',
+    title: '💵 Pricing Strategy Research',
+    category: 'Business',
+    size: '24KB'
+  },
+  
+  // Voxify Brand
+  {
+    name: 'BRAND-IDENTITY.md',
+    path: 'docs/voxify/brand/BRAND-IDENTITY.md',
+    title: '🎨 Brand Identity Guidelines',
+    category: 'Brand',
+    size: '9KB'
+  },
+  {
+    name: 'NAME-RESEARCH.md',
+    path: 'docs/voxify/brand/NAME-RESEARCH.md',
+    title: '✨ Name Research (Voxify)',
+    category: 'Brand',
+    size: '6KB'
+  },
+  {
+    name: 'LOGO-CONCEPTS.md',
+    path: 'docs/voxify/brand/LOGO-CONCEPTS.md',
+    title: '🖼️ Logo Concepts (V→)',
+    category: 'Brand',
+    size: '2KB'
+  },
+  {
+    name: 'DOMAIN-TLD-RESEARCH.md',
+    path: 'docs/voxify/brand/DOMAIN-TLD-RESEARCH.md',
+    title: '🌐 Domain Strategy',
+    category: 'Brand',
+    size: '5KB'
+  },
+  
+  // Voxify Technical
+  {
+    name: 'GOOGLE-DOCS-INTEGRATION.md',
+    path: 'docs/voxify/technical/GOOGLE-DOCS-INTEGRATION.md',
+    title: '📄 Google Docs Integration',
+    category: 'Technical',
+    size: '2KB'
+  },
+  {
     name: 'call-content-INTEGRATION-GUIDE.md',
-    title: 'Stripe Integration Guide',
+    path: 'docs/voxify/technical/call-content-INTEGRATION-GUIDE.md',
+    title: '🔌 Integration Guide',
     category: 'Technical',
     size: '10KB'
   },
   {
-    name: 'michigan-up-land-research.md',
-    title: 'Michigan UP Land Research',
-    category: 'Finance',
-    size: '5KB'
+    name: 'analytics-tracking-plan.md',
+    path: 'docs/voxify/technical/analytics-tracking-plan.md',
+    title: '📊 Analytics Tracking Plan',
+    category: 'Technical',
+    size: '17KB'
+  },
+  
+  // Voxify Marketing
+  {
+    name: 'call-content-seo-strategy.md',
+    path: 'docs/voxify/marketing/call-content-seo-strategy.md',
+    title: '🔍 SEO Strategy',
+    category: 'Marketing',
+    size: '15KB'
   },
   {
+    name: 'call-content-email-sequences.md',
+    path: 'docs/voxify/marketing/call-content-email-sequences.md',
+    title: '📧 Email Sequences',
+    category: 'Marketing',
+    size: '17KB'
+  },
+  {
+    name: 'call-content-demo-transcripts.md',
+    path: 'docs/voxify/marketing/call-content-demo-transcripts.md',
+    title: '🎙️ Demo Transcript Library',
+    category: 'Marketing',
+    size: '23KB'
+  },
+  {
+    name: 'call-content-getting-started-guide.md',
+    path: 'docs/voxify/marketing/call-content-getting-started-guide.md',
+    title: '📚 Getting Started Guide',
+    category: 'Marketing',
+    size: '15KB'
+  },
+  
+  // Setup Guides
+  {
+    name: 'STRIPE_ENV_SETUP.md',
+    path: 'docs/setup/STRIPE_ENV_SETUP.md',
+    title: '💳 Stripe Setup',
+    category: 'Setup',
+    size: '3KB'
+  },
+  {
+    name: 'VERCEL_ENV_SETUP.md',
+    path: 'docs/setup/VERCEL_ENV_SETUP.md',
+    title: '▲ Vercel Setup',
+    category: 'Setup',
+    size: '1KB'
+  },
+  {
+    name: 'POSTHOG_SETUP.md',
+    path: 'docs/setup/POSTHOG_SETUP.md',
+    title: '📈 PostHog Setup',
+    category: 'Setup',
+    size: '6KB'
+  },
+  {
+    name: 'EMAIL_SETUP.md',
+    path: 'docs/setup/EMAIL_SETUP.md',
+    title: '✉️ Email (Resend) Setup',
+    category: 'Setup',
+    size: '6KB'
+  },
+  {
+    name: 'RUN_SQL_MIGRATION_GUIDE.md',
+    path: 'docs/setup/RUN_SQL_MIGRATION_GUIDE.md',
+    title: '🗄️ SQL Migration Guide',
+    category: 'Setup',
+    size: '6KB'
+  },
+  
+  // Earl
+  {
+    name: 'DASHBOARD-USER-GUIDE.md',
+    path: 'docs/earl/DASHBOARD-USER-GUIDE.md',
+    title: '🤖 Dashboard User Guide',
+    category: 'Earl',
+    size: '7KB'
+  },
+  {
+    name: 'EARL-WORKFLOW.md',
+    path: 'docs/earl/EARL-WORKFLOW.md',
+    title: '⚙️ Earl Workflow',
+    category: 'Earl',
+    size: '4KB'
+  },
+  
+  // Personal
+  {
     name: 'drew-income-acceleration-ideas.md',
-    title: 'Income Acceleration Ideas',
-    category: 'Finance',
+    path: 'docs/personal/drew-income-acceleration-ideas.md',
+    title: '💡 Income Acceleration Ideas',
+    category: 'Personal',
     size: '8KB'
   },
   {
-    name: 'tile-table-instructions.md',
-    title: 'Tile Table Building Instructions',
-    category: 'DIY',
+    name: 'michigan-up-land-research.md',
+    path: 'docs/personal/michigan-up-land-research.md',
+    title: '🏔️ Michigan UP Land Research',
+    category: 'Personal',
     size: '5KB'
   },
   {
-    name: 'pricing-strategy-research.md',
-    title: 'Pricing Strategy Research',
-    category: 'Strategy',
-    size: '24KB'
-  },
-  {
-    name: 'DASHBOARD-USER-GUIDE.md',
-    title: 'Dashboard User Guide',
-    category: 'Documentation',
-    size: '7KB'
+    name: 'land-savings-roadmap.md',
+    path: 'docs/personal/land-savings-roadmap.md',
+    title: '🗺️ Land Savings Roadmap',
+    category: 'Personal',
+    size: '9KB'
   }
 ]
 
-const CATEGORIES = ['All', 'Marketing', 'Product', 'Strategy', 'Technical', 'Finance', 'DIY', 'Documentation']
+const CATEGORIES = ['All', 'Launch', 'Business', 'Brand', 'Technical', 'Marketing', 'Setup', 'Earl', 'Personal']
 
 export default function DocumentsPage() {
   const [documents] = useState<DocumentInfo[]>(DOCUMENTS)
@@ -109,13 +271,14 @@ export default function DocumentsPage() {
     setSelectedDoc(doc)
     
     try {
-      const response = await fetch(`/${doc.name}`)
+      // Fetch from GitHub raw content
+      const response = await fetch(`https://raw.githubusercontent.com/EarlAiAssistant/earl-dashboard/main/${doc.path}`)
       if (!response.ok) throw new Error('Failed to fetch document')
       const text = await response.text()
       setContent(text)
     } catch (error) {
       console.error('Error fetching document:', error)
-      setContent('# Error\n\nFailed to load document.')
+      setContent('# Error\n\nFailed to load document. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -125,12 +288,26 @@ export default function DocumentsPage() {
     ? documents 
     : documents.filter(d => d.category === selectedCategory)
 
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
+      'Launch': 'bg-green-500/10 text-green-400',
+      'Business': 'bg-blue-500/10 text-blue-400',
+      'Brand': 'bg-purple-500/10 text-purple-400',
+      'Technical': 'bg-orange-500/10 text-orange-400',
+      'Marketing': 'bg-pink-500/10 text-pink-400',
+      'Setup': 'bg-yellow-500/10 text-yellow-400',
+      'Earl': 'bg-cyan-500/10 text-cyan-400',
+      'Personal': 'bg-gray-500/10 text-gray-400'
+    }
+    return colors[category] || 'bg-blue-500/10 text-blue-400'
+  }
+
   return (
     <div className="min-h-screen bg-black">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">📄 Documents</h1>
-          <p className="text-gray-400 text-lg">Earl's autonomous work and resources</p>
+          <p className="text-gray-400 text-lg">Organized documentation for Voxify and Earl</p>
         </div>
 
         {!selectedDoc ? (
@@ -143,7 +320,7 @@ export default function DocumentsPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                     selectedCategory === cat
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                      ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/30'
                       : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800 hover:border-gray-700'
                   }`}
                 >
@@ -156,18 +333,18 @@ export default function DocumentsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredDocs.map((doc) => (
                 <button
-                  key={doc.name}
+                  key={doc.path}
                   onClick={() => fetchDocument(doc)}
                   className="bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 rounded-xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-xl"
                 >
                   <div className="flex items-start gap-4">
-                    <FileText className="w-10 h-10 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <FileText className="w-10 h-10 text-teal-400 flex-shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2">
                         {doc.title}
                       </h3>
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-md font-medium">
+                        <span className={`px-2 py-1 rounded-md font-medium ${getCategoryColor(doc.category)}`}>
                           {doc.category}
                         </span>
                         <span className="text-gray-500">{doc.size}</span>
@@ -186,7 +363,7 @@ export default function DocumentsPage() {
           </>
         ) : (
           <>
-            {/* Document Viewer - Mobile Friendly */}
+            {/* Document Viewer */}
             <div className="bg-black border border-gray-800 rounded-lg overflow-hidden">
               {/* Header */}
               <div className="bg-black border-b border-gray-800 p-4 sticky top-0 z-10 backdrop-blur-sm bg-black/95">
@@ -224,7 +401,7 @@ export default function DocumentsPage() {
               <div className="p-6 md:p-8 lg:p-12 bg-black min-h-screen">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                    <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
                   </div>
                 ) : (
                   <article className="max-w-4xl mx-auto">
@@ -247,7 +424,7 @@ export default function DocumentsPage() {
                                 </SyntaxHighlighter>
                               </div>
                             ) : (
-                              <code className="bg-gray-900 text-blue-400 px-2 py-1 rounded font-mono text-sm">
+                              <code className="bg-gray-900 text-teal-400 px-2 py-1 rounded font-mono text-sm">
                                 {children}
                               </code>
                             )
@@ -338,7 +515,7 @@ export default function DocumentsPage() {
                             return (
                               <a 
                                 href={href} 
-                                className="text-blue-400 hover:text-blue-300 underline decoration-blue-400/30 hover:decoration-blue-300 underline-offset-2 break-words transition-colors"
+                                className="text-teal-400 hover:text-teal-300 underline decoration-teal-400/30 hover:decoration-teal-300 underline-offset-2 break-words transition-colors"
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
@@ -354,7 +531,7 @@ export default function DocumentsPage() {
                           },
                           blockquote({ children }) {
                             return (
-                              <blockquote className="border-l-4 border-blue-500 bg-gray-900/50 pl-6 py-4 my-6 italic">
+                              <blockquote className="border-l-4 border-teal-500 bg-gray-900/50 pl-6 py-4 my-6 italic">
                                 <div className="text-white">
                                   {children}
                                 </div>
