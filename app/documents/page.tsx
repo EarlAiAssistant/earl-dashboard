@@ -375,6 +375,14 @@ const DOCUMENTS: DocumentInfo[] = [
     category: 'Finance',
     project: 'Personal',
     size: '9KB'
+  },
+  {
+    name: 'VOXIFY-LLC-SETUP.md',
+    path: 'docs/personal/VOXIFY-LLC-SETUP.md',
+    title: '🏢 Voxify LLC Setup Guide',
+    category: 'Legal',
+    project: 'Voxify',
+    size: '6KB'
   }
 ]
 
