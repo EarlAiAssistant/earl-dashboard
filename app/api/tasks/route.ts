@@ -14,7 +14,11 @@ export const dynamic = 'force-dynamic'
 // Verify API key
 function verifyApiKey(request: Request): boolean {
   const apiKey = request.headers.get('x-api-key')
-  const expectedKey = process.env.EARL_HEARTBEAT_KEY || process.env.OPENCLAW_WEBHOOK_SECRET
+  const expectedKey = process.env.EARL_HEARTBEAT_KEY
+  if (!expectedKey) {
+    console.error('EARL_HEARTBEAT_KEY not configured')
+    return false
+  }
   return apiKey === expectedKey
 }
 
