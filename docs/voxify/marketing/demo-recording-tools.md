@@ -4,6 +4,33 @@ Best tools for recording product demos and walkthroughs for Voxify.
 
 ---
 
+## 🖱️ Smooth Cursor Movement (Mac)
+
+### 🏆 **Screen Studio** (Recommended) - $89 one-time
+- **Auto-smooths mouse movement** post-recording
+- Auto-zooms on clicks
+- Adds professional motion blur
+- Makes any recording look polished
+- [screen.studio](https://screen.studio)
+
+### **Presentify** - $7.99 (Mac App Store)
+- Highlights cursor and clicks while recording
+- Works with any screen recorder
+- Good for live presentations
+
+### **Smooth Capture** - One-time purchase
+- Mac-native cursor smoothing
+- Webcam support
+- [smoothcapture.app](https://smoothcapture.app)
+
+### **CANVID** - Free
+- Browser-based with cursor smoothing
+- [canvid.com](https://canvid.com)
+
+**Budget setup:** QuickTime (free) + Presentify ($8) for cursor highlighting
+
+---
+
 ## Quick Recommendation
 
 **For a polished launch demo:** Use **Loom** (free tier works) or **OBS Studio** (free, more control)
