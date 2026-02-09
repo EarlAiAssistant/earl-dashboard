@@ -19,6 +19,14 @@ interface DocumentInfo {
 const DOCUMENTS: DocumentInfo[] = [
   // Voxify Launch
   {
+    name: 'linkedin-launch-post.md',
+    path: 'docs/voxify/launch/linkedin-launch-post.md',
+    title: '💼 LinkedIn Launch Post',
+    category: 'Launch',
+    project: 'Voxify',
+    size: '4KB'
+  },
+  {
     name: 'LAUNCH-PLAN.md',
     path: 'docs/voxify/launch/LAUNCH-PLAN.md',
     title: '🚀 Voxify Launch Plan (30-Day GTM)',
@@ -76,6 +84,14 @@ const DOCUMENTS: DocumentInfo[] = [
   },
   
   // Voxify Business
+  {
+    name: 'networking-qa.md',
+    path: 'docs/voxify/business/networking-qa.md',
+    title: '🎤 Networking Q&A Prep',
+    category: 'Business',
+    project: 'Voxify',
+    size: '3KB'
+  },
   {
     name: 'EXPENSES.md',
     path: 'docs/voxify/business/EXPENSES.md',
