@@ -261,56 +261,87 @@ function CreateTaskModal({ isOpen, onClose, onCreateTask }: {
   )
 }
 
-function TaskDetailModal({ task, isOpen, onClose }: {
+function TaskDetailModal({ task, isOpen, onClose, onStatusChange }: {
   task: Task | null;
   isOpen: boolean;
   onClose: () => void;
+  onStatusChange: (taskId: string, newStatus: TaskStatus) => void;
 }) {
+  const [isChangingStatus, setIsChangingStatus] = useState(false)
+  
   if (!isOpen || !task) return null
 
   const config = statusConfig[task.status]
   const Icon = config.icon
   const { formatDate } = require('@/lib/utils')
 
+  const handleStatusChange = async (newStatus: TaskStatus) => {
+    if (newStatus !== task.status) {
+      setIsChangingStatus(true)
+      await onStatusChange(task.id, newStatus)
+      setIsChangingStatus(false)
+    }
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <div className={`${config.color} p-2 rounded-lg`}>
-                <Icon className="w-5 h-5 text-white" />
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 md:p-4" onClick={onClose}>
+      <div 
+        className="bg-gray-800 border border-gray-700 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" 
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Sticky Header */}
+        <div className="sticky top-0 bg-gray-800 border-b border-gray-700 p-4 md:p-6 z-10">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 md:gap-3 mb-3">
+                <div className={`${config.color} p-1.5 md:p-2 rounded-lg flex-shrink-0`}>
+                  <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                </div>
+                <h2 className="text-lg md:text-2xl font-bold text-white truncate">{task.title}</h2>
               </div>
-              <h2 className="text-2xl font-bold text-white">{task.title}</h2>
+              
+              {/* Status Selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-400">Status:</span>
+                <select
+                  value={task.status}
+                  onChange={(e) => handleStatusChange(e.target.value as TaskStatus)}
+                  disabled={isChangingStatus}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium text-white border-0 cursor-pointer focus:ring-2 focus:ring-blue-500 ${config.color} ${isChangingStatus ? 'opacity-50' : ''}`}
+                >
+                  <option value="backlog" className="bg-gray-700">Backlog</option>
+                  <option value="in_progress" className="bg-gray-700">In Progress</option>
+                  <option value="done" className="bg-gray-700">Done</option>
+                </select>
+                {isChangingStatus && <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />}
+              </div>
             </div>
-            <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${config.color} text-white`}>
-              {config.label}
-            </span>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white transition-colors p-1 flex-shrink-0"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
         </div>
 
-        <div className="space-y-6">
+        {/* Scrollable Content */}
+        <div className="p-4 md:p-6 space-y-5 md:space-y-6">
           {/* Description */}
           {task.description && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Description</h3>
-              <p className="text-gray-300 whitespace-pre-wrap">{task.description}</p>
+              <h3 className="text-xs md:text-sm font-semibold text-gray-400 uppercase mb-2">Description</h3>
+              <p className="text-sm md:text-base text-gray-300 whitespace-pre-wrap">{task.description}</p>
             </div>
           )}
 
           {/* Metadata */}
           {task.metadata && Object.keys(task.metadata).length > 0 && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Metadata</h3>
+              <h3 className="text-xs md:text-sm font-semibold text-gray-400 uppercase mb-2">Metadata</h3>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(task.metadata).map(([key, value]) => (
-                  <span key={key} className="px-3 py-1 bg-gray-700 text-gray-300 rounded-lg text-sm">
+                  <span key={key} className="px-2 md:px-3 py-1 bg-gray-700 text-gray-300 rounded-lg text-xs md:text-sm">
                     <span className="text-gray-500">{key}:</span> {String(value)}
                   </span>
                 ))}
@@ -321,8 +352,8 @@ function TaskDetailModal({ task, isOpen, onClose }: {
           {/* Session Key */}
           {task.session_key && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Session Key</h3>
-              <code className="block px-3 py-2 bg-gray-900 text-green-400 rounded-lg text-sm font-mono">
+              <h3 className="text-xs md:text-sm font-semibold text-gray-400 uppercase mb-2">Session Key</h3>
+              <code className="block px-3 py-2 bg-gray-900 text-green-400 rounded-lg text-xs md:text-sm font-mono overflow-x-auto">
                 {task.session_key}
               </code>
             </div>
@@ -330,8 +361,8 @@ function TaskDetailModal({ task, isOpen, onClose }: {
 
           {/* Timestamps */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Timeline</h3>
-            <div className="space-y-2 text-sm">
+            <h3 className="text-xs md:text-sm font-semibold text-gray-400 uppercase mb-2">Timeline</h3>
+            <div className="space-y-2 text-xs md:text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-400">Created:</span>
                 <span className="text-gray-300">{formatDate(task.created_at)}</span>
@@ -359,17 +390,18 @@ function TaskDetailModal({ task, isOpen, onClose }: {
 
           {/* Task ID */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">Task ID</h3>
-            <code className="block px-3 py-2 bg-gray-900 text-gray-400 rounded-lg text-xs font-mono break-all">
+            <h3 className="text-xs md:text-sm font-semibold text-gray-400 uppercase mb-2">Task ID</h3>
+            <code className="block px-3 py-2 bg-gray-900 text-gray-400 rounded-lg text-[10px] md:text-xs font-mono break-all">
               {task.id}
             </code>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        {/* Sticky Footer */}
+        <div className="sticky bottom-0 bg-gray-800 border-t border-gray-700 p-4 md:p-6">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            className="w-full md:w-auto px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
           >
             Close
           </button>
@@ -579,6 +611,31 @@ export default function KanbanBoard() {
         task={viewingTask}
         isOpen={!!viewingTask}
         onClose={() => setViewingTask(null)}
+        onStatusChange={async (taskId, newStatus) => {
+          const task = tasks.find(t => t.id === taskId)
+          if (!task) return
+          
+          const { error } = await supabase
+            .from('tasks')
+            .update({ 
+              status: newStatus,
+              started_at: newStatus === 'in_progress' && !task.started_at 
+                ? new Date().toISOString() 
+                : task.started_at,
+              completed_at: newStatus === 'done' 
+                ? new Date().toISOString() 
+                : null,
+            })
+            .eq('id', taskId)
+
+          if (error) {
+            console.error('Error updating task:', error)
+          } else {
+            fetchTasks()
+            // Update the viewing task with new status
+            setViewingTask(prev => prev ? { ...prev, status: newStatus } : null)
+          }
+        }}
       />
     </>
   )
