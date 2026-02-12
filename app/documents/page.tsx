@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { FileText, Loader2, X, ChevronLeft, Tag } from 'lucide-react'
+import { FileText, Loader2, X, ChevronLeft, Tag, Trash2 } from 'lucide-react'
 
 interface DocumentInfo {
   name: string
@@ -452,6 +452,29 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [selectedProject, setSelectedProject] = useState('All')
+  const [deletedDocs, setDeletedDocs] = useState<Set<string>>(new Set())
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+
+  const handleDelete = async (doc: DocumentInfo) => {
+    try {
+      const response = await fetch('/api/documents/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: doc.path, title: doc.title })
+      })
+      
+      if (response.ok) {
+        setDeletedDocs(prev => new Set([...prev, doc.path]))
+        setDeleteConfirm(null)
+        if (selectedDoc?.path === doc.path) {
+          setSelectedDoc(null)
+          setContent('')
+        }
+      }
+    } catch (error) {
+      console.error('Delete failed:', error)
+    }
+  }
 
   const fetchDocument = async (doc: DocumentInfo) => {
     setLoading(true)
@@ -473,7 +496,8 @@ export default function DocumentsPage() {
   const filteredDocs = documents.filter(d => {
     const categoryMatch = selectedCategory === 'All' || d.category === selectedCategory
     const projectMatch = selectedProject === 'All' || d.project === selectedProject
-    return categoryMatch && projectMatch
+    const notDeleted = !deletedDocs.has(d.path)
+    return categoryMatch && projectMatch && notDeleted
   })
 
   const getProjectColor = (project: string) => {
@@ -630,6 +654,31 @@ export default function DocumentsPage() {
                       <span className="text-gray-500">• {selectedDoc.size}</span>
                     </div>
                   </div>
+                  {deleteConfirm === selectedDoc.path ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-red-400">Delete?</span>
+                      <button
+                        onClick={() => handleDelete(selectedDoc)}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-sm rounded-lg"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(null)}
+                        className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg"
+                      >
+                        No
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setDeleteConfirm(selectedDoc.path)}
+                      className="p-2 hover:bg-red-900/50 rounded-lg transition-colors"
+                      title="Delete document"
+                    >
+                      <Trash2 className="w-5 h-5 text-red-400" />
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setSelectedDoc(null)
