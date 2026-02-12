@@ -235,6 +235,14 @@ const DOCUMENTS: DocumentInfo[] = [
   
   // Voxify Marketing
   {
+    name: 'VOXIFY-MARKETING-ROADMAP.md',
+    path: 'docs/voxify/marketing/VOXIFY-MARKETING-ROADMAP.md',
+    title: '🗺️ Marketing Roadmap (Trip Meeting)',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '14KB'
+  },
+  {
     name: 'call-content-seo-strategy.md',
     path: 'docs/voxify/marketing/call-content-seo-strategy.md',
     title: '🔍 SEO Strategy',
