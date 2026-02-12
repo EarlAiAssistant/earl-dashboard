@@ -240,7 +240,7 @@ const DOCUMENTS: DocumentInfo[] = [
     title: '🗺️ Marketing Roadmap (Trip Meeting)',
     category: 'Marketing',
     project: 'Voxify',
-    size: '14KB'
+    size: '12KB'
   },
   {
     name: 'call-content-seo-strategy.md',
