@@ -149,6 +149,30 @@ const DOCUMENTS: DocumentInfo[] = [
     size: '8KB'
   },
   {
+    name: 'VOXIFY-COMPETITIVE-BATTLECARDS.md',
+    path: 'docs/voxify/business/VOXIFY-COMPETITIVE-BATTLECARDS.md',
+    title: '⚔️ Competitive Battle Cards',
+    category: 'Sales',
+    project: 'Voxify',
+    size: '12KB'
+  },
+  {
+    name: 'VOXIFY-PARTNERSHIP-PLAYBOOK.md',
+    path: 'docs/voxify/business/VOXIFY-PARTNERSHIP-PLAYBOOK.md',
+    title: '🤝 Partnership Playbook',
+    category: 'Business',
+    project: 'Voxify',
+    size: '9KB'
+  },
+  {
+    name: 'CUSTOMER-FEEDBACK-STRATEGY.md',
+    path: 'docs/voxify/business/CUSTOMER-FEEDBACK-STRATEGY.md',
+    title: '📊 Customer Feedback Strategy',
+    category: 'Business',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
     name: 'customer-health-dashboard-spec.md',
     path: 'docs/voxify/business/customer-health-dashboard-spec.md',
     title: '📊 Customer Health Dashboard',
@@ -273,6 +297,126 @@ const DOCUMENTS: DocumentInfo[] = [
     category: 'Marketing',
     project: 'Voxify',
     size: '8KB'
+  },
+  {
+    name: '04-customer-interview-to-case-study.md',
+    path: 'docs/voxify/marketing/blog-drafts/04-customer-interview-to-case-study.md',
+    title: '📝 Blog: Customer Interview to Case Study',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
+    name: '05-recording-customer-calls-guide.md',
+    path: 'docs/voxify/marketing/blog-drafts/05-recording-customer-calls-guide.md',
+    title: '📝 Blog: Recording Customer Calls Guide',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '9KB'
+  },
+  {
+    name: '06-customer-interview-mistakes.md',
+    path: 'docs/voxify/marketing/blog-drafts/06-customer-interview-mistakes.md',
+    title: '📝 Blog: 7 Customer Interview Mistakes',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '6KB'
+  },
+  {
+    name: '07-repurposing-customer-interviews.md',
+    path: 'docs/voxify/marketing/blog-drafts/07-repurposing-customer-interviews.md',
+    title: '📝 Blog: Repurposing Customer Interviews',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '9KB'
+  },
+  {
+    name: '08-zoom-calls-to-content.md',
+    path: 'docs/voxify/marketing/blog-drafts/08-zoom-calls-to-content.md',
+    title: '📝 Blog: Zoom Calls to Content in 30 Min',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
+    name: '09-get-customers-to-agree-to-interviews.md',
+    path: 'docs/voxify/marketing/blog-drafts/09-get-customers-to-agree-to-interviews.md',
+    title: '📝 Blog: Get Customers to Agree to Interviews',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '9KB'
+  },
+  {
+    name: '10-case-study-template-framework.md',
+    path: 'docs/voxify/marketing/blog-drafts/10-case-study-template-framework.md',
+    title: '📝 Blog: Case Study Template Framework',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '11KB'
+  },
+  {
+    name: 'LINKEDIN-CONTENT-TEMPLATES.md',
+    path: 'docs/voxify/marketing/blog-drafts/LINKEDIN-CONTENT-TEMPLATES.md',
+    title: '💼 LinkedIn Content Templates (20+)',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '15KB'
+  },
+  {
+    name: 'TWITTER-THREAD-TEMPLATES.md',
+    path: 'docs/voxify/marketing/blog-drafts/TWITTER-THREAD-TEMPLATES.md',
+    title: '🐦 Twitter Thread Templates (6)',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '12KB'
+  },
+  {
+    name: 'COLD-OUTREACH-TEMPLATES.md',
+    path: 'docs/voxify/marketing/blog-drafts/COLD-OUTREACH-TEMPLATES.md',
+    title: '📧 Cold Outreach Email Templates',
+    category: 'Sales',
+    project: 'Voxify',
+    size: '10KB'
+  },
+  {
+    name: 'VOXIFY-TRIAL-EMAIL-SEQUENCE.md',
+    path: 'docs/voxify/marketing/VOXIFY-TRIAL-EMAIL-SEQUENCE.md',
+    title: '📧 14-Day Trial Email Sequence',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '14KB'
+  },
+  {
+    name: 'VOXIFY-FAQ-PAGE-CONTENT.md',
+    path: 'docs/voxify/marketing/VOXIFY-FAQ-PAGE-CONTENT.md',
+    title: '❓ FAQ Page Content (Ready to Publish)',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '7KB'
+  },
+  {
+    name: 'VOXIFY-ROI-CALCULATOR-COPY.md',
+    path: 'docs/voxify/marketing/VOXIFY-ROI-CALCULATOR-COPY.md',
+    title: '🧮 ROI Calculator Copy & Methodology',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
+    name: 'VOXIFY-PRODUCT-HUNT-ASSETS.md',
+    path: 'docs/voxify/marketing/VOXIFY-PRODUCT-HUNT-ASSETS.md',
+    title: '🏆 Product Hunt Launch Kit (Full)',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '9KB'
+  },
+  {
+    name: 'CONTENT-CREATION-SUMMARY.md',
+    path: 'docs/voxify/marketing/CONTENT-CREATION-SUMMARY.md',
+    title: '📋 Content Creation Summary & Inventory',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '5KB'
   },
   {
     name: 'call-content-seo-strategy.md',
@@ -442,7 +586,7 @@ const DOCUMENTS: DocumentInfo[] = [
   }
 ]
 
-const CATEGORIES = ['All', 'Launch', 'Business', 'Brand', 'Technical', 'Marketing', 'Setup', 'Legal', 'Documentation', 'Ideas', 'Research', 'Finance']
+const CATEGORIES = ['All', 'Launch', 'Business', 'Brand', 'Technical', 'Marketing', 'Sales', 'Setup', 'Legal', 'Documentation', 'Ideas', 'Research', 'Finance']
 const PROJECTS = ['All', 'Voxify', 'Earl', 'Infrastructure', 'Personal']
 
 export default function DocumentsPage() {
@@ -517,6 +661,7 @@ export default function DocumentsPage() {
       'Brand': 'bg-purple-500/10 text-purple-400',
       'Technical': 'bg-orange-500/10 text-orange-400',
       'Marketing': 'bg-pink-500/10 text-pink-400',
+      'Sales': 'bg-violet-500/10 text-violet-400',
       'Setup': 'bg-yellow-500/10 text-yellow-400',
       'Legal': 'bg-red-500/10 text-red-400',
       'Documentation': 'bg-cyan-500/10 text-cyan-400',
