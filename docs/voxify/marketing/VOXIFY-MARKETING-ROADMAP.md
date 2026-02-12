@@ -1,18 +1,45 @@
 # Voxify Marketing Roadmap
-## Solo Founder, Limited Budget Strategy
+## Post-Launch Growth Strategy for Solo Founders
 ### Prepared for Meeting with Joseph "Trip" Gormley | February 2026
 
 ---
 
 ## Executive Summary
 
-**Product:** Voxify – AI platform that transforms customer call transcripts into complete marketing campaigns (case studies, social posts, email copy, FAQs, testimonials) in 10 minutes instead of 10 hours.
+**Product:** Voxify – AI platform that transforms customer call transcripts into ready-to-use marketing content (website copy, email drafts, social posts, FAQs) in 60 seconds.
 
-**Current Status:** Product built, polished, and ready for growth. Initial LinkedIn posts, Facebook outreach, and Indiana startup network connections made.
+**Current Status:** Launched and live. Initial outreach completed via LinkedIn posts, Facebook, and Indiana startup network.
 
-**Goal:** Reach $15k MRR by Month 3 (product-market fit signal) → $80k MRR by Month 12
+**Goal:** Scale from early traction to $15k MRR (Month 3) → $80k MRR (Month 12)
 
 **Budget Constraint:** Bootstrap-friendly approach, prioritizing ROI and time-efficient tactics
+
+---
+
+## What Voxify Actually Does
+
+### Core Product
+Upload a customer call transcript → Get 4 types of marketing content:
+
+1. **Website Copy** – Landing pages, hero sections, feature descriptions, CTAs
+2. **Email Drafts** – Nurture sequences using customer language  
+3. **Social Posts** – LinkedIn and Twitter content ready to publish
+4. **FAQ Answers** – Real objections addressed with authentic responses
+
+### Key Value Props
+- **60 seconds, not 6 hours** – Upload transcript, get complete content pack
+- **Your customers' actual words** – Not generic AI copy, but language extracted from real conversations
+- **~20+ pieces per transcript** – One call fuels weeks of content
+
+### Pricing Tiers
+| Tier | Price | Generations/Month | Best For |
+|------|-------|-------------------|----------|
+| Starter | $29/mo | 10 | Solo consultants & coaches |
+| Professional | $79/mo | 30 | Growing teams & agencies |
+| Business | $199/mo | 100 | High-volume operations |
+
+### Supported Call Types
+Sales calls, support calls, demos, interviews, testimonials, coaching sessions
 
 ---
 
@@ -22,36 +49,37 @@
 ❌ "Another AI writing tool" (commoditized, crowded)
 
 ### What We ARE Selling
-✅ "Turn every customer call into a complete marketing campaign in 10 minutes"
+✅ "Turn customer conversations into marketing content in 60 seconds—using their actual words"
 
 ### Competitive Wedge
 | Competitor | What They Do | Why Voxify Wins |
 |------------|--------------|-----------------|
-| **Otter.ai** | Transcription + summaries | We go 10 steps further → full marketing campaigns |
-| **ChatGPT** | General AI (prompts required) | One-click workflow, no prompt engineering needed |
-| **Jasper** | AI writing ($49/mo + Otter = $66/mo) | All-in-one, cheaper ($27-47/mo), specialized |
-| **Descript** | Video editing + transcription | Built for marketers, not video editors |
+| **ChatGPT** | Generic AI writing (prompts required) | We extract specific language from YOUR conversations—no prompt engineering |
+| **Jasper** | AI writing ($49/mo, no transcription) | Purpose-built for conversations, not generic copy |
+| **Otter.ai** | Transcription only | We go 10 steps further—transcription is just the input |
+| **Copy.ai** | Template-based AI copy | Customer-voice content vs generic marketing speak |
 
 ### Unique Value Proposition
-> "For consultants, coaches, and SaaS founders who conduct customer calls but struggle to turn insights into marketing content, Voxify transforms one transcript into 12+ ready-to-use assets in 10 minutes. Unlike ChatGPT or Jasper, we're purpose-built for customer conversations—no prompts, no copy-paste, just upload and go."
+> "ChatGPT writes generic copy from prompts. Voxify extracts YOUR customers' specific language, pain points, and objections from real conversations—then generates content using THEIR words."
 
 ---
 
 ## What's Already Done ✅
 
-- [x] Product built and polished (landing page, dashboard)
-- [x] Stripe integration complete
+- [x] Product launched and live
+- [x] Landing page polished
+- [x] Stripe billing working
 - [x] LinkedIn posts published
 - [x] Facebook posts published  
 - [x] Indiana startup network outreach
-- [x] Legal docs (Terms, Privacy, Operating Agreement)
-- [x] 15+ SEO blog posts drafted
+- [x] Legal docs complete (Terms, Privacy)
+- [x] SEO blog posts drafted
 - [x] Competitor analysis complete
-- [x] Pricing strategy validated ($27-$197-$497/mo tiers)
+- [x] Pricing validated
 
 ---
 
-## Phase 1: Foundation (Weeks 1-4)
+## Phase 1: Growth Foundation (Weeks 1-4)
 ### Budget: $0-200 | Time: 10-15 hrs/week
 
 ### 1.1 Founder-Led Content (FREE, Highest ROI)
@@ -59,195 +87,165 @@
 **LinkedIn Strategy:**
 - **Post frequency:** 3-4x per week
 - **Content types:**
-  - "Build in public" updates (metrics, learnings)
+  - Before/after transformations (transcript → content)
   - Customer pain point stories
   - Quick tips on customer interviews
-  - Before/after transformations (transcript → content)
+  - Results and wins (even small ones)
   
 **High-performing post formats:**
-1. **Problem → Insight posts:** "I spent 4 hours turning a customer call into a case study. Then I built a tool that does it in 10 minutes."
-2. **Contrarian takes:** "ChatGPT isn't replacing content marketers. Bad workflows are."
-3. **Framework posts:** "The 5-step process for turning customer calls into content gold"
-4. **Results posts:** "This 30-min customer call generated: 1 case study, 8 social posts, 3 email sequences, 15 testimonial quotes"
+1. **Problem → Solution posts:** "Spent 4 hours writing homepage copy from a customer call. Then I ran it through Voxify—60 seconds, better result."
+2. **Contrarian takes:** "Your customers have already written your marketing copy. You just haven't extracted it yet."
+3. **Process posts:** "Here's exactly how I turn one 30-minute call into 3 weeks of content"
+4. **Results posts:** "This sales call generated: 5 website sections, 3 email drafts, 5 social posts, 8 FAQ answers"
 
 **Twitter/X Strategy:**
-- Build in public threads
-- Reply to SaaS founders, consultants, and marketers
-- Share short-form tips
-- Use #BuildInPublic, #SaaS, #AI hashtags
+- Short-form tips and insights
+- Reply to SaaS founders, consultants, marketers
+- Share customer wins
+- Use #BuildInPublic, #SaaS, #ContentMarketing
 
-### 1.2 Community Seeding (FREE)
+### 1.2 Community Engagement (FREE)
 
 **Target communities:**
-- **Indie Hackers** – Post journey updates, ask for feedback
-- **r/SaaS** – Contribute to discussions (don't spam)
-- **r/Entrepreneur** – Help others, mention tool when relevant
+- **Indie Hackers** – Share journey, ask for feedback
+- **r/SaaS, r/Entrepreneur** – Contribute value, mention tool when relevant
 - **SaaS Facebook Groups** – SaaS Growth Hacks, SaaS Founders
-- **Slack Communities** – Product-Led Growth, RevGenius
+- **Slack Communities** – RevGenius, Product-Led Growth
 
-**Posting approach:**
+**Approach:**
 1. Lead with value (answer questions, share knowledge)
-2. Mention Voxify only when genuinely relevant
-3. Share your founder story authentically
-4. Engage with every comment within 1 hour
+2. Mention Voxify only when genuinely helpful
+3. Share authentic founder journey
+4. Engage with every response quickly
 
 ### 1.3 Direct Outreach (FREE, Time-Intensive)
 
-**Target list building:**
-- 100 consultants who mention "customer interviews" on LinkedIn
-- 100 SaaS founders who've posted about case studies
-- 50 agencies that do customer research
+**Target list:**
+- 100 consultants who do customer interviews
+- 100 SaaS founders who've posted about case studies or content
+- 50 coaches with podcasts or active content presence
 
 **DM Template:**
 ```
-Hey [Name], quick question—do you do customer interviews or success calls?
+Hey [Name], quick question—do you record customer calls or interviews?
 
-I just launched a tool that turns those transcripts into complete marketing 
-campaigns (case studies, social posts, emails) in 10 minutes.
+I built a tool that turns those transcripts into ready-to-use marketing 
+content (website copy, emails, social posts) in about 60 seconds.
 
-Looking for feedback from [consultants/founders] like you. Would you try 
-the free demo and tell me what you think? Takes 5 min.
+Would you try the free trial and tell me what you think? Takes 5 min.
 ```
 
-**Follow-up (3 days later if no response):**
-```
-Hey [Name], following up—no pressure, but I'd genuinely value your take on 
-this. Built it to solve a problem I had for years. Happy to walk you through 
-it in 10 min if helpful.
-```
+### 1.4 Case Study Development
 
-### 1.4 Demo Transcript Library
-
-- Create 5 sample transcripts from different industries
-- Pre-generate content packs for each
-- Let visitors see output quality immediately (no sign-up required for demo)
-- This is your "try before you buy" conversion tool
+Even with early customers, document wins:
+- Interview first users about their experience
+- Focus on: time saved, content quality, workflow improvement
+- Format: 500 words + customer quote + before/after
 
 ---
 
 ## Phase 2: Amplification (Weeks 5-8)
 ### Budget: $500-1,000 | Time: 10-15 hrs/week
 
-### 2.1 Product Hunt Launch
+### 2.1 Product Hunt Launch (If Not Done Yet)
 
-**Preparation checklist:**
-- [ ] 60-90 second demo video (screen recording + voiceover)
-- [ ] 5 high-quality screenshots showing workflow
-- [ ] Tagline: "Turn customer calls into marketing campaigns in 10 minutes"
-- [ ] Find a "hunter" (someone with PH credibility)
-- [ ] Line up 15-20 supporters for launch day comments/upvotes
-- [ ] Schedule for Tuesday-Thursday (best days)
+If you haven't launched on Product Hunt, this is still valuable:
 
-**Launch day playbook:**
-1. **12:01 AM PT:** Listing goes live
-2. **6:00 AM:** Twitter thread about the launch
-3. **8:00 AM:** LinkedIn post
-4. **9:00 AM:** Email existing contacts asking for support
-5. **All day:** Reply to every PH comment within 30 min
-6. **Goal:** Top 5 product of the day = 500-1,000 visitors
+**Preparation:**
+- 60-90 second demo video showing the workflow
+- 5 high-quality screenshots
+- Tagline: "Turn customer calls into marketing content in 60 seconds"
+- Line up 15-20 supporters for launch day
 
-### 2.2 First Case Studies
+**Alternative: Smaller Launch Moments**
+- Launch a new feature on Product Hunt
+- Or skip PH and focus on niche communities instead
 
-Even with few customers, create case studies:
-- Interview your first 3-5 users
-- Focus on: time saved, content created, results achieved
-- Format: 500 words + customer quote + before/after
-
-**Case study template:**
-1. Company background (1 paragraph)
-2. Challenge they faced (2 paragraphs)
-3. How they use Voxify (2 paragraphs)
-4. Results with numbers (1 paragraph)
-5. Customer quote (pull quote, highlighted)
-
-### 2.3 SEO Foundation (Long-term play)
+### 2.2 SEO Foundation (Long-term play)
 
 **Priority keywords (low competition, high intent):**
 - "turn customer calls into content"
-- "customer interview to case study"
-- "repurpose customer interviews"
-- "transcript to marketing content"
+- "customer interview to marketing copy"
+- "transcript to website copy"
+- "AI content from customer conversations"
 
 **Content calendar (1 post/week):**
-- Week 5: "How to Turn Customer Calls into Content (Step-by-Step)"
-- Week 6: "50 Customer Interview Questions (Free Template)"
-- Week 7: "Customer Interview to Case Study: 5-Step Framework"
-- Week 8: "Voxify vs ChatGPT: Which is Better for Customer Content?"
+- Week 5: "How to Turn Customer Calls into Marketing Content"
+- Week 6: "The Best Questions to Ask in Customer Interviews"
+- Week 7: "Why Your Customers' Words Convert Better Than Copywriters"
+- Week 8: "Voxify vs ChatGPT: Which is Better for Customer-Voice Content?"
 
-### 2.4 Email List Building
+### 2.3 Email List Building
 
-**Lead magnets to create:**
-1. "Customer Interview Playbook" (PDF)
-2. "50 Questions That Get Quotable Answers" (checklist)
-3. "Case Study Template" (Google Doc)
+**Lead magnets:**
+1. "Customer Interview Question Bank" (PDF)
+2. "Content Extraction Template" (Google Doc)
+3. "30-Minute Call to 3 Weeks of Content" (Mini-guide)
 
-**Promotion:**
-- Offer at end of every blog post
-- Pop-up on exit intent
+**Distribution:**
+- End of every blog post
+- Exit-intent popup on site
 - Share in communities
+
+### 2.4 Trial Optimization
+
+Focus on converting existing trial signups:
+- Email sequence for trial users (if not built yet)
+- Personal outreach to trial users who haven't converted
+- Ask churned trials why they didn't convert
 
 ---
 
-## Phase 3: Scale (Weeks 9-16)
+## Phase 3: Scaling (Weeks 9-16)
 ### Budget: $1,000-2,500 | Time: 15-20 hrs/week
 
 ### 3.1 Paid Acquisition Test (Start Small)
 
 **Google Ads ($1,000 first month):**
-- Target keywords: "AI content from transcripts", "customer call marketing tool"
-- Target CPA: $150 (based on $197 ACV, 20% trial conversion)
+- Target keywords: "AI content from calls", "customer interview content tool"
+- Target CPA: $75-100 (based on $79 Pro plan, 20% trial conversion)
 - Start with $30-50/day, optimize weekly
-- Pause anything with CPA > $250
+- Pause anything with CPA > $150
 
-**LinkedIn Ads ($500 first month, optional):**
-- Target: Founders, Consultants, Marketing Managers
+**LinkedIn Ads ($500 optional):**
+- Target: Consultants, Founders, Marketing Managers
 - Company size: 1-50 employees
-- Lead gen ad with "Free Demo" CTA
-- Or promote lead magnet for email capture
+- Lead gen ad with "Free Trial" CTA
 
 ### 3.2 Partnership Outreach
 
-**Tier 1 targets (Integration partners):**
+**Tier 1 (Integration partners):**
 - **Otter.ai** – "We're the next step after transcription"
-- **Calendly** – Post-meeting content automation
-- **Zoom** – AI content from recordings
+- **Fathom / Fireflies** – Same pitch
+- **Calendly / Zoom** – Post-call content automation
 
-**Tier 2 targets (Affiliate/referral):**
+**Tier 2 (Affiliate/referral):**
 - Business coaches with audiences
 - Podcast hosts in SaaS/marketing space
 - Course creators teaching customer research
 
 **Outreach template:**
 ```
-Subject: Quick partnership idea for [Company]
+Subject: Quick partnership idea
 
 Hi [Name],
 
-I built Voxify—we turn customer call transcripts into complete marketing 
-campaigns (case studies, social posts, emails) automatically.
+I built Voxify—we turn customer call transcripts into ready-to-use 
+marketing content (website copy, emails, social posts, FAQs) in 60 seconds.
 
 I think there's a natural fit with [their product]:
-- [Their product] captures the call
+- [Their product] captures/records the call
 - Voxify turns it into marketing content
 
-Would you be open to exploring an integration or referral partnership?
-
-Happy to show you how it works—takes 5 min.
+Would you be open to exploring a referral partnership?
 ```
 
-### 3.3 Zapier Integration
-
-- Submit to Zapier marketplace (free)
-- Creates discoverability for "transcript" searches
-- Enables: Transcript processed → auto-post to WordPress/Buffer/Notion
-- Increases stickiness (workflow lock-in)
-
-### 3.4 Video Content
+### 3.3 Video Content
 
 **YouTube strategy (low effort, high leverage):**
 - Screen recordings with voiceover
 - "How to turn [X] into content" tutorials
-- Embed in blog posts (SEO boost)
+- Embed in blog posts
 - 1-2 videos per month
 
 ---
@@ -266,56 +264,41 @@ By Month 4, you'll know:
 
 ### 4.2 Expand Target Verticals
 
-**Start:** SaaS founders (Month 1-3)
-**Then:** Consultants → Agencies → Coaches
+**Start:** Consultants & coaches (Month 1-3)  
+**Then:** SaaS founders → Agencies → Sales teams
 
 Each vertical gets:
-- Dedicated landing page
-- Industry-specific case study
-- Targeted LinkedIn outreach
+- Targeted landing page
+- Vertical-specific case study
 - Adjusted messaging
 
-### 4.3 Affiliate Program Launch
+### 4.3 Affiliate Program
 
 - Offer 20-30% recurring commission
-- Target: course creators, coaches, consultants with audiences
-- Provide them: demo videos, email swipe copy, case studies
-- Use tool like Rewardful or FirstPromoter
-
-### 4.4 Speaking & Podcasts
-
-**Target podcasts:**
-- SaaS-focused: MicroConf, Indie Hackers, SaaS Club
-- Marketing-focused: Marketing School, Everyone Hates Marketers
-- Entrepreneur-focused: My First Million, The Hustle
-
-**Pitch angle:**
-"I can talk about how I turned my customer calls into a complete content strategy that drives MRR—and how any founder can do the same."
+- Target: coaches, consultants, course creators with audiences
+- Provide: demo videos, swipe copy, case studies
 
 ---
 
-## Budget Allocation Summary
+## Budget Summary
 
-### Conservative Budget (First 6 Months): ~$3,000-5,000 total
+### Conservative 6-Month Budget: ~$3,000-5,000
 
 | Category | Budget | Notes |
 |----------|--------|-------|
 | Founder time | $0 (sweat equity) | 10-15 hrs/week |
-| Product Hunt assets | $100-200 | Demo video, graphics |
-| Google Ads (test) | $1,000 | Month 3-4, pause if CAC > $250 |
-| LinkedIn Ads (optional) | $500 | Only if organic LinkedIn works |
+| Google Ads (test) | $1,000-1,500 | Month 2-3, pause if CAC too high |
+| LinkedIn Ads (optional) | $500 | Only if organic works first |
 | Content tools | $200-300 | Ahrefs lite, Canva Pro |
-| Email marketing | $0-50 | Free tier ConvertKit/Loops |
-| Video editing | $0-100 | Descript free tier or CapCut |
-| Lead magnets | $0 | DIY with templates |
-| Zapier dev account | $0 | Free for integration |
-| **Total** | **$1,800-2,150** | |
+| Video editing | $0-100 | Free tools or Descript |
+| Lead magnets | $0 | DIY |
+| **Total** | **$1,700-2,400** | Conservative start |
 
 ### If Early Traction ($5k+ MRR): Add $1,000-2,000/mo
 
 - Scale winning ad channel
-- Hire content writer ($500-1,000/mo freelancer)
-- Podcast booking service ($300-500/mo)
+- Content writer ($500-1,000/mo freelancer)
+- Podcast booking service
 
 ---
 
@@ -324,89 +307,74 @@ Each vertical gets:
 ### Weekly
 - [ ] Website visitors (unique)
 - [ ] Trial signups
-- [ ] Signup sources (UTM tracking)
-- [ ] LinkedIn post engagement
-- [ ] Community mentions
+- [ ] Generations processed
+- [ ] LinkedIn engagement
 
 ### Monthly
-- [ ] MRR (goal: Month 3 = $15k)
+- [ ] MRR
 - [ ] Trial-to-paid conversion (goal: 20%+)
 - [ ] Monthly churn (goal: <5%)
 - [ ] CAC by channel
-- [ ] Top-performing content
 
-### Quarterly
-- [ ] LTV:CAC ratio (goal: >3:1)
-- [ ] Organic traffic growth
-- [ ] Backlinks acquired
-- [ ] Partnership conversions
-
----
-
-## Milestones
-
-| Milestone | Target | Key Activities |
-|-----------|--------|----------------|
-| **Month 1** | 30 trials, 5 paid | Founder outreach, community seeding, LinkedIn |
-| **Month 2** | 100 trials, 25 paid | Product Hunt, first case studies, SEO posts |
-| **Month 3** | $15k MRR | Paid ads test, partnerships, email sequences |
-| **Month 6** | $35k MRR | Scale winning channels, expand verticals |
-| **Month 12** | $80k MRR | Affiliate program, speaking, brand authority |
+### Milestones
+| Milestone | Target | Key Focus |
+|-----------|--------|-----------|
+| **Month 1** | 20 trials, 5 paid | Founder outreach, LinkedIn |
+| **Month 2** | 50 trials, 15 paid | Community, first case studies |
+| **Month 3** | $15k MRR | Paid ads test, partnerships |
+| **Month 6** | $35k MRR | Scale winning channels |
 
 ---
 
 ## What Trip (Xaris) Could Help With
 
-Based on Xaris's positioning as "AI Growth Architects" focusing on:
-- Get Found (SEO, visibility)
-- Get Known (content, social proof)
-- Get Chosen (funnels, conversion)
+Based on Xaris's "Get Found, Get Known, Get Chosen" positioning:
 
-**Potential areas of collaboration:**
+**Potential collaboration areas:**
 
-1. **SEO/Local visibility optimization** – Ranking for target keywords
-2. **Paid ad management** – If I want to outsource Google/LinkedIn ads
+1. **SEO/Visibility** – Ranking for target keywords faster
+2. **Paid ad management** – If you want to outsource Google/LinkedIn ads
 3. **Lead gen automation** – Automated follow-up sequences
-4. **Sales funnel optimization** – Improving trial-to-paid conversion
-5. **Content distribution** – Amplifying reach beyond organic
+4. **Funnel optimization** – Improving trial-to-paid conversion
+5. **Content distribution** – Amplifying reach
 
 **Questions for Trip:**
-- What's your typical engagement look like for an early-stage SaaS?
-- Do you work on performance (pay-for-results) or retainer basis?
+- What does a typical engagement look like for an early-stage SaaS?
+- Performance-based or retainer pricing?
 - What's the minimum budget you recommend for paid acquisition?
-- How do you approach SEO for a new domain with low authority?
+- How do you approach SEO for a newer domain?
+- What results have you seen for similar B2B SaaS products?
 
 ---
 
-## What Makes This Plan Work
+## Why This Plan Works
 
 ### 1. Founder-Led First
-The most successful solo SaaS founders (Pieter Levels, AJ at Carrd, Nathan Barry) all built distribution through personal brand first. No ads needed early on.
+Most successful bootstrapped SaaS founders built distribution through personal brand before paid ads. Your authentic voice and story are your biggest assets right now.
 
 ### 2. Content as Infrastructure
-SEO and content aren't campaigns—they're infrastructure. Every blog post compounds over time. Month 6 traffic will be 10x Month 1.
+SEO and content compound over time. Every blog post is an asset that keeps working. Month 6 traffic will be 10x Month 1.
 
 ### 3. Narrow → Wide
-Start with one vertical (SaaS founders), dominate it, then expand. Better to own a niche than be noise in a crowd.
+Start with one vertical (consultants/coaches who do customer calls), dominate it, then expand.
 
 ### 4. Speed to Learning
-The goal isn't perfection—it's learning fast. Run small tests, measure everything, double down on winners.
-
-### 5. Community Over Ads
-In 2025/2026, community-driven growth beats paid acquisition for early-stage SaaS. Trust > impressions.
+Run small tests, measure everything, double down on winners. Kill what doesn't work fast.
 
 ---
 
-## TL;DR – The 90-Day Playbook
+## TL;DR
 
-**Days 1-30:** Founder-led LinkedIn content, direct outreach to 100 targets, community seeding, build demo transcript library
+**Current state:** Launched, initial outreach done, need systematic growth
 
-**Days 31-60:** Product Hunt launch, publish first case studies, SEO blog posts begin, email list building with lead magnets
+**Next 30 days:** Founder-led LinkedIn (3-4x/week), direct outreach to 100 targets, document first case studies
 
-**Days 61-90:** Small paid ads test ($1k), partnership outreach, first integration (Zapier), video content
+**Days 31-60:** SEO blog posts, email list building, optimize trial conversion
+
+**Days 61-90:** Small paid ads test ($1k), partnership outreach, video content
 
 **Success = $15k MRR by Day 90**
 
 ---
 
-*Prepared by Earl | Last Updated: February 12, 2026*
+*Prepared by Earl | February 12, 2026*
