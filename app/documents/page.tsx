@@ -837,33 +837,34 @@ export default function DocumentsPage() {
               </div>
 
               {/* Content */}
-              <div className="p-6 md:p-8 lg:p-12 bg-black min-h-screen">
+              <div className="p-4 md:p-8 lg:p-12 bg-black min-h-screen overflow-x-hidden">
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 text-teal-400 animate-spin" />
                   </div>
                 ) : (
-                  <article className="max-w-4xl mx-auto">
-                    <div className="space-y-6">
+                  <article className="max-w-4xl mx-auto overflow-hidden">
+                    <div className="space-y-6 break-words">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
                         components={{
                           code({ node, inline, className, children, ...props }: any) {
                             const match = /language-(\w+)/.exec(className || '')
                             return !inline && match ? (
-                              <div className="my-6">
+                              <div className="my-6 overflow-x-auto max-w-full">
                                 <SyntaxHighlighter
                                   style={vscDarkPlus}
                                   language={match[1]}
                                   PreTag="div"
-                                  className="rounded-xl border border-gray-800 !text-sm md:!text-base overflow-x-auto"
+                                  className="rounded-xl border border-gray-800 !text-xs md:!text-sm"
+                                  wrapLongLines={true}
                                   {...props}
                                 >
                                   {String(children).replace(/\n$/, '')}
                                 </SyntaxHighlighter>
                               </div>
                             ) : (
-                              <code className="bg-gray-900 text-teal-400 px-2 py-1 rounded font-mono text-sm">
+                              <code className="bg-gray-900 text-teal-400 px-1.5 py-0.5 rounded font-mono text-xs md:text-sm break-all">
                                 {children}
                               </code>
                             )
@@ -924,7 +925,7 @@ export default function DocumentsPage() {
                           },
                           p({ children }) {
                             return (
-                              <p className="text-white text-base md:text-lg leading-relaxed mb-5">
+                              <p className="text-white text-base md:text-lg leading-relaxed mb-5 break-words overflow-wrap-anywhere">
                                 {children}
                               </p>
                             )
@@ -945,7 +946,7 @@ export default function DocumentsPage() {
                           },
                           li({ children }) {
                             return (
-                              <li className="text-white text-base md:text-lg leading-relaxed list-disc">
+                              <li className="text-white text-sm md:text-base leading-relaxed list-disc break-words">
                                 {children}
                               </li>
                             )
@@ -970,8 +971,8 @@ export default function DocumentsPage() {
                           },
                           blockquote({ children }) {
                             return (
-                              <blockquote className="border-l-4 border-teal-500 bg-gray-900/50 pl-6 py-4 my-6 italic">
-                                <div className="text-white">
+                              <blockquote className="border-l-4 border-teal-500 bg-gray-900/50 pl-4 md:pl-6 py-4 my-6 italic overflow-hidden">
+                                <div className="text-white break-words text-sm md:text-base">
                                   {children}
                                 </div>
                               </blockquote>
