@@ -243,6 +243,38 @@ const DOCUMENTS: DocumentInfo[] = [
     size: '12KB'
   },
   {
+    name: '01-how-to-turn-customer-calls-into-content.md',
+    path: 'docs/voxify/marketing/blog-drafts/01-how-to-turn-customer-calls-into-content.md',
+    title: '📝 Blog: How to Turn Customer Calls Into Content',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
+    name: '02-50-customer-interview-questions.md',
+    path: 'docs/voxify/marketing/blog-drafts/02-50-customer-interview-questions.md',
+    title: '📝 Blog: 50 Customer Interview Questions',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '10KB'
+  },
+  {
+    name: '03-voxify-vs-chatgpt.md',
+    path: 'docs/voxify/marketing/blog-drafts/03-voxify-vs-chatgpt.md',
+    title: '📝 Blog: Voxify vs ChatGPT Comparison',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '7KB'
+  },
+  {
+    name: 'DISTRIBUTION-CHANNELS.md',
+    path: 'docs/voxify/marketing/blog-drafts/DISTRIBUTION-CHANNELS.md',
+    title: '📣 Blog Distribution Channels Guide',
+    category: 'Marketing',
+    project: 'Voxify',
+    size: '8KB'
+  },
+  {
     name: 'call-content-seo-strategy.md',
     path: 'docs/voxify/marketing/call-content-seo-strategy.md',
     title: '🔍 SEO Strategy',
