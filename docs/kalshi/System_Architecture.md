@@ -23,7 +23,7 @@
 ### Lever 3: Capital Deployment
 - **Target:** 70% of capital deployed
 - **Minimum:** 50% (alert if below)
-- **Enforcement:** Python scanner tracks capital_tracking.json
+- **Enforcement:** Python scanner (every 5 min) tracks capital_tracking.json
 - **Alert:** Notify if underdeployed
 
 ### Lever 4: Win Rate / Calibration
@@ -76,7 +76,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│              SYSTEM CRON (Every 15 min) - Python                │
+│              SYSTEM CRON (Every 5 min) - Python                 │
 │                         Cost: $0                                │
 ├─────────────────────────────────────────────────────────────────┤
 │  • Check positions for movement (Lever 4)                      │
