@@ -1,20 +1,49 @@
 # Kalshi Oracle: System Architecture
 
-**Version:** 2.2 (Live + Tested)  
+**Version:** 3.0 (4 Levers + Self-Improvement)  
 **Author:** Earl (AI Trading Assistant)  
 **Date:** February 14, 2026  
 **Status:** ✅ LIVE & VERIFIED
 
 ---
 
-## Executive Summary
+## The 4 Key Levers
 
-Kalshi Oracle is an autonomous prediction market trading system that identifies mispriced contracts on Kalshi.com, performs deep research to verify edge, and executes trades based on predefined risk parameters. 
+### Lever 1: Edge Quality
+- **Requirement:** Only bet with 10%+ genuine edge
+- **Enforcement:** AI trade windows verify edge with fresh research
+- **Tracking:** edge_claimed vs edge_realized in trade_log.json
 
-**Architecture:**
-- **Python** (system cron, every 15 min) → Fast scanning, zero AI cost
-- **OpenClaw** (cron, every 5 min) → Checks for alerts, sends to Telegram
-- **OpenClaw** (cron, every 6 hours) → Deep research + trade decisions with Opus
+### Lever 2: Resolution Speed  
+- **Preferred:** 1-6 months (faster compounding)
+- **Absolute Max:** 12 months
+- **Enforcement:** Python scanner prioritizes in_preferred_window markets
+- **Goal:** 3-4x capital turnover per year
+
+### Lever 3: Capital Deployment
+- **Target:** 70% of capital deployed
+- **Minimum:** 50% (alert if below)
+- **Enforcement:** Python scanner tracks capital_tracking.json
+- **Alert:** Notify if underdeployed
+
+### Lever 4: Win Rate / Calibration
+- **Tracking:** Every trade logged with predicted vs actual
+- **Metrics:** Win rate, Brier score, edge claimed vs realized
+- **Review:** Weekly self-improvement loop
+- **Goal:** Continuous calibration improvement
+
+---
+
+## Expected Returns (With 4 Levers)
+
+| Capital | Edge | Turnover | Annual Profit | Monthly | After Costs |
+|---------|------|----------|---------------|---------|-------------|
+| $5,000 | 15% | 3x/year | $2,250 | $188 | $103 |
+| $10,000 | 15% | 3x/year | $4,500 | $375 | $290 |
+| $25,000 | 15% | 4x/year | $15,000 | $1,250 | $1,165 |
+| $50,000 | 15% | 4x/year | $30,000 | $2,500 | $2,415 |
+
+**Break-even:** ~$2,500 capital (with efficient execution)
 
 ---
 
@@ -23,214 +52,209 @@ Kalshi Oracle is an autonomous prediction market trading system that identifies 
 ### Account
 | Metric | Value |
 |--------|-------|
+| Total Capital | ~$677 |
+| Deployed | ~$69 (10%) |
 | Available | ~$608 |
-| Invested | ~$69 |
-| Total | ~$677 |
 
 ### Active Positions
+| Market | Entry | Current | Days Left | Edge Claimed |
+|--------|-------|---------|-----------|--------------|
+| Zelenskyy/Putin | 19¢ | 17¢ | 137 | 58% |
+| Hockey SVK (manual) | 22¢ | 16¢ | 0 | N/A |
 
-| Market | Side | Contracts | Entry | Current | P&L |
-|--------|------|-----------|-------|---------|-----|
-| Zelenskyy/Putin meet by Jul 2026 | YES | 315 | 19¢ | 17¢ | -10.5% |
-| Women's Hockey SVK (manual) | YES | 42 | 22¢ | 16¢ | -27.6% |
-
-### System Health
-- ✅ Python Scanner (system cron, every 15 min)
-- ✅ Alert Checker (OpenClaw cron, every 5 min)
-- ✅ Trade Windows (OpenClaw cron, every 6 hours)
-- ✅ Daily Briefing (8am MT)
-- ✅ Weekly Review (Sunday 10am MT)
-
----
-
-## Trading Rules
-
-### Position Sizing
-| Parameter | Value |
-|-----------|-------|
-| Position size | $50-75 |
-| Min market volume | $5,000 |
-| Max resolution time | 12 months |
-
-### Edge Thresholds
-| Edge | Action |
-|------|--------|
-| >10% | Auto-execute, notify Drew |
-| 5-10% | Ask Drew for approval |
-| <5% | Skip |
-
-### Research Protocol (Mandatory)
-1. ✅ Fresh web search
-2. ✅ Recent news (24-48h)
-3. ✅ Base rate analysis
-4. ✅ Contrarian check
+### Lever Performance
+| Lever | Target | Current |
+|-------|--------|---------|
+| Edge Quality | ≥10% | 58% ✅ |
+| Resolution | 1-6mo | 137 days ✅ |
+| Deployment | 70% | 10% ⚠️ |
+| Win Rate | ≥60% | TBD |
 
 ---
 
-## Architecture Diagram
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                   SYSTEM CRON (Every 15 min)                    │
-│                       Python Scanner                            │
+│              SYSTEM CRON (Every 15 min) - Python                │
 │                         Cost: $0                                │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  • Check positions for >5% movement                            │
-│  • Scan top 50 Politics/Economics/Elections events             │
-│  • Update watchlist.json                                        │
+├─────────────────────────────────────────────────────────────────┤
+│  • Check positions for movement (Lever 4)                      │
+│  • Track capital deployment (Lever 3)                          │
+│  • Scan markets with priority scoring (Levers 1, 2)            │
 │  • Write alerts to pending_alerts.json                         │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                OPENCLAW CRON (Every 5 min)                      │
-│                   Alert Checker (Sonnet)                        │
-│                      Cost: ~$0.05/run                           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
+│              OPENCLAW CRON (Every 5 min) - Sonnet               │
+│                    Alert Checker                                │
+├─────────────────────────────────────────────────────────────────┤
 │  • Read pending_alerts.json                                     │
-│  • If alerts exist → Send to Drew via Telegram                 │
-│  • Clear the file after sending                                │
+│  • Send alerts to Drew via Telegram                            │
+│  • Clear file after sending                                     │
 └─────────────────────────────────────────────────────────────────┘
 
-                    ─────────────────────
-                    
 ┌─────────────────────────────────────────────────────────────────┐
-│                OPENCLAW CRON (Every 6 hours)                    │
-│                  Trade Window (Opus)                            │
-│                    Cost: ~$0.40/run                             │
+│              OPENCLAW CRON (Every 6 hours) - Opus               │
+│                    Trade Window                                 │
+├─────────────────────────────────────────────────────────────────┤
+│  • Review watchlist (prioritized by Lever 2)                   │
+│  • Deep research on candidates                                  │
+│  • Calculate edge (Lever 1: must be ≥10%)                      │
+│  • Check deployment % (Lever 3)                                │
+│  • Log decision with prediction (Lever 4)                      │
+│  • Execute or ask Drew                                          │
 └─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
+
 ┌─────────────────────────────────────────────────────────────────┐
-│  • Review watchlist.json candidates                            │
-│  • Deep research (web search, news, base rates)                │
-│  • Calculate edge vs market price                              │
-│  • Execute if >10%, ask Drew if 5-10%                          │
+│            OPENCLAW CRON (Weekly) - Self-Improvement            │
+│                    Sunday 10am MT                               │
+├─────────────────────────────────────────────────────────────────┤
+│  • Calibration check (predicted vs actual)                     │
+│  • Lever performance analysis                                   │
+│  • Pattern recognition                                          │
+│  • Strategy adjustments                                         │
+│  • Update learnings.md                                          │
+│  • Weekly report to Drew                                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Cron Jobs
+## Data Structures
 
-### 1. Python Scanner (System Cron)
-| Field | Value |
-|-------|-------|
-| Schedule | `*/15 * * * *` |
-| Executor | System crontab |
-| Script | `run_cron.sh` |
-| Cost | $0 |
-
-### 2. Alert Checker (OpenClaw Cron)
-| Field | Value |
-|-------|-------|
-| Schedule | Every 5 min |
-| Model | Sonnet |
-| Cost | ~$0.05/run (~$22/month) |
-
-### 3. Trade Window (OpenClaw Cron)
-| Field | Value |
-|-------|-------|
-| Schedule | 2am, 8am, 2pm, 8pm MT |
-| Model | **Opus** |
-| Cost | ~$0.40/run (~$48/month) |
-
-### 4. Daily Briefing
-| Field | Value |
-|-------|-------|
-| Schedule | 8am MT |
-| Model | Sonnet |
-| Cost | ~$4.50/month |
-
-### 5. Weekly Review
-| Field | Value |
-|-------|-------|
-| Schedule | Sunday 10am MT |
-| Model | **Opus** |
-| Cost | ~$2/month |
-
----
-
-## Cost Analysis
-
-### Monthly Operating Costs
-| Component | Frequency | Cost |
-|-----------|-----------|------|
-| Python scanner | 96/day | $0 |
-| Alert checker | 288/day | ~$22 |
-| Trade windows | 4/day | ~$48 |
-| Daily briefing | 1/day | ~$4.50 |
-| Weekly review | 4/month | ~$2 |
-| Health check | 6/day | ~$9 |
-| **Total** | | **~$85/month** |
-
-### Break-Even
-| Capital | Monthly Profit (20% annual) | System Cost | Net |
-|---------|----------------------------|-------------|-----|
-| $677 (current) | $11 | $85 | -$74 |
-| $5,000 | $83 | $85 | -$2 |
-| $6,000 | $100 | $85 | +$15 |
-| $10,000 | $167 | $85 | +$82 |
-
-**Break-even: ~$5,500 capital**
-
----
-
-## File Structure
-
+### watchlist.json
+```json
+{
+  "candidates": [
+    {
+      "ticker": "...",
+      "priority_score": 45,
+      "in_preferred_window": true,
+      "days_to_resolution": 90
+    }
+  ],
+  "stats": {
+    "in_preferred_window": 3,
+    "avg_priority": 32
+  }
+}
 ```
-kalshi-oracle/
-├── scripts/
-│   ├── cron_scan.py           # Python scanner
-│   └── run_cron.sh            # System cron wrapper
-├── data/
-│   ├── watchlist.json         # Candidates for review
-│   ├── positions_cache.json   # Entry price tracking
-│   ├── pending_alerts.json    # Alerts for OpenClaw to send
-│   └── trades/
-│       ├── trade_log.json
-│       └── learnings.md
-└── docs/
-    └── ARCHITECTURE.md
+
+### trade_log.json
+```json
+{
+  "trades": [
+    {
+      "predicted_probability": 0.30,
+      "market_probability": 0.19,
+      "edge_claimed": 0.58,
+      "actual_outcome": null,
+      "edge_realized": null
+    }
+  ],
+  "calibration": {
+    "win_rate": null,
+    "avg_edge_claimed": 0.58,
+    "avg_edge_realized": null,
+    "brier_score": null
+  }
+}
+```
+
+### capital_tracking.json
+```json
+{
+  "current": {
+    "total": 677,
+    "deployed": 69,
+    "deployment_pct": 10
+  }
+}
 ```
 
 ---
 
-## Alert Flow (Verified ✅)
+## Decision Matrix
 
-1. **Python detects** position move >5% or high-vol opportunity
-2. **Python writes** alert to `pending_alerts.json`
-3. **OpenClaw cron** (every 5 min) reads the file
-4. **Sonnet sends** alert to Drew via Telegram
-5. **File cleared** after sending
+| Edge | Resolution | Capital | Action |
+|------|------------|---------|--------|
+| ≥10% | 1-6 months | <70% deployed | Auto-execute |
+| ≥10% | 1-6 months | ≥70% deployed | Ask Drew |
+| ≥10% | 6-12 months | Any | Ask Drew |
+| 5-10% | Any | Any | Ask Drew with research |
+| <5% | Any | Any | Remove from watchlist |
 
-**Tested:** Feb 14, 2026 3:51am MT ✅
+---
+
+## Position Sizing
+
+| Capital | Bet Size | Max Positions |
+|---------|----------|---------------|
+| $677 | $50-75 | 8-10 |
+| $2,500 | $150-200 | 10-12 |
+| $5,000 | $300-400 | 12-15 |
+| $10,000 | $500-750 | 12-15 |
+| $25,000 | $1,000-1,500 | 15-20 |
+
+---
+
+## Monthly Costs
+
+| Component | Cost |
+|-----------|------|
+| Python scanner | $0 |
+| Alert checker (5 min) | ~$22 |
+| Trade windows (6h, Opus) | ~$48 |
+| Daily briefing | ~$4.50 |
+| Weekly review (Opus) | ~$2 |
+| Health check | ~$9 |
+| **Total** | **~$85/month** |
+
+---
+
+## Self-Improvement Loop
+
+```
+Week N:
+┌─────────────────────────────────────────────────────────────────┐
+│  1. Make predictions (trade_log.json)                          │
+│  2. Track outcomes as they resolve                             │
+│  3. Compare predicted vs actual (calibration)                  │
+│  4. Identify patterns (what works, what doesn't)               │
+│  5. Adjust thresholds/strategy (learnings.md)                  │
+│  6. Apply to Week N+1                                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Calibration Targets
+| Metric | Target |
+|--------|--------|
+| Win Rate | ≥60% |
+| Brier Score | <0.20 |
+| Edge Realized / Edge Claimed | ≥0.7 |
+| Capital Turnover | 3-4x/year |
 
 ---
 
 ## Quick Commands
 
 ```bash
-# Manual scan
-cd ~/kalshi-oracle && python3 scripts/cron_scan.py --verbose
+# Run scanner manually
+python3 ~/kalshi-oracle/scripts/cron_scan.py --verbose
+
+# Check capital deployment
+cat ~/kalshi-oracle/data/capital_tracking.json
 
 # Check watchlist
-cat data/watchlist.json | python3 -m json.tool
+cat ~/kalshi-oracle/data/watchlist.json | python3 -m json.tool
 
-# Check pending alerts
-cat data/pending_alerts.json
+# Check trade log
+cat ~/kalshi-oracle/data/trades/trade_log.json | python3 -m json.tool
 
-# View cron log
-tail -50 /tmp/kalshi-cron.log
-
-# System cron
-crontab -l
+# View learnings
+cat ~/kalshi-oracle/data/trades/learnings.md
 ```
 
 ---
@@ -240,4 +264,4 @@ https://github.com/EarlAiAssistant/kalshi-oracle
 
 ---
 
-*Last updated: February 14, 2026 3:53am MT*
+*Last updated: February 14, 2026 4:05am MT*
