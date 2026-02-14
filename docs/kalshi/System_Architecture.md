@@ -1,60 +1,114 @@
-# Kalshi Oracle: Complete System Architecture
+# Kalshi Oracle: System Architecture
 
-**Version:** 2.0  
+**Version:** 2.1 (Implemented)  
 **Author:** Earl (AI Trading Assistant)  
-**Date:** February 14, 2026
+**Date:** February 14, 2026  
+**Status:** ✅ LIVE
 
 ---
 
 ## Executive Summary
 
-Kalshi Oracle is an autonomous prediction market trading system that identifies mispriced contracts on Kalshi.com, performs deep research to verify edge, and executes trades based on predefined risk parameters. The system uses Python for efficient market scanning and data processing, with AI (Claude via OpenClaw) handling research, analysis, and trade decisions only when actionable opportunities arise.
+Kalshi Oracle is an autonomous prediction market trading system that identifies mispriced contracts on Kalshi.com, performs deep research to verify edge, and executes trades based on predefined risk parameters. 
+
+The system uses a **hybrid architecture**:
+- **Python** handles fast, frequent scanning (every 15 min) at zero AI cost
+- **AI (Claude)** handles deep research and trade decisions (every 6 hours)
 
 ---
 
-## Trading Criteria (Hard Rules)
+## Current Status
 
-### Position Requirements
+### Account Balance
+- **Available:** ~$608
+- **Invested:** ~$69
+- **Total:** ~$677
 
-| Parameter | Value | Non-Negotiable |
-|-----------|-------|----------------|
-| Position size | $50-75 | ✅ |
-| Minimum market volume | $5,000 | ✅ |
-| Maximum resolution time | 12 months | ✅ |
-| Preferred resolution | 1-6 months | Preferred |
+### Active Positions
+
+| Market | Side | Contracts | Entry | Current | P&L |
+|--------|------|-----------|-------|---------|-----|
+| Zelenskyy/Putin meet by Jul 2026 | YES | 315 | 19¢ | 17¢ | -10.5% |
+| Women's Hockey SVK (manual) | YES | 42 | 22¢ | 16¢ | -27.6% |
+
+### System Health
+- **Python Cron:** ✅ Running (system crontab, every 15 min)
+- **AI Trade Windows:** ✅ Enabled (every 6 hours)
+- **Daily Briefing:** ✅ Enabled (8am MT)
+- **Weekly Review:** ✅ Enabled (Sunday 10am MT)
+
+---
+
+## Trading Rules (Hardcoded)
+
+### Position Sizing
+| Parameter | Value |
+|-----------|-------|
+| Position size | $50-75 |
+| Min market volume | $5,000 |
+| Max resolution time | 12 months |
+| Max positions | 10 |
 
 ### Edge Thresholds
-
 | Edge | Action |
 |------|--------|
-| >10% | Auto-execute (no approval needed) |
-| 5-10% | Ask Drew for approval via Telegram |
-| <5% | Skip (not worth the risk) |
+| >10% | Auto-execute (notify Drew after) |
+| 5-10% | Ask Drew for approval |
+| <5% | Skip |
 
-### Research Requirements (Mandatory Before ANY Trade)
+### Pre-Filters (Python enforces these)
+- Volume < $5K → Reject
+- Resolution > 365 days → Reject
+- Price < 5¢ or > 95¢ → Reject
+- No bid/ask spread → Reject
+- Sports/Entertainment → Skip
 
-1. **Fresh web search** - Verify current facts, never rely on model memory
-2. **Recent news check** - Last 24-48 hours of relevant headlines
-3. **Twitter/social scan** - Real-time sentiment from key figures
-4. **Base rate analysis** - Historical frequency of similar events
-5. **Contrarian check** - Why is the market pricing it this way?
-
-⚠️ **No trade executes without completing all 5 research steps.**
+### Research Protocol (Mandatory)
+Before ANY trade:
+1. ✅ Fresh web search (verify current facts)
+2. ✅ Recent news check (last 24-48h)
+3. ✅ Base rate analysis
+4. ✅ Contrarian check (why does market disagree?)
 
 ---
 
-## System Architecture
+## Architecture
 
 ### Component Overview
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| Market Scanner | Python 3.11 | Fetches markets, pre-filters, detects opportunities |
-| Trading Client | Python + RSA Auth | Executes authenticated trades on Kalshi |
-| AI Decision Engine | OpenClaw (Claude) | Deep research + trade decisions (alert-only) |
-| Scheduling | System cron + OpenClaw | Triggers scans and analysis |
-| News Monitoring | Bird CLI + Brave API | Real-time event detection |
-| Data Storage | JSON files | Trade logs, watchlist, learnings |
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     SYSTEM CRON (Every 15 min)                  │
+│                        Python Scanner                           │
+│                          Cost: $0                               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  1. Check positions for >5% movement                           │
+│  2. Quick scan top 50 Politics/Economics/Elections events      │
+│  3. Update watchlist.json with candidates                      │
+│  4. Alert OpenClaw ONLY if significant finding                 │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+            (alert only if needed)
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                  OPENCLAW CRON (Every 6 hours)                  │
+│                    AI Trade Windows                             │
+│                     Cost: ~$0.40/run                            │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  1. Review watchlist.json candidates                           │
+│  2. Deep research on each (web search, news, base rates)       │
+│  3. Calculate edge vs market price                             │
+│  4. Execute if >10% edge, ask Drew if 5-10%                    │
+│  5. Log decision to trade_log.json                             │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### File Structure
 
@@ -62,209 +116,113 @@ Kalshi Oracle is an autonomous prediction market trading system that identifies 
 kalshi-oracle/
 ├── kalshi_oracle/
 │   ├── __init__.py
-│   ├── client.py              # RSA-authenticated Kalshi API client
-│   └── scanner.py             # Market scanning and pre-filtering
+│   ├── client.py              # RSA-authenticated Kalshi API
+│   └── scanner.py             # Market scanning utilities
 ├── scripts/
-│   ├── list_markets.py        # List all available markets
-│   ├── scan_opportunities.py  # Find and pre-filter opportunities
-│   ├── check_positions.py     # Monitor position movements
-│   └── alert_earl.py          # Wake AI only when needed
+│   ├── cron_scan.py           # Python cron scanner (MAIN)
+│   ├── run_cron.sh            # Wrapper for system cron
+│   ├── list_markets.py        # Manual market listing
+│   └── scan_opportunities.py  # Manual opportunity scan
 ├── data/
-│   ├── watchlist.json         # Queued opportunities for review
+│   ├── watchlist.json         # Candidates awaiting review
+│   ├── positions_cache.json   # Entry prices for P&L tracking
 │   └── trades/
-│       ├── trade_log.json     # All executed trades with reasoning
-│       └── learnings.md       # Post-trade analysis and lessons
-├── .env                       # API credentials (not in git)
+│       ├── trade_log.json     # All trades with reasoning
+│       └── learnings.md       # Post-trade lessons
+├── .env                       # Credentials (not in git)
 └── requirements.txt
 ```
 
 ---
 
-## How It Works: Optimized Flow
+## Cron Jobs
 
-### Design Principle: Python Scans, AI Decides
+### 1. Python Scanner (System Cron)
 
-**Old approach:** AI runs every 15 minutes, burning tokens even when nothing happens.
+| Field | Value |
+|-------|-------|
+| Schedule | `*/15 * * * *` (every 15 min) |
+| Executor | System crontab |
+| Script | `/home/ubuntu/.openclaw/workspace/kalshi-oracle/scripts/run_cron.sh` |
+| AI Cost | $0 |
 
-**New approach:** Python runs lightweight scans via system cron. AI is only woken when:
-- Position moves >5%
-- Opportunity passes all pre-filters
-- Error requires human-level judgment
+**What it does:**
+- Fetches current positions, calculates P&L vs entry
+- Quick scan of top 50 priority events
+- Updates watchlist.json with passing candidates
+- Alerts OpenClaw only if position moves >5% or high-volume opportunity found
 
-This reduces costs by ~80%.
+### 2. Trade Window (OpenClaw Cron)
 
-### Phase 1: Continuous Monitoring (Python, Every 15 Minutes)
+| Field | Value |
+|-------|-------|
+| Schedule | Every 6 hours (2am, 8am, 2pm, 8pm MT) |
+| Type | systemEvent (main session) |
+| AI Cost | ~$0.40/run |
+| Monthly Cost | ~$48 |
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│              SYSTEM CRON TRIGGERS PYTHON SCRIPT                 │
-│                    (Every 15 minutes)                           │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                  PYTHON: CHECK POSITIONS                        │
-│                                                                 │
-│  For each open position:                                        │
-│  • Fetch current price from Kalshi API                         │
-│  • Compare to entry price                                       │
-│  • If moved >5% → flag for alert                               │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                  PYTHON: SCAN MARKETS                           │
-│                                                                 │
-│  Pre-filter (reject before AI sees it):                        │
-│  • Volume < $5,000 → SKIP                                      │
-│  • Resolution > 12 months → SKIP                               │
-│  • Price < 5¢ or > 95¢ → SKIP (low edge potential)            │
-│  • Already in watchlist → SKIP                                 │
-│                                                                 │
-│  Passed filters? → Add to watchlist.json                       │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     DECISION GATE                               │
-│                                                                 │
-│  Alert needed?                                                  │
-│  • Position alert triggered? → Wake Earl                       │
-│  • New watchlist item added? → Log for trade window            │
-│  • Nothing significant? → Exit silently (no AI cost)           │
-└─────────────────────────────────────────────────────────────────┘
-```
+**What it does:**
+- Reviews watchlist.json candidates
+- Deep research on each (web search, news)
+- Calculates edge, makes trade decisions
+- Executes or asks Drew for approval
 
-### Phase 2: Trade Window (AI, Every 6 Hours)
+### 3. Daily Briefing (OpenClaw Cron)
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                OPENCLAW CRON TRIGGERS                           │
-│           (Every 6 hours: 2am, 8am, 2pm, 8pm MT)               │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│             EARL: REVIEW WATCHLIST                              │
-│                                                                 │
-│  Load watchlist.json                                            │
-│  For each candidate:                                            │
-│  • Is it still available at attractive price?                  │
-│  • Does it still meet all criteria?                            │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│          EARL: DEEP RESEARCH (Per Candidate)                    │
-│                                                                 │
-│  1. Web search for current facts (Brave API)                   │
-│  2. Check recent news (last 24-48 hours)                       │
-│  3. Twitter scan for real-time sentiment                       │
-│  4. Base rate analysis - historical frequency                  │
-│  5. Contrarian check - why does market disagree?               │
-│                                                                 │
-│  Calculate: My probability estimate vs market price            │
-│  Edge = (My Prob - Market Price) / Market Price                │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   DECISION & EXECUTION                          │
-│                                                                 │
-│  Edge >10%:                                                     │
-│  → Execute trade automatically                                  │
-│  → Log to trade_log.json                                       │
-│  → Notify Drew via Telegram                                    │
-│                                                                 │
-│  Edge 5-10%:                                                    │
-│  → Send approval request to Drew                               │
-│  → Wait for YES/NO response                                    │
-│  → Execute if approved                                          │
-│                                                                 │
-│  Edge <5%:                                                      │
-│  → Remove from watchlist                                        │
-│  → No action                                                    │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Field | Value |
+|-------|-------|
+| Schedule | 8:00 AM Mountain Time |
+| Type | isolated session |
+| Model | Sonnet |
+| Monthly Cost | ~$4.50 |
+
+**What it does:**
+- Portfolio status report
+- P&L summary
+- Overnight news scan
+- Sends summary to Drew via Telegram
+
+### 4. Weekly Review (OpenClaw Cron)
+
+| Field | Value |
+|-------|-------|
+| Schedule | Sunday 10:00 AM Mountain Time |
+| Type | main session |
+| Model | Opus |
+| Monthly Cost | ~$2 |
+
+**What it does:**
+- Performance analysis (wins/losses)
+- Calibration check (predicted vs actual)
+- Strategy adjustments
+- Updates learnings.md
 
 ---
 
-## Cron Job Specifications
+## Cost Analysis
 
-### Job 1: Position & Market Scan (Python via System Cron)
+### Monthly Operating Costs
 
-| Field | Value |
-|-------|-------|
-| **Schedule** | */15 * * * * (every 15 minutes) |
-| **Executor** | System crontab (not OpenClaw) |
-| **Script** | `python scripts/scan_opportunities.py` |
-| **AI Involvement** | None (unless alert triggered) |
-| **Cost** | ~$0 (Python only) |
+| Component | Frequency | Cost/Run | Monthly |
+|-----------|-----------|----------|---------|
+| Python scanner | 96/day | $0 | $0 |
+| Trade windows | 4/day | $0.40 | $48 |
+| Daily briefing | 1/day | $0.15 | $4.50 |
+| Weekly review | 4/month | $0.50 | $2 |
+| Health check | 6/day | $0.05 | $9 |
+| **Total** | | | **~$63/month** |
 
-**What it does:**
-- Checks all open positions for >5% movement
-- Scans markets with pre-filters
-- Updates watchlist.json
-- Only wakes Earl if alert needed
+### Break-Even Analysis
 
-### Job 2: Trade Analysis Window (OpenClaw Cron)
+| Capital | Annual Return (20%) | Monthly Profit | System Cost | Net |
+|---------|---------------------|----------------|-------------|-----|
+| $677 (current) | $135 | $11 | $63 | -$52 |
+| $2,000 | $400 | $33 | $63 | -$30 |
+| $4,000 | $800 | $67 | $63 | +$4 |
+| $5,000 | $1,000 | $83 | $63 | +$20 |
+| $10,000 | $2,000 | $167 | $63 | +$104 |
 
-| Field | Value |
-|-------|-------|
-| **Schedule** | Every 6 hours (2am, 8am, 2pm, 8pm MT) |
-| **Type** | systemEvent (main session) |
-| **Model** | Sonnet for initial review, Opus for trade decisions |
-| **Cost** | ~$0.30-0.50 per run |
-| **Monthly Cost** | ~$40-60 |
-
-**Trigger Message:**
-```
-Kalshi trade window. Review watchlist.json for opportunities.
-For each candidate: verify still valid, do deep research (web search, 
-Twitter, base rates), calculate edge. Execute if >10% edge, 
-ask me if 5-10% edge, remove if <5%.
-```
-
-### Job 3: Daily Briefing (OpenClaw Cron)
-
-| Field | Value |
-|-------|-------|
-| **Schedule** | 8:00 AM Mountain Time |
-| **Type** | systemEvent (main session) |
-| **Model** | Sonnet |
-| **Cost** | ~$0.15 per run |
-| **Monthly Cost** | ~$4.50 |
-
-**Trigger Message:**
-```
-Kalshi morning briefing. Report:
-1. Current positions with entry price and current price
-2. P&L summary (unrealized)
-3. Any positions approaching resolution
-4. Top 3 watchlist candidates
-Keep it brief.
-```
-
-### Job 4: Weekly Review (OpenClaw Cron)
-
-| Field | Value |
-|-------|-------|
-| **Schedule** | Sunday 10:00 AM Mountain Time |
-| **Type** | systemEvent (main session) |
-| **Model** | Opus (needs deep analysis) |
-| **Cost** | ~$0.50 per run |
-| **Monthly Cost** | ~$2 |
-
-**Trigger Message:**
-```
-Weekly Kalshi review. Analyze:
-1. Trades executed this week
-2. Win/loss record and P&L
-3. Calibration: predicted probability vs actual outcome
-4. What worked, what didn't
-5. Strategy adjustments for next week
-Update learnings.md with insights.
-```
+**Break-even: ~$4,000 capital at 20% annual returns**
 
 ---
 
@@ -274,18 +232,33 @@ Update learnings.md with insights.
 
 ```json
 {
-  "updated": "2026-02-14T03:00:00Z",
+  "updated": "2026-02-14T03:38:24Z",
   "candidates": [
     {
-      "ticker": "KXSOMEEVENT-26MAY",
-      "title": "Will X happen by May 2026?",
-      "current_price": 0.23,
-      "volume": 15420,
-      "resolution_date": "2026-05-01",
-      "added": "2026-02-14T02:45:00Z",
-      "notes": "Passed pre-filters, awaiting deep research"
+      "ticker": "KXTAIWANLVL4-27JAN01",
+      "title": "US Level 4 warning for Taiwan before Jan 2027?",
+      "category": "Politics",
+      "current_price": 23.5,
+      "volume": 72912,
+      "days_to_resolution": 321,
+      "status": "pending_review"
     }
   ]
+}
+```
+
+### positions_cache.json
+
+```json
+{
+  "updated": "2026-02-14T03:38:58Z",
+  "positions": {
+    "KXZELENSKYPUTIN-29-26JUL": {
+      "entry_price": 19.0,
+      "last_price": 17,
+      "contracts": 315
+    }
+  }
 }
 ```
 
@@ -298,282 +271,68 @@ Update learnings.md with insights.
       "id": "trade_001",
       "timestamp": "2026-02-14T02:30:00Z",
       "market": "KXZELENSKYPUTIN-29-26JUL",
-      "title": "Zelenskyy and Putin meet by Jul 1, 2026",
       "side": "YES",
       "contracts": 315,
-      "entry_price": 0.19,
+      "entry_price": 19,
       "cost": 59.85,
-      "edge_estimate": 0.58,
-      "my_probability": 0.30,
-      "market_probability": 0.19,
-      "thesis": "Diplomatic pressure mounting, multiple back-channels active",
-      "research_completed": {
-        "web_search": true,
-        "twitter_scan": true,
-        "base_rate_analysis": true,
-        "contrarian_check": true
-      },
-      "key_evidence": [
-        "Swiss mediation ongoing since Jan 2026",
-        "Trump administration pushing for summit",
-        "Both sides showing flexibility on preconditions"
-      ],
-      "what_changes_my_mind": [
-        "Major military escalation",
-        "Either leader publicly refuses talks",
-        "Key mediator withdraws"
-      ],
-      "current_price": null,
-      "exit_price": null,
-      "outcome": null,
-      "resolved": false,
-      "resolution_date": "2026-07-01"
+      "edge_estimate": 58,
+      "thesis": "Diplomatic momentum underestimated",
+      "research_completed": true,
+      "resolved": false
     }
   ]
 }
-```
-
-### learnings.md
-
-```markdown
-# Kalshi Oracle: Lessons Learned
-
-## Critical Lessons
-
-### 1. Always Verify with Fresh Web Search
-Near-miss on Musk/DOGE bet - almost traded on stale model knowledge.
-Model training data can be months old. ALWAYS web search first.
-
-### 2. Volume Matters
-Low-volume markets (<$5K) are traps - hard to exit, wide spreads.
-
-### 3. Extreme Prices = Low Edge
-Markets at 5¢ or 95¢ rarely have real edge - the obvious bet is priced in.
-
-## Trade Reviews
-
-### Trade 001: Zelenskyy/Putin Meeting (OPEN)
-- Entry: 19¢ YES on 2026-02-14
-- Thesis: Market underpricing diplomatic momentum
-- Status: Monitoring
-- Lessons: TBD after resolution
-```
-
----
-
-## Cost Analysis (Optimized)
-
-### Monthly Operating Costs
-
-| Component | How | Cost/Run | Runs/Month | Monthly Total |
-|-----------|-----|----------|------------|---------------|
-| 15-min scan | Python (no AI) | $0 | 2,880 | $0 |
-| Position alerts | AI on-demand | $0.10 | ~10 | $1 |
-| Trade windows | Sonnet + Opus | $0.40 | 120 | $48 |
-| Daily briefing | Sonnet | $0.15 | 30 | $4.50 |
-| Weekly review | Opus | $0.50 | 4 | $2 |
-| **Total** | | | | **~$55/month** |
-
-### Break-Even Analysis
-
-| Capital | Annual Return (20%) | Monthly Profit | System Cost | Net |
-|---------|---------------------|----------------|-------------|-----|
-| $670 | $134 | $11 | $55 | -$44 |
-| $2,000 | $400 | $33 | $55 | -$22 |
-| $3,500 | $700 | $58 | $55 | +$3 |
-| $5,000 | $1,000 | $83 | $55 | +$28 |
-| $10,000 | $2,000 | $167 | $55 | +$112 |
-
-**Break-even: ~$3,500 capital at 20% annual returns**
-
----
-
-## Risk Management
-
-### Hard Limits
-
-| Rule | Limit | Enforced By |
-|------|-------|-------------|
-| Max position size | $75 | Python pre-check |
-| Min position size | $50 | Python pre-check |
-| Max total positions | 10 | Python pre-check |
-| Max single-market exposure | 15% of capital | Earl review |
-| Max resolution time | 12 months | Python pre-filter |
-| Min volume | $5,000 | Python pre-filter |
-| Research requirement | All 5 steps | Earl checklist |
-
-### Position Sizing (Future: Kelly Criterion)
-
-Current: Flat $50-75 per position
-
-Future enhancement: Size based on edge and confidence
-```
-Kelly % = (Edge × Confidence) / Odds
-Position = Kelly % × Bankroll × 0.25 (quarter-Kelly for safety)
-```
-
-### Correlation Awareness (Future)
-
-Don't overexpose to correlated events:
-```json
-{
-  "correlation_groups": {
-    "ukraine_conflict": ["KXZELENSKYPUTIN", "KXUKRAINECEASEFIRE", "KXRUSSIAWAR"],
-    "us_politics": ["KXTRUMP2028", "KXBIDEN2028", "KXIMPEACHMENT"]
-  },
-  "max_per_group": 2
-}
-```
-
----
-
-## Communication Protocol
-
-### Alert Levels
-
-| Level | Trigger | Action |
-|-------|---------|--------|
-| 🟢 Silent | Scan complete, nothing found | No message (Python exits) |
-| 🟡 Log | New watchlist candidate | Write to watchlist.json |
-| 🟠 Ask | 5-10% edge opportunity | Telegram Drew for approval |
-| 🔴 Notify | Trade executed or position alert | Telegram notification |
-| 🚨 Urgent | Account issue, API failure, >10% position move | Immediate Telegram |
-
-### Message Templates
-
-**Position Alert:**
-```
-🔴 Kalshi Position Alert
-
-KXZELENSKYPUTIN-29-26JUL moved significantly
-Entry: 19¢ → Current: 25¢ (+32%)
-
-Check news for catalyst?
-```
-
-**Trade Approval Request:**
-```
-🟠 Kalshi Trade Opportunity
-
-Market: [TITLE]
-Current: [X]¢ [YES/NO]
-My estimate: [Y]%
-Edge: [Z]% (5-10% range)
-
-Research completed:
-✅ Web search
-✅ Twitter scan
-✅ Base rate analysis
-✅ Contrarian check
-
-Thesis: [Brief reasoning]
-
-Position: $[AMOUNT] for [N] contracts
-
-Reply YES to approve, NO to skip.
-```
-
-**Trade Executed:**
-```
-✅ Kalshi Trade Executed
-
-Market: [TITLE]
-Side: [YES/NO] @ [X]¢
-Contracts: [N]
-Cost: $[AMOUNT]
-Edge: [Z]%
-
-Thesis: [One sentence]
 ```
 
 ---
 
 ## Authentication
 
-### RSA Key Signing (Required for Trading)
+### Kalshi RSA Signing
+- **Private Key:** `~/.kalshi/private_key.pem`
+- **API Key ID:** `1e62a891...`
+- **Method:** PKCS1v15 + SHA256
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                   REQUEST SIGNING FLOW                          │
-│                                                                 │
-│  1. Create timestamp (milliseconds since epoch)                │
-│  2. Build message: timestamp + method + path + body            │
-│  3. Sign with RSA private key (PKCS1v15 + SHA256)             │
-│  4. Base64 encode signature                                    │
-│  5. Add headers to request                                      │
-└─────────────────────────────────────────────────────────────────┘
+Signature = Base64(RSA_Sign(timestamp + method + path + body))
 ```
-
-**Credentials:**
-- Private key: `~/.kalshi/private_key.pem`
-- API Key ID: `KALSHI_API_KEY` in `.env`
-- Key ID: `1e62a891...`
 
 ---
 
-## Recovery Procedures
+## Alert Levels
 
-### Python Scan Fails
-1. Check Kalshi API status (status.kalshi.com)
-2. Verify `.env` credentials exist
-3. Test: `python -c "from kalshi_oracle.client import KalshiClient; print(KalshiClient().get_balance())"`
-4. Check logs in `/tmp/kalshi-scan.log`
-5. If persistent >1 hour: alert Drew
-
-### Trade Execution Fails
-1. Log full error to trade_log.json
-2. Do NOT retry automatically (avoid double-orders)
-3. Check Kalshi for partial fills
-4. Alert Drew immediately
-5. Manual review before retry
-
-### API Rate Limited
-1. Exponential backoff (Python handles)
-2. Temporarily increase scan interval
-3. Alert if >1 hour
+| Level | Trigger | Action |
+|-------|---------|--------|
+| 🟢 Silent | Scan complete, nothing found | Python exits quietly |
+| 🟡 Log | New candidate added | Update watchlist.json |
+| 🟠 Ask | 5-10% edge found | Telegram Drew for approval |
+| 🔴 Notify | Trade executed | Telegram notification |
+| 🚨 Urgent | Position >5% move or API error | Immediate Telegram |
 
 ---
 
-## Quick Reference Commands
+## Quick Commands
 
 ```bash
 # Check balance
 cd ~/kalshi-oracle
-python -c "from kalshi_oracle.client import KalshiClient; c = KalshiClient(); print(c.get_balance())"
+python3 -c "from kalshi_oracle.client import KalshiClient; print(KalshiClient().get_balance())"
 
 # List positions
-python -c "from kalshi_oracle.client import KalshiClient; c = KalshiClient(); print(c.get_positions())"
+python3 -c "from kalshi_oracle.client import KalshiClient; print(KalshiClient().get_positions())"
 
 # Manual scan
-python scripts/scan_opportunities.py
+python3 scripts/cron_scan.py --verbose
 
 # View watchlist
-cat data/watchlist.json | python -m json.tool
+cat data/watchlist.json | python3 -m json.tool
 
-# View trade log
-cat data/trades/trade_log.json | python -m json.tool
+# View cron log
+tail -50 /tmp/kalshi-cron.log
 
-# View learnings
-cat data/trades/learnings.md
+# Check system cron
+crontab -l
 ```
-
----
-
-## Implementation Status
-
-| Component | Status |
-|-----------|--------|
-| Kalshi API client (RSA auth) | ✅ Complete |
-| Basic market scanner | ✅ Complete |
-| Trade execution | ✅ Complete |
-| Trade logging | ✅ Complete |
-| Position monitoring | ✅ Complete |
-| Pre-filtering (Python) | 🔄 In progress |
-| Watchlist persistence | 🔄 In progress |
-| System cron (Python scans) | ⏳ Pending |
-| Sonnet sub-agent integration | ⏳ Pending |
-| Kelly position sizing | ⏳ Future |
-| Correlation tracking | ⏳ Future |
 
 ---
 
@@ -581,11 +340,6 @@ cat data/trades/learnings.md
 
 **URL:** https://github.com/EarlAiAssistant/kalshi-oracle
 
-**Branches:**
-- `main` - Production code
-- `develop` - Active development
-
 ---
 
-*Document generated by Earl for Drew Kubacki*  
-*Version 2.0 - February 14, 2026*
+*Document reflects live system as of February 14, 2026*
