@@ -1,6 +1,6 @@
 // ============================================================
 // Dashboard page — orchestrates views, command palette, shortcuts
-// Phase 3: Added analytics, activity log, notifications, settings
+// Phase 4: Profiles, error boundaries, UX polish
 // ============================================================
 
 'use client';
@@ -19,6 +19,8 @@ import { NotificationCenter } from '@/src/components/notification-center';
 import { AnalyticsView } from '@/src/components/analytics-view';
 import { ActivityTimeline } from '@/src/components/activity-timeline';
 import { SettingsPanel } from '@/src/components/settings-panel';
+import { ProfileSelector } from '@/src/components/profile-selector';
+import { ErrorBoundary } from '@/src/components/error-boundary';
 import { Button } from '@/src/components/ui/button';
 import { useKeyboardShortcuts, type ShortcutAction } from '@/src/lib/hooks/use-keyboard-shortcuts';
 import { useTasks, useUpdateTask, useAddToMyDay, useRemoveFromMyDay } from '@/src/lib/hooks/use-tasks';
@@ -211,12 +213,15 @@ export default function DashboardPage() {
   return (
     <div className="h-screen flex flex-col">
       {/* Top bar */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-border bg-card">
-        <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold tracking-tight">Earl Dashboard</h1>
+      <header className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border bg-card" role="banner">
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* Profile selector (replaces plain title) */}
+          <ErrorBoundary section="Profile">
+            <ProfileSelector />
+          </ErrorBoundary>
 
           {/* View tabs */}
-          <div className="flex items-center border border-border rounded-md overflow-hidden">
+          <nav className="flex items-center border border-border rounded-lg overflow-hidden" role="tablist" aria-label="Dashboard views">
             {[
               { id: 'list' as const, icon: LayoutList, label: 'List' },
               { id: 'kanban' as const, icon: Columns3, label: 'Board' },
@@ -226,34 +231,43 @@ export default function DashboardPage() {
             ].map(({ id, icon: Icon, label }) => (
               <button
                 key={id}
+                role="tab"
+                aria-selected={view === id}
+                aria-controls={`panel-${id}`}
                 className={cn(
-                  'px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5',
+                  'px-3 py-1.5 text-xs font-medium transition-all flex items-center gap-1.5',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
                   view === id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-accent text-muted-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'hover:bg-accent text-muted-foreground hover:text-foreground'
                 )}
                 onClick={() => setView(id)}
               >
                 <Icon className="h-3.5 w-3.5" />
-                {label}
+                <span className="hidden sm:inline">{label}</span>
               </button>
             ))}
-          </div>
+          </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Quick stats */}
-          <div className="hidden lg:block">
-            <QuickStats />
+          <div className="hidden xl:block">
+            <ErrorBoundary section="Quick Stats">
+              <QuickStats />
+            </ErrorBoundary>
           </div>
 
           {/* Notifications */}
-          <NotificationCenter onSelectTask={handleSelectTaskById} />
+          <ErrorBoundary section="Notifications">
+            <NotificationCenter onSelectTask={handleSelectTaskById} />
+          </ErrorBoundary>
 
           {/* Command palette trigger */}
           <button
             onClick={() => setCommandPaletteOpen(true)}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground border border-border rounded-md hover:bg-accent transition-colors"
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-xs text-muted-foreground border border-border rounded-lg hover:bg-accent hover:text-foreground transition-all"
+            aria-label="Open command palette"
           >
             <Command className="h-3.5 w-3.5" />
             <span>Command</span>
@@ -266,6 +280,7 @@ export default function DashboardPage() {
             size="icon"
             onClick={() => setSettingsOpen(true)}
             title="Settings"
+            aria-label="Open settings"
           >
             <Settings className="h-4 w-4 text-muted-foreground" />
           </Button>
@@ -277,6 +292,7 @@ export default function DashboardPage() {
             onClick={() => setShortcutsOpen(true)}
             title="Keyboard shortcuts (⌘/)"
             className="hidden sm:flex"
+            aria-label="Show keyboard shortcuts"
           >
             <Keyboard className="h-4 w-4 text-muted-foreground" />
           </Button>
@@ -288,42 +304,46 @@ export default function DashboardPage() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Main view */}
-        <div className="flex-1 overflow-hidden">
-          {view === 'list' ? (
-            <TaskList
-              onSelectTask={handleSelectTask}
-              selectedTaskId={selectedTask?.id}
-              externalFilters={externalFilters}
-              focusedIndex={focusedIndex}
-              onFocusedIndexChange={setFocusedIndex}
-            />
-          ) : view === 'kanban' ? (
-            <KanbanBoard onSelectTask={handleSelectTask} />
-          ) : view === 'myday' ? (
-            <MyDayView onSelectTask={handleSelectTask} selectedTaskId={selectedTask?.id} />
-          ) : view === 'analytics' ? (
-            <AnalyticsView />
-          ) : view === 'activity' ? (
-            <div className="p-6 overflow-auto h-full">
-              <div className="max-w-3xl mx-auto">
-                <h2 className="text-xl font-bold flex items-center gap-2 mb-1">
-                  <History className="h-5 w-5" />
-                  Activity Log
-                </h2>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Full audit trail of all task changes and actions
-                </p>
-                <ActivityTimeline showFilters showExport />
+        <main className="flex-1 overflow-hidden" id={`panel-${view}`} role="tabpanel">
+          <ErrorBoundary section={view === 'list' ? 'Task List' : view === 'kanban' ? 'Kanban Board' : view === 'myday' ? 'My Day' : view === 'analytics' ? 'Analytics' : 'Activity'}>
+            {view === 'list' ? (
+              <TaskList
+                onSelectTask={handleSelectTask}
+                selectedTaskId={selectedTask?.id}
+                externalFilters={externalFilters}
+                focusedIndex={focusedIndex}
+                onFocusedIndexChange={setFocusedIndex}
+              />
+            ) : view === 'kanban' ? (
+              <KanbanBoard onSelectTask={handleSelectTask} />
+            ) : view === 'myday' ? (
+              <MyDayView onSelectTask={handleSelectTask} selectedTaskId={selectedTask?.id} />
+            ) : view === 'analytics' ? (
+              <AnalyticsView />
+            ) : view === 'activity' ? (
+              <div className="p-6 overflow-auto h-full">
+                <div className="max-w-3xl mx-auto">
+                  <h2 className="text-xl font-bold flex items-center gap-2 mb-1">
+                    <History className="h-5 w-5" />
+                    Activity Log
+                  </h2>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Full audit trail of all task changes and actions
+                  </p>
+                  <ActivityTimeline showFilters showExport />
+                </div>
               </div>
-            </div>
-          ) : null}
-        </div>
+            ) : null}
+          </ErrorBoundary>
+        </main>
 
         {/* Detail panel (slides in) */}
         {selectedTask && (view === 'list' || view === 'kanban' || view === 'myday') && (
-          <div className="w-[400px] min-w-[400px] max-w-[400px] border-l border-border overflow-hidden">
-            <TaskDetailPanel taskId={selectedTask.id} onClose={handleCloseDetail} />
-          </div>
+          <aside className="w-[400px] min-w-[400px] max-w-[400px] border-l border-border overflow-hidden hidden md:block">
+            <ErrorBoundary section="Task Detail">
+              <TaskDetailPanel taskId={selectedTask.id} onClose={handleCloseDetail} />
+            </ErrorBoundary>
+          </aside>
         )}
       </div>
 

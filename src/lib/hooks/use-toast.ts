@@ -1,26 +1,43 @@
 // ============================================================
 // Toast notification store — lightweight, no external deps
+// Uses useSyncExternalStore for proper React integration
 // ============================================================
 
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import type { Toast, ToastType } from '@/src/lib/types';
 import { generateId } from '@/src/lib/utils';
 
-// Global state so multiple components can trigger toasts
+// Global state
 let globalToasts: Toast[] = [];
-let globalListeners: Array<(toasts: Toast[]) => void> = [];
+let listeners: Array<() => void> = [];
 
-function notify() {
-  globalListeners.forEach((fn) => fn([...globalToasts]));
+function emitChange() {
+  listeners.forEach((fn) => fn());
 }
 
+function subscribe(listener: () => void) {
+  listeners.push(listener);
+  return () => {
+    listeners = listeners.filter((l) => l !== listener);
+  };
+}
+
+function getSnapshot(): Toast[] {
+  return globalToasts;
+}
+
+function getServerSnapshot(): Toast[] {
+  return [];
+}
+
+/** Add a toast notification */
 export function toast(type: ToastType, title: string, description?: string, duration = 3000) {
   const id = generateId();
   const t: Toast = { id, type, title, description, duration };
   globalToasts = [...globalToasts, t];
-  notify();
+  emitChange();
 
   // Auto-dismiss
   if (duration > 0) {
@@ -32,24 +49,16 @@ export function toast(type: ToastType, title: string, description?: string, dura
   return id;
 }
 
+/** Dismiss a toast by ID */
 export function dismissToast(id: string) {
   globalToasts = globalToasts.filter((t) => t.id !== id);
-  notify();
+  emitChange();
 }
 
-/** Hook to subscribe to toast state */
+/** Hook to subscribe to toast state (properly reactive) */
 export function useToasts() {
-  const [toasts, setToasts] = useState<Toast[]>(globalToasts);
-
-  // Subscribe on mount
-  const ref = useRef(false);
-  if (!ref.current) {
-    ref.current = true;
-    globalListeners.push(setToasts);
-  }
-
+  const toasts = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const dismiss = useCallback((id: string) => dismissToast(id), []);
-
   return { toasts, dismiss };
 }
 

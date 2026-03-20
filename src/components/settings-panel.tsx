@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   useNotificationPreferences,
   useUpdateNotificationPreferences,
@@ -130,16 +130,19 @@ function WebhookSettings() {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
 
-  // Load webhooks
-  useState(() => {
+  // Load webhooks on mount
+  // Note: Using a ref to prevent double-fetch in StrictMode
+  const fetchedRef = useRef(false);
+  if (!fetchedRef.current && typeof window !== 'undefined') {
+    fetchedRef.current = true;
     fetch('/api/webhooks')
       .then((r) => r.json())
       .then((data) => {
-        setWebhooks(data);
+        if (Array.isArray(data)) setWebhooks(data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  });
+  }
 
   const addWebhook = async () => {
     if (!name || !url) return;
@@ -272,8 +275,68 @@ function EarlApiInfo() {
   );
 }
 
+function DataSettings() {
+  const handleClearAll = async () => {
+    if (!confirm('Are you sure you want to delete ALL tasks? This cannot be undone.')) return;
+    try {
+      // Fetch all tasks and delete them one by one
+      const res = await fetch('/api/tasks?pageSize=1000');
+      const data = await res.json();
+      let deleted = 0;
+      for (const task of data.data || []) {
+        const delRes = await fetch(`/api/tasks/${task.id}`, { method: 'DELETE' });
+        if (delRes.ok) deleted++;
+      }
+      toastSuccess(`Deleted ${deleted} tasks`);
+    } catch {
+      toastError('Failed to delete tasks');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="p-3 bg-muted/30 rounded text-sm">
+        <div className="font-medium mb-2">Data Storage</div>
+        <p className="text-xs text-muted-foreground mb-3">
+          Tasks are stored in a local SQLite database. Profiles and preferences are stored in your browser&apos;s localStorage.
+        </p>
+        <div className="space-y-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-green-400" />
+            <span>Local SQLite — Fast, no internet required</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-blue-400" />
+            <span>Browser localStorage — Profiles & settings</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-gray-400" />
+            <span>Cloud sync — Coming soon</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 bg-red-500/5 border border-red-500/20 rounded">
+        <div className="font-medium text-sm text-red-400 mb-2">Danger Zone</div>
+        <p className="text-xs text-muted-foreground mb-3">
+          Permanently delete all tasks. This action cannot be undone.
+        </p>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={handleClearAll}
+          className="text-xs"
+        >
+          <Trash2 className="h-3 w-3 mr-1.5" />
+          Delete All Tasks
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
-  const [tab, setTab] = useState<'notifications' | 'webhooks' | 'earl'>('notifications');
+  const [tab, setTab] = useState<'notifications' | 'webhooks' | 'earl' | 'data'>('notifications');
 
   if (!open) return null;
 
@@ -297,6 +360,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
             { id: 'notifications', label: 'Notifications', icon: Bell },
             { id: 'webhooks', label: 'Webhooks', icon: Webhook },
             { id: 'earl', label: 'Earl API', icon: Bot },
+            { id: 'data', label: 'Data', icon: Settings },
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -319,6 +383,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
           {tab === 'notifications' && <NotificationSettings />}
           {tab === 'webhooks' && <WebhookSettings />}
           {tab === 'earl' && <EarlApiInfo />}
+          {tab === 'data' && <DataSettings />}
         </div>
       </div>
     </div>

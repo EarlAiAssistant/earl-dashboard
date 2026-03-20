@@ -15,6 +15,8 @@ import type { TaskStatus, TaskPriority } from '@/src/lib/types';
 import { cn } from '@/src/lib/utils';
 import { Badge } from '@/src/components/ui/badge';
 import { Button } from '@/src/components/ui/button';
+import { StatCardSkeleton } from '@/src/components/ui/skeleton';
+import { EmptyState } from '@/src/components/empty-state';
 import {
   BarChart3,
   TrendingUp,
@@ -24,6 +26,7 @@ import {
   Calendar,
   Download,
   Loader2,
+  PieChart,
 } from 'lucide-react';
 
 // Simple chart components using divs (no recharts dependency issues)
@@ -173,8 +176,19 @@ export function AnalyticsView() {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="p-6 space-y-6 overflow-auto h-full" role="status" aria-label="Loading analytics">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Analytics
+            </h2>
+            <p className="text-sm text-muted-foreground mt-0.5">Loading insights...</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+        </div>
       </div>
     );
   }

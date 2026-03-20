@@ -1,11 +1,13 @@
 // ============================================================
-// Task list view with keyboard navigation & advanced filters
+// Task list view with keyboard navigation, skeletons, & empty states
 // ============================================================
 
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Badge } from '@/src/components/ui/badge';
+import { EmptyState } from '@/src/components/empty-state';
+import { TaskRowSkeleton } from '@/src/components/ui/skeleton';
 import { AdvancedFilters } from '@/src/components/advanced-filters';
 import { useTasks } from '@/src/lib/hooks/use-tasks';
 import {
@@ -16,8 +18,9 @@ import {
 } from '@/src/lib/types';
 import type { Task, TaskFilters } from '@/src/lib/types';
 import { formatDate } from '@/src/lib/utils';
-import { ArrowUpDown, Loader2, Sun } from 'lucide-react';
+import { ArrowUpDown, Sun, ListTodo, SearchX, AlertCircle, RefreshCw, Plus } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
+import { Button } from '@/src/components/ui/button';
 
 interface TaskListProps {
   onSelectTask: (task: Task) => void;
@@ -46,7 +49,7 @@ export function TaskList({
 
   // Merge external filters
   const mergedFilters = { ...filters, ...externalFilters };
-  const { data, isLoading, isError } = useTasks(mergedFilters);
+  const { data, isLoading, isError, refetch } = useTasks(mergedFilters);
   const tableRef = useRef<HTMLTableSectionElement>(null);
 
   // Sync URL params on mount
@@ -97,6 +100,8 @@ export function TaskList({
     setFilters(newFilters);
   }, []);
 
+  const hasActiveFilters = mergedFilters.search || (mergedFilters.status && mergedFilters.status !== 'all') || (mergedFilters.priority && mergedFilters.priority !== 'all');
+
   return (
     <div className="flex flex-col h-full">
       {/* Advanced filters */}
@@ -105,47 +110,109 @@ export function TaskList({
       {/* Table */}
       <div className="flex-1 overflow-auto">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          /* Loading skeleton */
+          <div role="status" aria-label="Loading tasks">
+            <table className="w-full">
+              <thead className="sticky top-0 bg-background border-b border-border">
+                <tr className="text-left text-xs text-muted-foreground uppercase tracking-wider">
+                  <th className="px-4 py-3">Title</th>
+                  <th className="px-4 py-3 w-[120px]">Status</th>
+                  <th className="px-4 py-3 w-[100px]">Priority</th>
+                  <th className="px-4 py-3 w-[50px]"><Sun className="h-3.5 w-3.5" /></th>
+                  <th className="px-4 py-3 w-[120px]">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <tr key={i}><td colSpan={5}><TaskRowSkeleton /></td></tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : isError ? (
-          <div className="flex items-center justify-center py-12 text-destructive">
-            Failed to load tasks. Try refreshing.
-          </div>
+          /* Error state */
+          <EmptyState
+            icon={<AlertCircle className="h-12 w-12" />}
+            title="Failed to load tasks"
+            description="There was a problem connecting to the server. Check your connection and try again."
+            action={{
+              label: 'Retry',
+              onClick: () => refetch(),
+              variant: 'outline',
+            }}
+          />
         ) : !data?.data.length ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-            <p className="mb-2">No tasks found.</p>
-            <p className="text-xs">
-              Press <kbd className="px-1 py-0.5 bg-muted rounded border border-border">⌘N</kbd> to create one
-            </p>
-          </div>
+          hasActiveFilters ? (
+            /* No results for current filters */
+            <EmptyState
+              icon={<SearchX className="h-12 w-12" />}
+              title="No matching tasks"
+              description="No tasks match your current filters. Try adjusting your search or filters."
+              action={{
+                label: 'Clear Filters',
+                onClick: () => handleFiltersChange({
+                  status: 'all',
+                  priority: 'all',
+                  search: '',
+                  sortBy: filters.sortBy,
+                  sortOrder: filters.sortOrder,
+                }),
+                variant: 'outline',
+              }}
+            />
+          ) : (
+            /* Truly empty — no tasks at all */
+            <EmptyState
+              icon={<ListTodo className="h-12 w-12" />}
+              title="No tasks yet"
+              description="Create your first task to get started. Use the button below or the keyboard shortcut."
+              action={{
+                label: 'Create Task',
+                onClick: () => {
+                  // Dispatch keyboard shortcut for creating task
+                  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'n', metaKey: true }));
+                },
+              }}
+              hint={
+                <span>
+                  or press <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border font-mono">⌘N</kbd>
+                </span>
+              }
+            />
+          )
         ) : (
-          <table className="w-full">
+          <table className="w-full" role="grid" aria-label="Tasks">
             <thead className="sticky top-0 bg-background border-b border-border">
               <tr className="text-left text-xs text-muted-foreground uppercase tracking-wider">
                 <th
-                  className="px-4 py-3 cursor-pointer hover:text-foreground"
+                  className="px-4 py-3 cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => toggleSort('title')}
+                  scope="col"
+                  aria-sort={mergedFilters.sortBy === 'title' ? (mergedFilters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   <span className="inline-flex items-center gap-1">
                     Title <ArrowUpDown className="h-3 w-3" />
                   </span>
                 </th>
-                <th className="px-4 py-3 w-[120px]">Status</th>
+                <th className="px-4 py-3 w-[120px]" scope="col">Status</th>
                 <th
-                  className="px-4 py-3 w-[100px] cursor-pointer hover:text-foreground"
+                  className="px-4 py-3 w-[100px] cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => toggleSort('priority')}
+                  scope="col"
+                  aria-sort={mergedFilters.sortBy === 'priority' ? (mergedFilters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   <span className="inline-flex items-center gap-1">
                     Priority <ArrowUpDown className="h-3 w-3" />
                   </span>
                 </th>
-                <th className="px-4 py-3 w-[50px]" title="My Day">
+                <th className="px-4 py-3 w-[50px]" title="My Day" scope="col" aria-label="My Day">
                   <Sun className="h-3.5 w-3.5" />
                 </th>
                 <th
-                  className="px-4 py-3 w-[120px] cursor-pointer hover:text-foreground"
+                  className="px-4 py-3 w-[120px] cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => toggleSort('created_at')}
+                  scope="col"
+                  aria-sort={mergedFilters.sortBy === 'created_at' ? (mergedFilters.sortOrder === 'asc' ? 'ascending' : 'descending') : 'none'}
                 >
                   <span className="inline-flex items-center gap-1">
                     Created <ArrowUpDown className="h-3 w-3" />
@@ -158,7 +225,8 @@ export function TaskList({
                 <tr
                   key={task.id}
                   className={cn(
-                    'border-b border-border cursor-pointer transition-colors hover:bg-accent/50',
+                    'border-b border-border cursor-pointer transition-all',
+                    'hover:bg-accent/50',
                     selectedTaskId === task.id && 'bg-accent/70',
                     focusedIndex === index && 'ring-2 ring-inset ring-primary/50 bg-accent/30'
                   )}
@@ -166,6 +234,9 @@ export function TaskList({
                     onSelectTask(task);
                     onFocusedIndexChange?.(index);
                   }}
+                  tabIndex={focusedIndex === index ? 0 : -1}
+                  role="row"
+                  aria-selected={selectedTaskId === task.id}
                 >
                   <td className="px-4 py-3 font-medium">{task.title}</td>
                   <td className="px-4 py-3">
@@ -180,11 +251,11 @@ export function TaskList({
                   </td>
                   <td className="px-4 py-3">
                     {task.myDay && (
-                      <Sun className="h-4 w-4 text-yellow-500" />
+                      <Sun className="h-4 w-4 text-yellow-500" aria-label="In My Day" />
                     )}
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {formatDate(task.createdAt)}
+                    <time dateTime={task.createdAt}>{formatDate(task.createdAt)}</time>
                   </td>
                 </tr>
               ))}

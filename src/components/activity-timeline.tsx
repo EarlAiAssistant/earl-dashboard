@@ -26,6 +26,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  History,
 } from 'lucide-react';
 import { Input } from '@/src/components/ui/input';
 import { Select } from '@/src/components/ui/select';
@@ -226,8 +227,14 @@ export function ActivityTimeline({
 
       {/* Timeline */}
       {activities.length === 0 ? (
-        <div className="py-6 text-center text-muted-foreground text-sm">
-          No activity yet
+        <div className="flex flex-col items-center justify-center py-12 text-center" role="status">
+          <History className="h-10 w-10 text-muted-foreground/20 mb-3" />
+          <p className="text-sm font-medium mb-1">No activity yet</p>
+          <p className="text-xs text-muted-foreground max-w-xs">
+            {taskId
+              ? 'Activity will appear here as changes are made to this task.'
+              : 'Create, update, or complete tasks to see the activity trail here.'}
+          </p>
         </div>
       ) : (
         <div className="space-y-0">

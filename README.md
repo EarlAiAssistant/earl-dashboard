@@ -1,93 +1,142 @@
-# Earl Dashboard — Task Management System
+# Earl Dashboard
 
-A fast, keyboard-first task management dashboard inspired by Linear. Built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Drizzle ORM.
+A fast, keyboard-first task management dashboard. No login required — works entirely in your browser with local profiles.
 
-## Features (Phase 1)
+## Features
 
-- **List View** — Sortable, filterable task table with search
-- **Kanban Board** — Drag-and-drop between 5 status columns (Triage → Backlog → In Progress → In Review → Done)
-- **Task Detail Panel** — Inline editing, activity log, metadata
-- **Full CRUD API** — RESTful endpoints with pagination, filtering, sorting
-- **Activity Tracking** — Automatic audit log for all task changes
-- **Dark Mode** — Default dark theme with CSS variable system
-- **Optimistic UI** — React Query for fast, responsive interactions
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) |
-| UI | React 19 + TypeScript + Tailwind CSS |
-| Database | SQLite (via better-sqlite3) — swap to PostgreSQL for production |
-| ORM | Drizzle ORM |
-| State | React Query (TanStack Query v5) |
-| Drag & Drop | @dnd-kit |
-| Icons | Lucide React |
+- 🗂️ **Multiple Views** — List, Kanban board, My Day, Activity log, Analytics
+- ⌨️ **Keyboard First** — Full keyboard navigation (j/k, 1-5 for status, ⌘K palette)
+- 👤 **Local Profiles** — Switch between named profiles, no login needed
+- 📊 **Analytics** — Task trends, status distribution, activity heatmaps
+- 🔔 **Notifications** — In-app notification center with preferences
+- 🤖 **Earl AI API** — Programmatic task management via REST API
+- 📦 **Import/Export** — Backup and restore tasks as JSON
+- 🎯 **Templates** — Quick-start templates for common task types
+- 🔍 **Advanced Filters** — Search, filter by status/priority/date, save custom views
+- 🪝 **Webhooks** — Outgoing webhook subscriptions for integrations
 
 ## Quick Start
 
 ```bash
 # Install dependencies
-npm install --legacy-peer-deps
+npm install
 
-# Start dev server
+# Start development server
 npm run dev
-
-# Open http://localhost:3000/dashboard
 ```
 
-The SQLite database is auto-created in `data/earl-dashboard.db` on first request.
+Open [http://localhost:3000](http://localhost:3000).
 
-## API Endpoints
+## Profile System
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/tasks` | List tasks (supports `?status=`, `?priority=`, `?sortBy=`, `?sortOrder=`, `?search=`, `?page=`, `?pageSize=`) |
-| `POST` | `/api/tasks` | Create task (`{ title, description?, status?, priority? }`) |
-| `GET` | `/api/tasks/:id` | Get task with activity log |
-| `PATCH` | `/api/tasks/:id` | Update task fields |
-| `DELETE` | `/api/tasks/:id` | Delete task |
+Earl Dashboard uses browser-based profiles instead of authentication. No login required.
 
-## Project Structure
+### How It Works
 
-```
-src/
-├── app/
-│   ├── api/tasks/          # REST API routes
-│   ├── dashboard/          # Main dashboard page
-│   ├── layout.tsx          # Root layout with providers
-│   ├── page.tsx            # Redirect to /dashboard
-│   └── providers.tsx       # React Query provider
-├── components/
-│   ├── ui/                 # Reusable UI primitives (Button, Badge, Input, Select, Textarea)
-│   ├── create-task-dialog.tsx
-│   ├── kanban-board.tsx    # Drag-and-drop board view
-│   ├── task-detail-panel.tsx
-│   └── task-list.tsx       # Filterable list view
-├── lib/
-│   ├── db/
-│   │   ├── index.ts        # Database connection + auto-migration
-│   │   └── schema.ts       # Drizzle ORM schema
-│   ├── hooks/
-│   │   └── use-tasks.ts    # React Query hooks for CRUD
-│   ├── types.ts            # TypeScript types and constants
-│   └── utils.ts            # Utility functions
-└── styles/
-    └── globals.css         # Tailwind + CSS variables
+- **First Visit**: A default profile ("My Tasks") is created automatically
+- **Switch Profiles**: Click the profile dropdown in the header to switch
+- **Create Profiles**: Add new profiles for different contexts (work, personal, etc.)
+- **Customize**: Each profile has a name and emoji avatar
+- **Data Separation**: Tasks are stored server-side in SQLite; profiles are stored in `localStorage`
+
+### Profile Features
+
+| Feature | Storage | Scope |
+|---------|---------|-------|
+| Profile name & avatar | `localStorage` | Per-browser |
+| Tasks | SQLite (server) | Shared |
+| Notification prefs | SQLite (server) | Per-profile |
+| Saved filters | SQLite (server) | Shared |
+
+### Import/Export
+
+Export your tasks as JSON for backup or sharing:
+1. Click the profile dropdown
+2. Click "Export" to download a JSON file
+3. Click "Import" to load tasks from a JSON file
+
+### Future: Multi-Device Sync
+
+The architecture is prepared for Supabase-based sync. Set the environment variables in `.env.local` to enable (currently disabled).
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `⌘K` | Command palette |
+| `⌘N` | Create new task |
+| `⌘/` | Show keyboard shortcuts |
+| `Esc` | Close modals / deselect |
+| `J` / `K` | Navigate task list |
+| `Enter` | Open selected task |
+| `1`-`5` | Set status (Triage→Done) |
+| `P` | Cycle priority |
+| `D` | Mark as done |
+| `A` | Toggle My Day |
+
+## Earl AI API
+
+Earl can create, update, and manage tasks programmatically:
+
+```bash
+# Create a task
+curl -X POST http://localhost:3000/api/earl \
+  -H "Authorization: Bearer $EARL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "create", "title": "New task", "priority": "high"}'
+
+# Update a task
+curl -X POST http://localhost:3000/api/earl \
+  -H "Authorization: Bearer $EARL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "update", "id": "task_id", "status": "in_progress"}'
+
+# Search tasks
+curl -X POST http://localhost:3000/api/earl \
+  -H "Authorization: Bearer $EARL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "search", "query": "bug fix"}'
 ```
 
 ## Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DATABASE_PATH` | `./data/earl-dashboard.db` | Path to SQLite database file |
+Copy `.env.example` to `.env.local`:
 
-## Next Steps (Phase 2)
+```bash
+cp .env.example .env.local
+```
 
-- [ ] Command palette (Cmd+K) with cmdk
-- [ ] Keyboard shortcuts (C = create, S = set status)
-- [ ] Supabase/PostgreSQL for production database
-- [ ] Authentication
-- [ ] Real-time updates
-- [ ] Task labels/tags
-- [ ] Bulk operations
+See `.env.example` for all available configuration options.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Database**: SQLite via better-sqlite3 + Drizzle ORM
+- **UI**: Tailwind CSS, Lucide icons, cmdk
+- **State**: React Query (TanStack Query)
+- **Drag & Drop**: dnd-kit
+- **Deploy**: Vercel-ready
+
+## Development
+
+```bash
+npm run dev        # Start dev server
+npm run build      # Production build
+npm run lint       # ESLint
+npm run type-check # TypeScript check
+```
+
+## Deployment
+
+### Vercel
+
+1. Push to GitHub
+2. Import project on Vercel
+3. Set environment variables
+4. Deploy
+
+Note: SQLite works in Vercel's serverless functions but data is ephemeral. For persistent storage, configure Supabase or use Vercel Postgres.
+
+## License
+
+Private project for Drew / Earl AI assistant.
