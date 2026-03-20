@@ -1,162 +1,93 @@
-# Earl Dashboard
+# Earl Dashboard — Task Management System
 
-A modern project management and task tracking dashboard for managing work, documenting decisions, and tracking progress.
+A fast, keyboard-first task management dashboard inspired by Linear. Built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Drizzle ORM.
 
-## Overview
+## Features (Phase 1)
 
-Earl Dashboard is a Jira-like task management system built with:
-- **Frontend:** Next.js + React + TypeScript + Tailwind CSS
-- **Backend:** Drizzle ORM + PostgreSQL
-- **UI Components:** shadcn/ui
-- **Deployment:** Vercel
+- **List View** — Sortable, filterable task table with search
+- **Kanban Board** — Drag-and-drop between 5 status columns (Triage → Backlog → In Progress → In Review → Done)
+- **Task Detail Panel** — Inline editing, activity log, metadata
+- **Full CRUD API** — RESTful endpoints with pagination, filtering, sorting
+- **Activity Tracking** — Automatic audit log for all task changes
+- **Dark Mode** — Default dark theme with CSS variable system
+- **Optimistic UI** — React Query for fast, responsive interactions
 
-## Features
+## Tech Stack
 
-- **List & Kanban Views** — Switch between list and board layouts
-- **Task Management** — Create, update, categorize, and prioritize tasks
-- **Status Tracking** — Triage → Backlog → In Progress → In Review → Done
-- **Priority Levels** — Urgent, High, Medium, Low
-- **Keyboard Navigation** — `Cmd+K` command palette, single-letter shortcuts
-- **Activity Logging** — Track all task updates and actions
-- **API** — Simple REST API with bearer token auth for programmatic access
-- **Documents Section** — Organized documentation and decision logs
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19 + TypeScript + Tailwind CSS |
+| Database | SQLite (via better-sqlite3) — swap to PostgreSQL for production |
+| ORM | Drizzle ORM |
+| State | React Query (TanStack Query v5) |
+| Drag & Drop | @dnd-kit |
+| Icons | Lucide React |
 
 ## Quick Start
 
-### Prerequisites
-- Node.js 18+
-- PostgreSQL database (or Neon)
-- Vercel account (for deployment)
-
-### Installation
-
 ```bash
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
 
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your database and API credentials
-
-# Run database migrations
-npm run db:migrate
-
-# Start development server
+# Start dev server
 npm run dev
+
+# Open http://localhost:3000/dashboard
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
+The SQLite database is auto-created in `data/earl-dashboard.db` on first request.
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/tasks` | List tasks (supports `?status=`, `?priority=`, `?sortBy=`, `?sortOrder=`, `?search=`, `?page=`, `?pageSize=`) |
+| `POST` | `/api/tasks` | Create task (`{ title, description?, status?, priority? }`) |
+| `GET` | `/api/tasks/:id` | Get task with activity log |
+| `PATCH` | `/api/tasks/:id` | Update task fields |
+| `DELETE` | `/api/tasks/:id` | Delete task |
 
 ## Project Structure
 
 ```
 src/
-├── app/          # Next.js app router pages and API routes
-├── components/   # React components (shared and page-specific)
-├── lib/          # Utilities, database setup, helpers
-└── styles/       # Global CSS and Tailwind configuration
-
-public/          # Static assets
-docs/            # Project documentation
+├── app/
+│   ├── api/tasks/          # REST API routes
+│   ├── dashboard/          # Main dashboard page
+│   ├── layout.tsx          # Root layout with providers
+│   ├── page.tsx            # Redirect to /dashboard
+│   └── providers.tsx       # React Query provider
+├── components/
+│   ├── ui/                 # Reusable UI primitives (Button, Badge, Input, Select, Textarea)
+│   ├── create-task-dialog.tsx
+│   ├── kanban-board.tsx    # Drag-and-drop board view
+│   ├── task-detail-panel.tsx
+│   └── task-list.tsx       # Filterable list view
+├── lib/
+│   ├── db/
+│   │   ├── index.ts        # Database connection + auto-migration
+│   │   └── schema.ts       # Drizzle ORM schema
+│   ├── hooks/
+│   │   └── use-tasks.ts    # React Query hooks for CRUD
+│   ├── types.ts            # TypeScript types and constants
+│   └── utils.ts            # Utility functions
+└── styles/
+    └── globals.css         # Tailwind + CSS variables
 ```
 
-## Documentation
+## Environment Variables
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** — System design and database schema
-- **[API.md](docs/API.md)** — REST API documentation
-- **[DEVELOPMENT.md](docs/DEVELOPMENT.md)** — Development workflow and conventions
-- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** — Deployment and environment setup
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_PATH` | `./data/earl-dashboard.db` | Path to SQLite database file |
 
-## Build Phases
+## Next Steps (Phase 2)
 
-### Phase 1 (Week 1)
-- [ ] List view (tasks, filtering, sorting)
-- [ ] Kanban board view (drag-and-drop)
-- [ ] Task CRUD operations
-- [ ] Basic API
-
-### Phase 2 (Week 2)
-- [ ] Keyboard shortcuts and command palette
-- [ ] "My Day" view
-- [ ] Advanced filtering and search
-- [ ] Task templates
-
-### Phase 3 (Week 3+)
-- [ ] Activity log and audit trail
-- [ ] Integrations (Slack, email, etc.)
-- [ ] Analytics and reporting
-- [ ] Advanced features (recurring tasks, subtasks, etc.)
-
-## Technology Stack
-
-**Frontend:**
-- Next.js 14 (App Router)
-- React 18
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- cmdk (command palette)
-- @dnd-kit (drag-and-drop)
-- React Query (server state)
-
-**Backend:**
-- Drizzle ORM
-- PostgreSQL
-- Vercel KV (optional, for caching)
-
-**Infrastructure:**
-- Vercel (hosting)
-- Neon (PostgreSQL)
-- GitHub (version control)
-
-## Development
-
-### Running Tests
-```bash
-npm run test
-```
-
-### Building for Production
-```bash
-npm run build
-npm start
-```
-
-### Database Migrations
-```bash
-npm run db:migrate       # Run pending migrations
-npm run db:rollback      # Rollback last migration
-npm run db:seed          # Seed development data
-```
-
-## Deployment
-
-Automated deployments to Vercel on every push to `main`.
-
-For manual deployment:
-```bash
-npm run build
-vercel deploy --prod
-```
-
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for detailed setup instructions.
-
-## Contributing
-
-1. Create a branch for your feature
-2. Make changes and test locally
-3. Push to GitHub
-4. Create a pull request
-5. Merge after review
-
-## License
-
-Proprietary — Earl AI Assistant
-
-## Support
-
-Questions or issues? Check the [documentation](docs/) or create an issue on GitHub.
-
----
-
-**Last updated:** March 20, 2026
+- [ ] Command palette (Cmd+K) with cmdk
+- [ ] Keyboard shortcuts (C = create, S = set status)
+- [ ] Supabase/PostgreSQL for production database
+- [ ] Authentication
+- [ ] Real-time updates
+- [ ] Task labels/tags
+- [ ] Bulk operations

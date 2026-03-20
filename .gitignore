@@ -40,3 +40,9 @@ credentials.md
 node_modules/
 .env.local
 .earl-config
+
+# Database
+data/
+*.db
+*.db-wal
+*.db-shm
