@@ -41,7 +41,7 @@ interface CommandPaletteProps {
   onFilterStatus: (status: TaskStatus | 'all') => void;
   onFilterPriority: (priority: TaskPriority | 'all') => void;
   onSelectTask: (task: Task) => void;
-  currentView: 'list' | 'kanban' | 'myday';
+  currentView: string;
 }
 
 export function CommandPalette({

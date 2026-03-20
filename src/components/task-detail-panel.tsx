@@ -1,5 +1,5 @@
 // ============================================================
-// Task detail panel with My Day toggle + shortcut hints
+// Task detail panel with enhanced activity timeline
 // ============================================================
 
 'use client';
@@ -10,6 +10,7 @@ import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
 import { Select } from '@/src/components/ui/select';
 import { Textarea } from '@/src/components/ui/textarea';
+import { ActivityTimeline } from '@/src/components/activity-timeline';
 import {
   useTask,
   useUpdateTask,
@@ -28,7 +29,19 @@ import {
 } from '@/src/lib/types';
 import type { TaskStatus, TaskPriority } from '@/src/lib/types';
 import { formatDateTime } from '@/src/lib/utils';
-import { X, Pencil, Check, Trash2, Loader2, Clock, User, Sun, SunDim } from 'lucide-react';
+import {
+  X,
+  Pencil,
+  Check,
+  Trash2,
+  Loader2,
+  Clock,
+  User,
+  Sun,
+  SunDim,
+  Archive,
+  Bot,
+} from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
 interface TaskDetailPanelProps {
@@ -43,7 +56,6 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
   const addToMyDay = useAddToMyDay();
   const removeFromMyDay = useRemoveFromMyDay();
 
-  // Edit state
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
@@ -99,6 +111,12 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
     onClose();
   };
 
+  const handleArchive = () => {
+    updateTask.mutate({ id: taskId, archived: true } as never);
+    toastSuccess('Task archived');
+    onClose();
+  };
+
   const handleToggleMyDay = () => {
     if (task.myDay) {
       removeFromMyDay.mutate(taskId);
@@ -113,9 +131,16 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
     <div className="h-full flex flex-col border-l border-border bg-card">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <span className="text-xs font-mono text-muted-foreground uppercase">{task.id}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono text-muted-foreground uppercase">{task.id}</span>
+          {task.createdBy === 'earl' && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">
+              <Bot className="h-3 w-3" />
+              Earl
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-1">
-          {/* My Day toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -124,6 +149,9 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
             className={cn(task.myDay && 'text-yellow-500')}
           >
             {task.myDay ? <Sun className="h-4 w-4" /> : <SunDim className="h-4 w-4" />}
+          </Button>
+          <Button variant="ghost" size="icon" onClick={handleArchive} title="Archive task">
+            <Archive className="h-4 w-4 text-muted-foreground" />
           </Button>
           <Button variant="ghost" size="icon" onClick={handleDelete} title="Delete task">
             <Trash2 className="h-4 w-4 text-destructive" />
@@ -164,7 +192,7 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
           )}
         </div>
 
-        {/* Status & Priority with shortcut hints */}
+        {/* Status & Priority */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-medium text-muted-foreground uppercase mb-2 flex items-center gap-2">
@@ -228,7 +256,12 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
         <div className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <User className="h-3.5 w-3.5" />
-            <span>Created by <strong className="text-foreground">{task.createdBy}</strong></span>
+            <span>
+              Created by{' '}
+              <strong className="text-foreground">
+                {task.createdBy === 'earl' ? '🤖 Earl' : task.createdBy}
+              </strong>
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-3.5 w-3.5" />
@@ -238,6 +271,12 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
             <Clock className="h-3.5 w-3.5" />
             <span>Updated {formatDateTime(task.updatedAt)}</span>
           </div>
+          {task.completedAt && (
+            <div className="flex items-center gap-2">
+              <Check className="h-3.5 w-3.5 text-green-400" />
+              <span>Completed {formatDateTime(task.completedAt)}</span>
+            </div>
+          )}
           {task.myDay && (
             <div className="flex items-center gap-2">
               <Sun className="h-3.5 w-3.5 text-yellow-500" />
@@ -248,58 +287,17 @@ export function TaskDetailPanel({ taskId, onClose }: TaskDetailPanelProps) {
 
         {/* Quick action hints */}
         <div className="flex flex-wrap gap-2 pt-2">
-          <kbd className="px-2 py-1 text-[10px] bg-muted rounded border border-border text-muted-foreground">
-            D = Done
-          </kbd>
-          <kbd className="px-2 py-1 text-[10px] bg-muted rounded border border-border text-muted-foreground">
-            A = My Day
-          </kbd>
-          <kbd className="px-2 py-1 text-[10px] bg-muted rounded border border-border text-muted-foreground">
-            P = Priority
-          </kbd>
+          <kbd className="px-2 py-1 text-[10px] bg-muted rounded border border-border text-muted-foreground">D = Done</kbd>
+          <kbd className="px-2 py-1 text-[10px] bg-muted rounded border border-border text-muted-foreground">A = My Day</kbd>
+          <kbd className="px-2 py-1 text-[10px] bg-muted rounded border border-border text-muted-foreground">P = Priority</kbd>
         </div>
 
-        {/* Activity Log */}
+        {/* Activity Timeline */}
         <div>
           <label className="text-xs font-medium text-muted-foreground uppercase mb-3 block">
             Activity Log
           </label>
-          {task.activities && task.activities.length > 0 ? (
-            <div className="space-y-3">
-              {task.activities.map((activity) => {
-                let details = '';
-                try {
-                  const parsed = JSON.parse(activity.details || '{}');
-                  if (parsed.changes) {
-                    details = parsed.changes.join(', ');
-                  } else {
-                    details = activity.details || '';
-                  }
-                } catch {
-                  details = activity.details || '';
-                }
-
-                return (
-                  <div
-                    key={activity.id}
-                    className="flex gap-3 text-sm border-l-2 border-border pl-3 py-1"
-                  >
-                    <div className="flex-1">
-                      <span className="font-medium capitalize">{activity.action}</span>
-                      {details && (
-                        <span className="text-muted-foreground"> — {details}</span>
-                      )}
-                    </div>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">
-                      {formatDateTime(activity.timestamp)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground italic">No activity yet</p>
-          )}
+          <ActivityTimeline taskId={taskId} compact />
         </div>
       </div>
     </div>

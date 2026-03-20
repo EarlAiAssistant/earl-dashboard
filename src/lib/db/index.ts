@@ -36,16 +36,62 @@ sqlite.exec(`
     created_by TEXT NOT NULL DEFAULT 'system',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    completed_at TEXT,
     my_day TEXT,
-    my_day_order INTEGER
+    my_day_order INTEGER,
+    archived INTEGER NOT NULL DEFAULT 0
   );
 
   CREATE TABLE IF NOT EXISTS activities (
     id TEXT PRIMARY KEY,
     task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
     action TEXT NOT NULL,
+    actor TEXT NOT NULL DEFAULT 'user',
     details TEXT,
     timestamp TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT,
+    task_id TEXT REFERENCES tasks(id) ON DELETE SET NULL,
+    actor TEXT NOT NULL DEFAULT 'system',
+    read INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS webhooks (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    events TEXT NOT NULL,
+    secret TEXT,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    last_triggered TEXT,
+    fail_count INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS integrations (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    config TEXT NOT NULL,
+    enabled INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS notification_preferences (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL DEFAULT 'default',
+    task_created INTEGER NOT NULL DEFAULT 1,
+    task_completed INTEGER NOT NULL DEFAULT 1,
+    status_changed INTEGER NOT NULL DEFAULT 1,
+    priority_changed INTEGER NOT NULL DEFAULT 0,
+    high_priority INTEGER NOT NULL DEFAULT 1,
+    earl_action INTEGER NOT NULL DEFAULT 1
   );
 
   CREATE TABLE IF NOT EXISTS task_templates (
@@ -71,16 +117,21 @@ sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
   CREATE INDEX IF NOT EXISTS idx_tasks_created_at ON tasks(created_at);
   CREATE INDEX IF NOT EXISTS idx_tasks_my_day ON tasks(my_day);
+  CREATE INDEX IF NOT EXISTS idx_tasks_archived ON tasks(archived);
   CREATE INDEX IF NOT EXISTS idx_activities_task_id ON activities(task_id);
+  CREATE INDEX IF NOT EXISTS idx_activities_actor ON activities(actor);
+  CREATE INDEX IF NOT EXISTS idx_activities_timestamp ON activities(timestamp);
+  CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(read);
+  CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications(created_at);
 `);
 
-// Phase 2: Add columns to existing tables if upgrading
-try {
-  sqlite.exec(`ALTER TABLE tasks ADD COLUMN my_day TEXT`);
-} catch { /* column already exists */ }
-try {
-  sqlite.exec(`ALTER TABLE tasks ADD COLUMN my_day_order INTEGER`);
-} catch { /* column already exists */ }
+// Phase 2/3: Add columns to existing tables if upgrading
+const safeAlter = (sql: string) => { try { sqlite.exec(sql); } catch { /* column already exists */ } };
+safeAlter('ALTER TABLE tasks ADD COLUMN my_day TEXT');
+safeAlter('ALTER TABLE tasks ADD COLUMN my_day_order INTEGER');
+safeAlter('ALTER TABLE tasks ADD COLUMN completed_at TEXT');
+safeAlter('ALTER TABLE tasks ADD COLUMN archived INTEGER NOT NULL DEFAULT 0');
+safeAlter('ALTER TABLE activities ADD COLUMN actor TEXT NOT NULL DEFAULT \'user\'');
 
 // Insert built-in templates if they don't exist
 const templateCount = sqlite.prepare('SELECT COUNT(*) as count FROM task_templates WHERE is_built_in = 1').get() as { count: number };
@@ -92,5 +143,14 @@ if (templateCount.count === 0) {
       ('tpl_feature', 'Feature Request', 'Request a new feature', 'backlog', 'medium', '[Feature] ', '## Problem Statement\n\n\n## Proposed Solution\n\n\n## Acceptance Criteria\n- [ ] \n- [ ] \n- [ ] ', 1),
       ('tpl_design', 'Design Task', 'Design-related work', 'backlog', 'medium', '[Design] ', '## Objective\n\n\n## Requirements\n\n\n## Deliverables\n- [ ] \n- [ ] ', 1),
       ('tpl_chore', 'Chore', 'Maintenance or cleanup task', 'backlog', 'low', '[Chore] ', '## What needs to be done\n\n\n## Why\n\n', 1);
+  `);
+}
+
+// Insert default notification preferences if none exist
+const prefCount = sqlite.prepare('SELECT COUNT(*) as count FROM notification_preferences').get() as { count: number };
+if (prefCount.count === 0) {
+  sqlite.exec(`
+    INSERT INTO notification_preferences (id, user_id, task_created, task_completed, status_changed, priority_changed, high_priority, earl_action)
+    VALUES ('pref_default', 'default', 1, 1, 1, 0, 1, 1);
   `);
 }

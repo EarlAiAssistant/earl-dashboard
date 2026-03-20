@@ -9,6 +9,13 @@ import { db } from '@/src/lib/db';
 import { tasks, activities } from '@/src/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
+import { logTaskUpdated, logTaskDeleted } from '@/src/lib/services/activity-logger';
+import {
+  notifyTaskCompleted,
+  notifyStatusChanged,
+  notifyHighPriority,
+} from '@/src/lib/services/notifications';
+import { fireTaskUpdated, fireTaskCompleted, fireTaskDeleted } from '@/src/lib/services/webhooks';
 import type { TaskStatus, TaskPriority, Task, Activity } from '@/src/lib/types';
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -50,43 +57,72 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const now = new Date().toISOString();
+    const actor = body._actor || 'user'; // Internal field for Earl API
     const updates: Record<string, unknown> = { updatedAt: now };
-    const changes: string[] = [];
+    const changes: Array<{ field: string; from: unknown; to: unknown }> = [];
 
-    // Track each field change for the activity log
     if (body.title !== undefined && body.title !== existing.title) {
       updates.title = body.title.trim();
-      changes.push(`title: "${existing.title}" → "${updates.title}"`);
+      changes.push({ field: 'title', from: existing.title, to: updates.title });
     }
     if (body.description !== undefined && body.description !== existing.description) {
       updates.description = body.description?.trim() || null;
-      changes.push('description updated');
+      changes.push({ field: 'description', from: existing.description, to: updates.description });
     }
     if (body.status !== undefined && body.status !== existing.status) {
       updates.status = body.status;
-      changes.push(`status: ${existing.status} → ${body.status}`);
+      changes.push({ field: 'status', from: existing.status, to: body.status });
+
+      // Track completion time
+      if (body.status === 'done') {
+        updates.completedAt = now;
+        notifyTaskCompleted(existing.title, id, actor);
+        fireTaskCompleted({ ...mapTask(existing), status: 'done' } as unknown as Record<string, unknown>);
+      } else if (existing.status === 'done') {
+        updates.completedAt = null; // Reopened
+      }
+
+      notifyStatusChanged(existing.title, id, existing.status, body.status, actor);
     }
     if (body.priority !== undefined && body.priority !== existing.priority) {
       updates.priority = body.priority;
-      changes.push(`priority: ${existing.priority} → ${body.priority}`);
+      changes.push({ field: 'priority', from: existing.priority, to: body.priority });
+
+      if (body.priority === 'urgent') {
+        notifyHighPriority(existing.title, id, actor);
+      }
+    }
+    if (body.archived !== undefined && body.archived !== existing.archived) {
+      updates.archived = body.archived;
+      changes.push({ field: 'archived', from: existing.archived, to: body.archived });
     }
 
-    if (changes.length === 0) {
+    if (changes.length === 0 && !body._note) {
       return NextResponse.json(mapTask(existing));
     }
 
-    db.update(tasks).set(updates).where(eq(tasks.id, id)).run();
+    if (changes.length > 0) {
+      db.update(tasks).set(updates).where(eq(tasks.id, id)).run();
+      logTaskUpdated(id, changes, actor);
+      fireTaskUpdated(
+        mapTask({ ...existing, ...updates } as typeof existing) as unknown as Record<string, unknown>,
+        Object.fromEntries(changes.map((c) => [c.field, { from: c.from, to: c.to }]))
+      );
+    }
 
-    // Log activity for each change
-    db.insert(activities)
-      .values({
-        id: generateId(),
-        taskId: id,
-        action: 'updated',
-        details: JSON.stringify({ changes }),
-        timestamp: now,
-      })
-      .run();
+    // Handle note (from Earl API)
+    if (body._note) {
+      db.insert(activities)
+        .values({
+          id: generateId(),
+          taskId: id,
+          action: 'note_added',
+          actor,
+          details: JSON.stringify({ note: body._note }),
+          timestamp: now,
+        })
+        .run();
+    }
 
     const updated = db.select().from(tasks).where(eq(tasks.id, id)).get();
     return NextResponse.json(mapTask(updated!));
@@ -105,7 +141,9 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Task not found' }, { status: 404 });
     }
 
-    // Activities cascade-delete via FK
+    logTaskDeleted(id, existing.title, 'user');
+    fireTaskDeleted(id);
+
     db.delete(tasks).where(eq(tasks.id, id)).run();
 
     return NextResponse.json({ success: true, id });
@@ -125,8 +163,10 @@ function mapTask(row: typeof tasks.$inferSelect): Task {
     createdBy: row.createdBy,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    completedAt: row.completedAt,
     myDay: row.myDay,
     myDayOrder: row.myDayOrder,
+    archived: row.archived,
   };
 }
 
@@ -135,6 +175,7 @@ function mapActivity(row: typeof activities.$inferSelect): Activity {
     id: row.id,
     taskId: row.taskId,
     action: row.action,
+    actor: row.actor,
     details: row.details,
     timestamp: row.timestamp,
   };

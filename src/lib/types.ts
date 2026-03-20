@@ -44,6 +44,38 @@ export const STATUS_COLORS: Record<TaskStatus, string> = {
   done: 'bg-green-500/10 text-green-400 border-green-500/20',
 };
 
+/** Activity action types */
+export const ACTIVITY_ACTIONS = [
+  'created',
+  'updated',
+  'status_changed',
+  'priority_changed',
+  'description_updated',
+  'title_updated',
+  'deleted',
+  'archived',
+  'restored',
+  'added_to_my_day',
+  'removed_from_my_day',
+  'note_added',
+] as const;
+export type ActivityAction = (typeof ACTIVITY_ACTIONS)[number];
+
+/** Actor types */
+export const ACTORS = ['user', 'earl', 'system'] as const;
+export type Actor = (typeof ACTORS)[number];
+
+/** Notification types */
+export const NOTIFICATION_TYPES = [
+  'task_created',
+  'task_completed',
+  'status_changed',
+  'priority_changed',
+  'high_priority',
+  'earl_action',
+] as const;
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+
 /** Core task shape returned from the API */
 export interface Task {
   id: string;
@@ -52,10 +84,12 @@ export interface Task {
   status: TaskStatus;
   priority: TaskPriority;
   createdBy: string;
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
-  myDay: string | null; // ISO timestamp when added to My Day
-  myDayOrder: number | null; // Sort order in My Day view
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+  myDay: string | null;
+  myDayOrder: number | null;
+  archived: boolean;
 }
 
 /** Activity log entry */
@@ -63,8 +97,56 @@ export interface Activity {
   id: string;
   taskId: string;
   action: string;
+  actor: string;
   details: string | null;
-  timestamp: string; // ISO date string
+  timestamp: string;
+}
+
+/** Notification */
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string | null;
+  taskId: string | null;
+  actor: string;
+  read: boolean;
+  createdAt: string;
+}
+
+/** Webhook subscription */
+export interface Webhook {
+  id: string;
+  name: string;
+  url: string;
+  events: string[];
+  secret: string | null;
+  enabled: boolean;
+  lastTriggered: string | null;
+  failCount: number;
+  createdAt: string;
+}
+
+/** Integration config */
+export interface Integration {
+  id: string;
+  type: 'slack' | 'email' | 'webhook';
+  name: string;
+  config: Record<string, unknown>;
+  enabled: boolean;
+  createdAt: string;
+}
+
+/** Notification preferences */
+export interface NotificationPreferences {
+  id: string;
+  userId: string;
+  taskCreated: boolean;
+  taskCompleted: boolean;
+  statusChanged: boolean;
+  priorityChanged: boolean;
+  highPriority: boolean;
+  earlAction: boolean;
 }
 
 /** Input for creating a task */
@@ -103,9 +185,45 @@ export interface TaskFilters {
   pageSize?: number;
   search?: string;
   createdBy?: string;
-  dateFrom?: string; // ISO date string
-  dateTo?: string; // ISO date string
-  myDay?: boolean; // Filter to My Day tasks only
+  dateFrom?: string;
+  dateTo?: string;
+  myDay?: boolean;
+  archived?: boolean;
+}
+
+/** Activity filters */
+export interface ActivityFilters {
+  taskId?: string;
+  action?: string;
+  actor?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+/** Analytics data shapes */
+export interface AnalyticsOverview {
+  totalTasks: number;
+  tasksThisWeek: number;
+  tasksThisMonth: number;
+  completedTasks: number;
+  completedThisWeek: number;
+  completedThisMonth: number;
+  averageCompletionHours: number | null;
+  byStatus: Record<TaskStatus, number>;
+  byPriority: Record<TaskPriority, number>;
+}
+
+export interface AnalyticsTrend {
+  date: string;
+  created: number;
+  completed: number;
+}
+
+export interface AnalyticsHourly {
+  hour: number;
+  count: number;
 }
 
 /** Task template */
@@ -137,7 +255,7 @@ export interface Toast {
   type: ToastType;
   title: string;
   description?: string;
-  duration?: number; // ms, default 3000
+  duration?: number;
 }
 
 /** Keyboard shortcut definition */
@@ -145,7 +263,31 @@ export interface KeyboardShortcut {
   key: string;
   label: string;
   description: string;
-  meta?: boolean; // Cmd/Ctrl
+  meta?: boolean;
   shift?: boolean;
   context?: 'global' | 'list' | 'detail';
+}
+
+/** Earl API types */
+export interface EarlCreateTaskRequest {
+  title: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  note?: string;
+}
+
+export interface EarlUpdateTaskRequest {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  note?: string;
+}
+
+export interface EarlSearchRequest {
+  query?: string;
+  status?: TaskStatus;
+  priority?: TaskPriority;
+  limit?: number;
 }

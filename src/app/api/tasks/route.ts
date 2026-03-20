@@ -5,9 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/lib/db';
-import { tasks, activities } from '@/src/lib/db/schema';
+import { tasks } from '@/src/lib/db/schema';
 import { eq, desc, asc, and, like, sql, or, gte, lte, isNotNull } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
+import { logTaskCreated } from '@/src/lib/services/activity-logger';
+import { notifyTaskCreated, notifyHighPriority } from '@/src/lib/services/notifications';
+import { fireTaskCreated } from '@/src/lib/services/webhooks';
 import type { TaskStatus, TaskPriority, TaskFilters, PaginatedResponse, Task } from '@/src/lib/types';
 
 export async function GET(request: NextRequest) {
@@ -26,10 +29,18 @@ export async function GET(request: NextRequest) {
       dateFrom: searchParams.get('dateFrom') || undefined,
       dateTo: searchParams.get('dateTo') || undefined,
       myDay: searchParams.get('myDay') === 'true' || undefined,
+      archived: searchParams.get('archived') === 'true' || undefined,
     };
 
-    // Build where conditions
     const conditions = [];
+
+    // By default, exclude archived unless explicitly requested
+    if (filters.archived) {
+      conditions.push(eq(tasks.archived, true));
+    } else {
+      conditions.push(eq(tasks.archived, false));
+    }
+
     if (filters.status && filters.status !== 'all') {
       conditions.push(eq(tasks.status, filters.status));
     }
@@ -37,7 +48,6 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(tasks.priority, filters.priority));
     }
     if (filters.search) {
-      // Search across title AND description
       conditions.push(
         or(
           like(tasks.title, `%${filters.search}%`),
@@ -60,7 +70,6 @@ export async function GET(request: NextRequest) {
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
 
-    // Sort mapping
     const sortColumn = {
       created_at: tasks.createdAt,
       updated_at: tasks.updatedAt,
@@ -70,7 +79,6 @@ export async function GET(request: NextRequest) {
 
     const orderFn = filters.sortOrder === 'asc' ? asc : desc;
 
-    // Count total
     const countResult = db
       .select({ count: sql<number>`count(*)` })
       .from(tasks)
@@ -78,7 +86,6 @@ export async function GET(request: NextRequest) {
       .get();
     const total = countResult?.count ?? 0;
 
-    // Fetch page
     const page = filters.page || 1;
     const pageSize = Math.min(filters.pageSize || 50, 100);
     const offset = (page - 1) * pageSize;
@@ -103,10 +110,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('GET /api/tasks error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch tasks' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 });
   }
 }
 
@@ -114,16 +118,13 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Validate required fields
     if (!body.title || typeof body.title !== 'string' || body.title.trim().length === 0) {
-      return NextResponse.json(
-        { error: 'Title is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
     const id = generateId();
     const now = new Date().toISOString();
+    const actor = body.createdBy || 'user';
 
     const newTask = {
       id,
@@ -131,37 +132,36 @@ export async function POST(request: NextRequest) {
       description: body.description?.trim() || null,
       status: body.status || 'triage',
       priority: body.priority || 'medium',
-      createdBy: body.createdBy || 'user',
+      createdBy: actor,
       createdAt: now,
       updatedAt: now,
+      completedAt: body.status === 'done' ? now : null,
       myDay: null,
       myDayOrder: null,
+      archived: false,
     };
 
     db.insert(tasks).values(newTask).run();
 
-    // Log activity
-    db.insert(activities)
-      .values({
-        id: generateId(),
-        taskId: id,
-        action: 'created',
-        details: JSON.stringify({ title: newTask.title, status: newTask.status, priority: newTask.priority }),
-        timestamp: now,
-      })
-      .run();
+    // Activity log
+    logTaskCreated(id, newTask.title, actor);
+
+    // Notifications
+    notifyTaskCreated(newTask.title, id, actor);
+    if (newTask.priority === 'urgent') {
+      notifyHighPriority(newTask.title, id, actor);
+    }
+
+    // Webhooks
+    fireTaskCreated(newTask as unknown as Record<string, unknown>);
 
     return NextResponse.json(mapTask(newTask), { status: 201 });
   } catch (error) {
     console.error('POST /api/tasks error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create task' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create task' }, { status: 500 });
   }
 }
 
-/** Map a DB row to the API Task shape */
 function mapTask(row: typeof tasks.$inferSelect): Task {
   return {
     id: row.id,
@@ -172,7 +172,9 @@ function mapTask(row: typeof tasks.$inferSelect): Task {
     createdBy: row.createdBy,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    completedAt: row.completedAt,
     myDay: row.myDay,
     myDayOrder: row.myDayOrder,
+    archived: row.archived,
   };
 }
