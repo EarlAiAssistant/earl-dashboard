@@ -125,6 +125,8 @@ function mapTask(row: typeof tasks.$inferSelect): Task {
     createdBy: row.createdBy,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    myDay: row.myDay,
+    myDayOrder: row.myDayOrder,
   };
 }
 

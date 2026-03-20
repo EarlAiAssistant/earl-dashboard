@@ -79,3 +79,39 @@
 * {
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
 }
+
+/* Toast animations */
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-in {
+  animation: slide-in-from-right 0.3s ease-out, fade-in 0.3s ease-out;
+}
+
+/* Command palette focus styles */
+[cmdk-item][data-selected="true"],
+[cmdk-item][aria-selected="true"] {
+  background: hsl(var(--accent));
+}
+
+[cmdk-group-heading] {
+  @apply text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 py-2;
+}
+
+/* Keyboard focused row highlight */
+.ring-inset {
+  --tw-ring-inset: inset;
+}

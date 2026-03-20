@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/src/lib/db';
 import { tasks, activities } from '@/src/lib/db/schema';
-import { eq, desc, asc, and, like, sql } from 'drizzle-orm';
+import { eq, desc, asc, and, like, sql, or, gte, lte, isNotNull } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
 import type { TaskStatus, TaskPriority, TaskFilters, PaginatedResponse, Task } from '@/src/lib/types';
 
@@ -22,6 +22,10 @@ export async function GET(request: NextRequest) {
       page: parseInt(searchParams.get('page') || '1'),
       pageSize: parseInt(searchParams.get('pageSize') || '50'),
       search: searchParams.get('search') || undefined,
+      createdBy: searchParams.get('createdBy') || undefined,
+      dateFrom: searchParams.get('dateFrom') || undefined,
+      dateTo: searchParams.get('dateTo') || undefined,
+      myDay: searchParams.get('myDay') === 'true' || undefined,
     };
 
     // Build where conditions
@@ -33,7 +37,25 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(tasks.priority, filters.priority));
     }
     if (filters.search) {
-      conditions.push(like(tasks.title, `%${filters.search}%`));
+      // Search across title AND description
+      conditions.push(
+        or(
+          like(tasks.title, `%${filters.search}%`),
+          like(tasks.description, `%${filters.search}%`)
+        )!
+      );
+    }
+    if (filters.createdBy) {
+      conditions.push(eq(tasks.createdBy, filters.createdBy));
+    }
+    if (filters.dateFrom) {
+      conditions.push(gte(tasks.createdAt, filters.dateFrom));
+    }
+    if (filters.dateTo) {
+      conditions.push(lte(tasks.createdAt, filters.dateTo));
+    }
+    if (filters.myDay) {
+      conditions.push(isNotNull(tasks.myDay));
     }
 
     const where = conditions.length > 0 ? and(...conditions) : undefined;
@@ -112,6 +134,8 @@ export async function POST(request: NextRequest) {
       createdBy: body.createdBy || 'user',
       createdAt: now,
       updatedAt: now,
+      myDay: null,
+      myDayOrder: null,
     };
 
     db.insert(tasks).values(newTask).run();
@@ -148,5 +172,7 @@ function mapTask(row: typeof tasks.$inferSelect): Task {
     createdBy: row.createdBy,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    myDay: row.myDay,
+    myDayOrder: row.myDayOrder,
   };
 }

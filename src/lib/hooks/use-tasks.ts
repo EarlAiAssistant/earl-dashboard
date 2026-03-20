@@ -117,3 +117,79 @@ export function useDeleteTask() {
     },
   });
 }
+
+/** Add task to My Day */
+export function useAddToMyDay() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Task, Error, string>({
+    mutationFn: async (id) => {
+      const res = await fetch(`/api/tasks/${id}/my-day`, { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to add to My Day');
+      return res.json();
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [TASKS_KEY] });
+    },
+  });
+}
+
+/** Remove task from My Day */
+export function useRemoveFromMyDay() {
+  const queryClient = useQueryClient();
+
+  return useMutation<{ success: boolean; id: string }, Error, string>({
+    mutationFn: async (id) => {
+      const res = await fetch(`/api/tasks/${id}/my-day`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to remove from My Day');
+      return res.json();
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: [TASKS_KEY] });
+    },
+  });
+}
+
+/** Fetch task templates */
+export function useTemplates() {
+  return useQuery<import('@/src/lib/types').TaskTemplate[]>({
+    queryKey: ['templates'],
+    queryFn: async () => {
+      const res = await fetch('/api/templates');
+      if (!res.ok) throw new Error('Failed to fetch templates');
+      return res.json();
+    },
+  });
+}
+
+/** Fetch saved filters */
+export function useSavedFilters() {
+  return useQuery<import('@/src/lib/types').SavedFilter[]>({
+    queryKey: ['saved-filters'],
+    queryFn: async () => {
+      const res = await fetch('/api/filters');
+      if (!res.ok) throw new Error('Failed to fetch saved filters');
+      return res.json();
+    },
+  });
+}
+
+/** Save a named filter */
+export function useSaveFilter() {
+  const queryClient = useQueryClient();
+
+  return useMutation<import('@/src/lib/types').SavedFilter, Error, { name: string; filters: TaskFilters }>({
+    mutationFn: async ({ name, filters }) => {
+      const res = await fetch('/api/filters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, filters }),
+      });
+      if (!res.ok) throw new Error('Failed to save filter');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-filters'] });
+    },
+  });
+}

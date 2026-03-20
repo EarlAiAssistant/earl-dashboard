@@ -54,6 +54,8 @@ export interface Task {
   createdBy: string;
   createdAt: string; // ISO date string
   updatedAt: string; // ISO date string
+  myDay: string | null; // ISO timestamp when added to My Day
+  myDayOrder: number | null; // Sort order in My Day view
 }
 
 /** Activity log entry */
@@ -100,4 +102,50 @@ export interface TaskFilters {
   page?: number;
   pageSize?: number;
   search?: string;
+  createdBy?: string;
+  dateFrom?: string; // ISO date string
+  dateTo?: string; // ISO date string
+  myDay?: boolean; // Filter to My Day tasks only
+}
+
+/** Task template */
+export interface TaskTemplate {
+  id: string;
+  name: string;
+  description: string | null;
+  defaultStatus: TaskStatus;
+  defaultPriority: TaskPriority;
+  titleTemplate: string | null;
+  descriptionTemplate: string | null;
+  isBuiltIn: boolean;
+  createdAt: string;
+}
+
+/** Saved filter view */
+export interface SavedFilter {
+  id: string;
+  name: string;
+  filters: TaskFilters;
+  createdAt: string;
+}
+
+/** Toast notification types */
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
+
+export interface Toast {
+  id: string;
+  type: ToastType;
+  title: string;
+  description?: string;
+  duration?: number; // ms, default 3000
+}
+
+/** Keyboard shortcut definition */
+export interface KeyboardShortcut {
+  key: string;
+  label: string;
+  description: string;
+  meta?: boolean; // Cmd/Ctrl
+  shift?: boolean;
+  context?: 'global' | 'list' | 'detail';
 }
