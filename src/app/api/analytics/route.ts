@@ -4,12 +4,20 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { tasks } from '@/src/lib/db/schema';
 import { eq, sql, and, gte, lte } from 'drizzle-orm';
 import type { TaskStatus, TaskPriority } from '@/src/lib/types';
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function GET(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type') || 'overview';

@@ -5,11 +5,19 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { notifications } from '@/src/lib/db/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function GET(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
@@ -56,6 +64,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const body = await request.json();
 
@@ -93,6 +102,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

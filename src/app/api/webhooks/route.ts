@@ -7,13 +7,21 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { webhooks } from '@/src/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
 import crypto from 'crypto';
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function GET() {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const rows = db.select().from(webhooks).all();
     return NextResponse.json(
@@ -29,6 +37,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const body = await request.json();
 
@@ -60,6 +69,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const body = await request.json();
     if (!body.id) {
@@ -87,6 +97,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

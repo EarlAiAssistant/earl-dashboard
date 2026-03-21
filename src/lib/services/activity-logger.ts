@@ -2,7 +2,7 @@
 // Activity logger — centralized audit trail
 // ============================================================
 
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { activities } from '@/src/lib/db/schema';
 import { generateId } from '@/src/lib/utils';
 
@@ -15,6 +15,7 @@ interface LogActivityInput {
 
 /** Log an activity entry */
 export function logActivity(input: LogActivityInput): void {
+  if (!DB_AVAILABLE) return; // Silently skip when DB unavailable
   db.insert(activities)
     .values({
       id: generateId(),

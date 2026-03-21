@@ -7,7 +7,7 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { tasks, activities } from '@/src/lib/db/schema';
 import { eq, desc, like, or, sql } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
@@ -31,7 +31,15 @@ function authenticate(request: NextRequest): boolean {
   return token === EARL_API_KEY;
 }
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function POST(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   if (!authenticate(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -65,6 +73,7 @@ export async function POST(request: NextRequest) {
 
 // Also support GET for search
 export async function GET(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   if (!authenticate(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

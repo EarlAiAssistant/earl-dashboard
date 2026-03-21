@@ -128,14 +128,51 @@ npm run type-check # TypeScript check
 
 ## Deployment
 
-### Vercel
+### Vercel (Browser Storage Mode)
 
-1. Push to GitHub
-2. Import project on Vercel
-3. Set environment variables
-4. Deploy
+Vercel's serverless functions run in ephemeral containers — SQLite files don't persist between requests. The app automatically detects this and falls back to **browser localStorage** for task storage.
 
-Note: SQLite works in Vercel's serverless functions but data is ephemeral. For persistent storage, configure Supabase or use Vercel Postgres.
+**What works on Vercel (out of the box):**
+- ✅ All task CRUD — create, read, update, delete
+- ✅ My Day, status/priority management
+- ✅ Local profiles (already browser-based)
+- ✅ Settings panel shows current storage mode
+- ⚠️ Tasks stored in this browser only — no cross-device sync
+- ❌ Webhooks, analytics, activity log (require DB)
+
+**How the fallback works:**
+1. On first API call, the app checks if the server DB is available
+2. If the API returns `503 DB_UNAVAILABLE`, it switches to `localStorage` mode
+3. A toast notifies: *"Running in offline mode (browser storage only)"*
+4. All subsequent operations bypass the API and use `localStorage` directly
+5. Mode is remembered in `localStorage` key `app_storage_mode`
+
+### Vercel (Full Persistence with Neon PostgreSQL) — Recommended
+
+For real persistent storage on Vercel:
+
+1. Create a free database at [neon.tech](https://neon.tech)
+2. Get your connection string
+3. Add to Vercel environment variables:
+   ```
+   DATABASE_URL=postgresql://user:pass@host/dbname?sslmode=require
+   ```
+4. Swap the database driver to `drizzle-orm/neon-http` or `@neondatabase/serverless`
+
+This gives you full persistence, multi-device sync, and all features working.
+
+### Self-Hosted / Local
+
+SQLite works perfectly in any non-serverless environment:
+
+```bash
+git clone https://github.com/EarlAiAssistant/earl-dashboard.git
+cd earl-dashboard
+npm install
+npm run dev
+```
+
+The SQLite database is created automatically at `data/earl-dashboard.db`.
 
 ## License
 

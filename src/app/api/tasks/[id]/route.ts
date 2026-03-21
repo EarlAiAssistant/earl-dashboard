@@ -2,10 +2,11 @@
 // GET    /api/tasks/:id — Get single task with activity log
 // PATCH  /api/tasks/:id — Update task fields
 // DELETE /api/tasks/:id — Delete task
+// Returns 503 when database is unavailable (Vercel/serverless)
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { tasks, activities } from '@/src/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
@@ -20,7 +21,16 @@ import type { TaskStatus, TaskPriority, Task, Activity } from '@/src/lib/types';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function GET(_request: NextRequest, { params }: RouteParams) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const { id } = await params;
 
@@ -47,6 +57,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -133,6 +145,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const { id } = await params;
 

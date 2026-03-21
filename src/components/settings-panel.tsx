@@ -25,7 +25,10 @@ import {
   Loader2,
   Check,
   Bot,
+  HardDrive,
+  Globe,
 } from 'lucide-react';
+import { getStorageMode } from '@/src/lib/hooks/use-tasks';
 
 interface SettingsPanelProps {
   open: boolean;
@@ -276,9 +279,17 @@ function EarlApiInfo() {
 }
 
 function DataSettings() {
+  const storageMode = getStorageMode();
+  const isLocalMode = storageMode === 'browser';
+
   const handleClearAll = async () => {
     if (!confirm('Are you sure you want to delete ALL tasks? This cannot be undone.')) return;
     try {
+      if (isLocalMode) {
+        localStorage.removeItem('local_tasks');
+        toastSuccess('All tasks deleted');
+        return;
+      }
       // Fetch all tasks and delete them one by one
       const res = await fetch('/api/tasks?pageSize=1000');
       const data = await res.json();
@@ -295,24 +306,49 @@ function DataSettings() {
 
   return (
     <div className="space-y-4">
+      {/* Storage mode banner */}
+      <div className={cn(
+        'p-3 rounded border text-sm',
+        isLocalMode
+          ? 'bg-amber-500/10 border-amber-500/30'
+          : 'bg-green-500/10 border-green-500/20'
+      )}>
+        <div className={cn(
+          'flex items-center gap-2 font-medium mb-1',
+          isLocalMode ? 'text-amber-400' : 'text-green-400'
+        )}>
+          {isLocalMode ? <HardDrive className="h-4 w-4" /> : <Globe className="h-4 w-4" />}
+          Storage Mode: {isLocalMode ? 'Browser' : 'Server'}
+        </div>
+        {isLocalMode ? (
+          <p className="text-xs text-muted-foreground">
+            Tasks are stored in this browser only. Data won&apos;t sync across devices or browsers.
+            To get persistent server storage, deploy with a PostgreSQL database (e.g. Neon).
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Tasks are stored in the server database and will persist across sessions.
+          </p>
+        )}
+      </div>
+
       <div className="p-3 bg-muted/30 rounded text-sm">
-        <div className="font-medium mb-2">Data Storage</div>
-        <p className="text-xs text-muted-foreground mb-3">
-          Tasks are stored in a local SQLite database. Profiles and preferences are stored in your browser&apos;s localStorage.
-        </p>
+        <div className="font-medium mb-2">Storage Details</div>
         <div className="space-y-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-green-400" />
-            <span>Local SQLite — Fast, no internet required</span>
+            <div className={cn('w-2 h-2 rounded-full', isLocalMode ? 'bg-amber-400' : 'bg-green-400')} />
+            <span>{isLocalMode ? 'Browser localStorage — Tasks (this browser only)' : 'Server SQLite — Tasks (persistent)'}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-blue-400" />
-            <span>Browser localStorage — Profiles & settings</span>
+            <span>Browser localStorage — Profiles &amp; settings</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-gray-400" />
-            <span>Cloud sync — Coming soon</span>
-          </div>
+          {!isLocalMode && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-400" />
+              <span>Cloud sync — Coming soon (Neon PostgreSQL)</span>
+            </div>
+          )}
         </div>
       </div>
 

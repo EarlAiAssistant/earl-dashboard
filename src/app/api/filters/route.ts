@@ -4,12 +4,20 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { savedFilters } from '@/src/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function GET() {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const filters = db.select().from(savedFilters).all();
     return NextResponse.json(
@@ -25,6 +33,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
   try {
     const body = await request.json();
 

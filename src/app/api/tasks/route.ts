@@ -1,10 +1,11 @@
 // ============================================================
 // GET /api/tasks  — List tasks with filtering, sorting, pagination
 // POST /api/tasks — Create a new task
+// Returns 503 when database is unavailable (Vercel/serverless)
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { tasks } from '@/src/lib/db/schema';
 import { eq, desc, asc, and, like, sql, or, gte, lte, isNotNull } from 'drizzle-orm';
 import { generateId } from '@/src/lib/utils';
@@ -13,7 +14,16 @@ import { notifyTaskCreated, notifyHighPriority } from '@/src/lib/services/notifi
 import { fireTaskCreated } from '@/src/lib/services/webhooks';
 import type { TaskStatus, TaskPriority, TaskFilters, PaginatedResponse, Task } from '@/src/lib/types';
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function GET(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const { searchParams } = new URL(request.url);
 
@@ -110,11 +120,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error('GET /api/tasks error:', error);
+    // If this looks like a DB error, return 503
+    if (isDbError(error)) return dbUnavailable();
     return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const body = await request.json();
 
@@ -158,6 +172,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(mapTask(newTask), { status: 201 });
   } catch (error) {
     console.error('POST /api/tasks error:', error);
+    if (isDbError(error)) return dbUnavailable();
     return NextResponse.json({ error: 'Failed to create task' }, { status: 500 });
   }
 }
@@ -177,4 +192,16 @@ function mapTask(row: typeof tasks.$inferSelect): Task {
     myDayOrder: row.myDayOrder,
     archived: row.archived,
   };
+}
+
+function isDbError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const msg = error.message.toLowerCase();
+  return (
+    msg.includes('sqlite') ||
+    msg.includes('better-sqlite3') ||
+    msg.includes('database') ||
+    msg.includes('no such table') ||
+    msg.includes('enoent')
+  );
 }

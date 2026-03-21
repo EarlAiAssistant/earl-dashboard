@@ -1,16 +1,26 @@
 // ============================================================
 // POST   /api/tasks/:id/my-day — Add task to My Day
 // DELETE /api/tasks/:id/my-day — Remove task from My Day
+// Returns 503 when database is unavailable (Vercel/serverless)
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { tasks } from '@/src/lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+function dbUnavailable() {
+  return NextResponse.json(
+    { error: 'Database unavailable. Running in browser storage mode.', code: 'DB_UNAVAILABLE' },
+    { status: 503 }
+  );
+}
+
 export async function POST(_request: NextRequest, { params }: RouteParams) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const { id } = await params;
 
@@ -46,6 +56,8 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  if (!DB_AVAILABLE) return dbUnavailable();
+
   try {
     const { id } = await params;
 

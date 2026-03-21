@@ -2,7 +2,7 @@
 // Notification service — creates notifications based on preferences
 // ============================================================
 
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { notifications, notificationPreferences } from '@/src/lib/db/schema';
 import { generateId } from '@/src/lib/utils';
 import type { NotificationType } from '@/src/lib/types';
@@ -17,6 +17,7 @@ interface CreateNotificationInput {
 
 /** Check if a notification type is enabled in preferences */
 function isNotificationEnabled(type: NotificationType): boolean {
+  if (!DB_AVAILABLE) return false; // No DB, skip notifications
   const prefs = db
     .select()
     .from(notificationPreferences)
@@ -39,6 +40,7 @@ function isNotificationEnabled(type: NotificationType): boolean {
 
 /** Create a notification (respects user preferences) */
 export function createNotification(input: CreateNotificationInput): void {
+  if (!DB_AVAILABLE) return; // Silently skip when DB unavailable
   if (!isNotificationEnabled(input.type)) return;
 
   db.insert(notifications)

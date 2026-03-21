@@ -2,7 +2,7 @@
 // Webhook service — fires outgoing webhooks on task events
 // ============================================================
 
-import { db } from '@/src/lib/db';
+import { db, DB_AVAILABLE } from '@/src/lib/db';
 import { webhooks } from '@/src/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import crypto from 'crypto';
@@ -20,6 +20,7 @@ function signPayload(payload: string, secret: string): string {
 
 /** Fire all matching webhooks for an event */
 export async function fireWebhooks(event: string, data: Record<string, unknown>): Promise<void> {
+  if (!DB_AVAILABLE) return; // Silently skip when DB unavailable
   const allWebhooks = db.select().from(webhooks).all();
   const matching = allWebhooks.filter((wh) => {
     if (!wh.enabled) return false;
