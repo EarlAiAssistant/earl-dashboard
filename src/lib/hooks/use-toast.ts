@@ -13,6 +13,9 @@ import { generateId } from '@/src/lib/utils';
 let globalToasts: Toast[] = [];
 let listeners: Array<() => void> = [];
 
+// Cached empty array for SSR (must be same reference to avoid infinite loops)
+const EMPTY_TOASTS: Toast[] = [];
+
 function emitChange() {
   listeners.forEach((fn) => fn());
 }
@@ -29,7 +32,7 @@ function getSnapshot(): Toast[] {
 }
 
 function getServerSnapshot(): Toast[] {
-  return [];
+  return EMPTY_TOASTS;
 }
 
 /** Add a toast notification */
